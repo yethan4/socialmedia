@@ -50,7 +50,7 @@ export const CreatePost = () => {
   }
 
   return (
-    <div className="min-w-[700px] bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:min-w-[480px]">
+    <div className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px]">
       <div className="flex flex-col gap-2">
         <span className="flex items-center gap-2">
           <img src="avatar.jpg" alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />

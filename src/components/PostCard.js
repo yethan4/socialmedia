@@ -33,7 +33,7 @@ export const PostCard = () => {
         <span className="hover:underline cursor-pointer select-none" onClick={() => setShowComments((prev) => !prev)}>22</span>
       </div>
 
-      <div className="flex w-full border-t mt-2">
+      <div className="flex w-full border-t mt-2 dark:border-gray-500">
         <div className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={() => setIsLiked((prev) => !prev)}>
           <i className={isLiked ? "bi bi-heart-fill text-xl mr-1 text-red-600" : "bi bi-heart text-xl mr-1"}></i>
           <p className="text-base">Like</p>
@@ -44,7 +44,7 @@ export const PostCard = () => {
         </div>
       </div>
       {showComments && comments && (
-        <div className="max-h-[350px] border-t w-full flex flex-col overflow-y-auto dark-scrollbar always-scrollbar">
+        <div className="max-h-[350px] border-t w-full flex flex-col overflow-y-auto dark-scrollbar always-scrollbar dark:border-gray-500">
           
           <CommentCard />
           <CommentCard />

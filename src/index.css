@@ -8,10 +8,6 @@
   font-family: "Poppins", sans-serif;
 }
 
-body{
-  height: 100vh;
-}
-
 /* Styl paska przewijania */
 .dark-scrollbar {
   scrollbar-width: thin;
