@@ -5,15 +5,13 @@ import { toast } from "react-toastify";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase/config";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
-import { useDispatch, useSelector } from "react-redux";
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { useDispatch } from "react-redux";
 import { login } from "../actions/authAction";
 
 export const Register = () => {
-  const currentUser = useSelector((state) => state.authReducer);
   const dispatch = useDispatch();
 
-  console.log(currentUser)
   console.log(auth.currentUser)
 
   const [formData, setFromData] = useState({
@@ -88,6 +86,7 @@ export const Register = () => {
             value={formData.username}
             onChange={handleChange}
             placeholder="Username"
+            required
             className="border-b w-full pl-8 py-3 outline-none dark:bg-gray-800"
           />
           <i className="bi bi-person-circle absolute left-1 top-3 text-gray-400"></i>
@@ -101,6 +100,7 @@ export const Register = () => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
+            required
             className="border-b w-full pl-8 py-3 outline-none dark:bg-gray-800"
           />
           <i className="bi bi-envelope-fill absolute left-1 top-3 text-gray-400"></i>
@@ -114,6 +114,7 @@ export const Register = () => {
             value={formData.password}
             onChange={handleChange}
             placeholder="Password"
+            required
             className="border-b w-full pl-8 py-3 outline-none dark:bg-gray-800"
           />
           <i className="bi bi-key-fill absolute left-1 top-3 text-gray-400"></i>
@@ -127,6 +128,7 @@ export const Register = () => {
             value={formData.repeatPassword}
             onChange={handleChange}
             placeholder="Repeat Password"
+            required
             className="border-b w-full pl-8 py-3 outline-none dark:bg-gray-800"
           />
           <i className="bi bi-key-fill absolute left-1 top-3 text-gray-400"></i>

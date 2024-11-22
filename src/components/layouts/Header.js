@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import { DropDownMenu, DropDownMenuSm } from "../";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem("darkMode")) || false);
   const [dropDwonMenu, setDropDwonMenu] = useState(false);
 
-  const user = true;
+  const currentUser = useSelector(state => state.auth.currentUser);
 
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
@@ -24,7 +25,7 @@ export const Header = () => {
         <div className="md flex justify-between">
           <div className="max-lg:hidden w-64 h-12 flex items-center gap-2">
             <span className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span>
-            { user && (
+            { currentUser && (
             <div className="relative flex">
               <i className="bi bi-search absolute top-2 left-2 text-gray-400"></i>
               <input name="search" type="text" className="w-64 pl-8 py-2 text-md text-gray-700 shadow rounded-xl outline-none focus:ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700" placeholder="Search" autoComplete="off" />
@@ -33,13 +34,13 @@ export const Header = () => {
           </div>
           <div className="lg:hidden h-12 pt-2">
             <span className="text-2xl font-bold text-blue-800">SocialApp</span>
-            {user && 
+            {currentUser && 
             <span>
               <i className="bi bi-search ml-1 rounded-full py-1 px-2 text-xl cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"></i>
             </span>}
           </div>
           <div className="flex items-center gap-2">
-            { user && (
+            { currentUser && (
               <>
                 {darkMode ? (
                 <span className=" rounded-full p-1 px-2 text-2xl cursor-pointer dark:hover:bg-gray-800" onClick={() => setDarkMode(false)}>
@@ -63,7 +64,7 @@ export const Header = () => {
                 </span>
               </>
             )}
-           { !user && (
+           { !currentUser && (
               <>
               {darkMode ? (
                 <span className=" rounded-full p-1 px-2 text-2xl cursor-pointer dark:hover:bg-gray-800" onClick={() => setDarkMode(false)}>
@@ -78,8 +79,8 @@ export const Header = () => {
            )}
             
           </div>
-          {dropDwonMenu && <DropDownMenu />}
-          {dropDwonMenu && <DropDownMenuSm />}
+          {dropDwonMenu && <DropDownMenu setDropDwonMenu={setDropDwonMenu} />}
+          {dropDwonMenu && <DropDownMenuSm setDropDwonMenu={setDropDwonMenu} />}
         </div>
       </nav>
     </header>
