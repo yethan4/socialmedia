@@ -6,3 +6,5 @@ export { PostCard } from "./PostCard";
 
 export { CommentCard } from "./CommentCard";
 export { CreateComment } from "./CreateComment";
+
+export { Notification } from "./Notification";
