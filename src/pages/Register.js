@@ -3,14 +3,11 @@ import { Link } from "react-router-dom"
 
 import { toast } from "react-toastify";
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase/config";
-import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
-import { useDispatch } from "react-redux";
-import { login } from "../actions/authAction";
+import { db } from "../firebase/config";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { registerUser } from "../services/authService";
 
 export const Register = () => {
-  const dispatch = useDispatch();
 
   const [formData, setFromData] = useState({
     username: "",
@@ -49,27 +46,7 @@ export const Register = () => {
       return toast.warn("Select another email")
     }
 
-
-    try{
-      const res = await createUserWithEmailAndPassword(auth, email, password)
-
-      const newUserData = {
-        username,
-        email,
-        avatar: "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9",
-        id: res.user.uid,
-        friends: [],
-      }
-
-      await setDoc(doc(db, "users", res.user.uid), newUserData)
-
-      dispatch(login(newUserData));
-
-      toast.success("Account created! You are now logged in.");
-    } catch(err){
-      toast.error(err.message);
-    }
-    
+    await registerUser();
   }
 
   return (

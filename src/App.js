@@ -2,7 +2,7 @@ import { AllRoutes } from "./routes/AllRoutes";
 import { Header } from './components/layouts/Header';
 import { Notification } from "./components";
 import { useEffect } from "react";
-import { initializeAuth } from "./firebase/firebaseUtils";
+import { initializeAuth } from "./services/authService";
 import { useDispatch, useSelector } from "react-redux";
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     initializeAuth(dispatch)
-  }, [])
+  }, [dispatch])
 
   return (
     <div className="App">

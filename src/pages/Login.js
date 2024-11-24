@@ -1,19 +1,12 @@
-import { doc, getDoc} from "firebase/firestore";
 import { useState } from "react"
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom"
-import { auth, db } from "../firebase/config";
-import { toast } from "react-toastify";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { login } from "../actions/authAction";
+import { signInUser } from "../services/authService";
 
 export const Login = () => {
   const [formData, setFromData] = useState({
     email: "",
     password: ""
   })
-
-  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFromData({...formData, [e.target.id]: e.target.value})
@@ -28,32 +21,7 @@ export const Login = () => {
     //VALIDATE INPUTS
     if(!email || !password ) return;
 
-
-    try{
-      
-      const res = await signInWithEmailAndPassword(auth, email, password)
-
-      if (!res || !res.user) {
-        throw new Error("Invalid response from Firebase.");
-      }
-
-      //ADD USER DATA TO STORE
-      const docRef = doc(db, "users", res.user.uid)
-      const docSnap = await getDoc(docRef);
-
-      if(docSnap.exists()){
-        dispatch(login(docSnap.data()));
-      }else{
-        throw new Error("no such user");
-      }
-
-      toast.success("You are now logged in.")
-
-    }catch(err){
-      toast.error(err.message)
-    }
-    
-
+    await signInUser();
   }
   
   return (

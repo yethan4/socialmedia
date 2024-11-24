@@ -60,7 +60,7 @@ export const Header = () => {
                   <i className="bi bi-bell "></i>
                 </span>
                 <span className="rounded-full" onClick={() => setDropDwonMenu(!dropDwonMenu)}>
-                  <img src="https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9" alt="" className="object-cover w-9 h-9 mb-1 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700 hover:ring-2" />
+                  <img src={userInfo.avatar} alt="" className="object-cover w-9 h-9 mb-1 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700 hover:ring-2" />
                 </span>
               </>
             )}
