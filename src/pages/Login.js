@@ -21,7 +21,7 @@ export const Login = () => {
     //VALIDATE INPUTS
     if(!email || !password ) return;
 
-    await signInUser();
+    await signInUser(email, password);
   }
   
   return (

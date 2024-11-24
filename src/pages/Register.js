@@ -46,7 +46,7 @@ export const Register = () => {
       return toast.warn("Select another email")
     }
 
-    await registerUser();
+    await registerUser(username, email, password);
   }
 
   return (

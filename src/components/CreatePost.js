@@ -3,6 +3,7 @@ import EmojiPicker from 'emoji-picker-react';
 
 import emoji from "../assets/emoji.png";
 import upload from "../assets/upload.png";
+import { useSelector } from "react-redux";
 
 
 export const CreatePost = () => {
@@ -12,6 +13,8 @@ export const CreatePost = () => {
     file: null,
     url: "",
   });
+
+  const userInfo = useSelector(state => state.authState.userInfo)
 
   const textareaRef = useRef();
 
@@ -53,13 +56,13 @@ export const CreatePost = () => {
     <div className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px]">
       <div className="flex flex-col gap-2">
         <span className="flex items-center gap-2">
-          <img src="avatar.jpg" alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />
-          <span className="text-gray-900 dark:text-gray-200 font-bold">Johny Jhony</span>
+          <img src={userInfo?.avatar} alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />
+          <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
         </span>
         {img.url && 
         <div className="">
           <div className="bg-gray-300 w-fit relative">
-            <img src={img.url} alt="" className="max-w-[400px] max-h-[400px]"/>
+            <img src={img?.url} alt="" className="max-w-[400px] max-h-[400px]"/>
             <i class="bi bi-x-lg absolute top-1 right-1 px-1 text-gray-600 bg-slate-200 bg-opacity-50 rounded-full cursor-pointer hover:bg-opacity-60" onClick={handleRemoveImage}></i>
           </div>
         </div>}
