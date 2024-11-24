@@ -1,5 +1,3 @@
-
-
 export const CommentCard = () => {
   return (
     <div className="mt-3 flex h-fit dark:text-gray-200">

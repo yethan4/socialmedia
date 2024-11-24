@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
 
-import emoji from "../assets/emoji.png";
-
 export const CreateComment = () => {
   const [commentText, setCommentText] = useState("");
   const [showPicker, setShowPicker] = useState(false);

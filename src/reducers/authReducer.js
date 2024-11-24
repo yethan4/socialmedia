@@ -1,7 +1,6 @@
-import { auth } from "../firebase/config";
-
 const initialState = {
-  currentUser: auth.currentUser || null,
+  userInfo: null,
+  loading: true,
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -9,17 +8,20 @@ export const authReducer = (state = initialState, action) => {
     case "LOGIN":
       return{
         ...state,
-        currentUser: action.payload,
+        userInfo: action.payload,
+        loading: false,
       };
     case "LOGOUT":
       return{
         ...state,
-        currentUser: null,
+        userInfo: null,
+        loading: false,
       };
     case "UPDATE":
       return{
         ...state,
-        currentUser: action.payload,
+        userInfo: action.payload,
+        loading: false,
       };
     default:
       return state;

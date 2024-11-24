@@ -12,8 +12,6 @@ import { login } from "../actions/authAction";
 export const Register = () => {
   const dispatch = useDispatch();
 
-  console.log(auth.currentUser)
-
   const [formData, setFromData] = useState({
     username: "",
     email: "",
