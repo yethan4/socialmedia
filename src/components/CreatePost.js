@@ -19,7 +19,6 @@ export const CreatePost = () => {
   });
 
   const userInfo = useSelector(state => state.authState.userInfo)
-
   const textareaRef = useRef();
 
   useEffect(() => {
@@ -68,7 +67,7 @@ export const CreatePost = () => {
       await addDoc(collection(db, "posts"), {
         content: text,
         authorId: userInfo.id,
-        tmestamp: serverTimestamp(),
+        createdAt: serverTimestamp(),
         img: imgUrl,
         likesCount: 0,
         commentsCount: 0,
@@ -78,6 +77,7 @@ export const CreatePost = () => {
       setText("");
       setImg({ file: null, url: "" });
       setShowPicker(false);
+
     }catch(err){
       console.log(err)
       toast.error("Something went wrong.")
