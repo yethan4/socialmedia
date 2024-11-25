@@ -7,7 +7,7 @@ import { formatTimestamp } from "../utils/timeUtils";
 
 export const PostCard = ({post}) => {
   const [comments, setComments] = useState(true);
-  const [showComments, setShowComments] = useState(true);
+  const [showComments, setShowComments] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [author, setAuthor] = useState([]);
 

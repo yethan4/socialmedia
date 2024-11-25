@@ -3,11 +3,12 @@ import EmojiPicker from 'emoji-picker-react';
 
 import emoji from "../assets/emoji.png";
 import upload from "../assets/upload.png";
-import { useSelector } from "react-redux";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
+import { addDoc, collection, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { uploadImage } from "../services/imageUploadService";
 import { toast } from "react-toastify";
+import { addNewPost } from "../actions/postsAction";
 
 
 export const CreatePost = () => {
@@ -17,6 +18,8 @@ export const CreatePost = () => {
     file: null,
     url: "",
   });
+
+  const dispatch = useDispatch();
 
   const userInfo = useSelector(state => state.authState.userInfo)
   const textareaRef = useRef();
@@ -64,7 +67,7 @@ export const CreatePost = () => {
         imgUrl = await uploadImage(img.file)
       }
 
-      await addDoc(collection(db, "posts"), {
+      const docRef = await addDoc(collection(db, "posts"), {
         content: text,
         authorId: userInfo.id,
         createdAt: serverTimestamp(),
@@ -72,6 +75,12 @@ export const CreatePost = () => {
         likesCount: 0,
         commentsCount: 0,
       });
+
+      //download data to avoid createdAT problem
+      const docSnapshot = await getDoc(docRef);
+      const postData = { id: docRef.id, ...docSnapshot.data() };
+
+      dispatch(addNewPost(postData));
       
       toast.success("Post created successfully!")
       setText("");

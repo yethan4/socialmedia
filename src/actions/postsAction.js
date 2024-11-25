@@ -23,4 +23,10 @@ export const addPosts = (posts, lastVisible) => {
       lastVisible
     }
   };
-}
+};
+
+export const addNewPost = (post) => {
+  return {
+  type: 'ADD_NEW_POST',
+  payload: post,}
+  };
