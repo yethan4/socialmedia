@@ -5,9 +5,10 @@ import { fetchUser } from "../services/fetchUser";
 import { formatTimestamp } from "../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db, storage } from "../firebase/config";
 import { toast } from "react-toastify";
 import { deletePost } from "../actions/postsAction";
+import { deleteObject, ref } from "firebase/storage";
 
 
 export const PostCard = ({post}) => {
@@ -37,6 +38,16 @@ export const PostCard = ({post}) => {
   const handleDelete = async() => {
     try{
       await deleteDoc(doc(db, "posts", post.id));
+
+      if(post.img){
+        const desertRef = ref(storage, post.img);
+        deleteObject(desertRef).then(() => {
+          // File deleted successfully
+        }).catch((error) => {
+          console.log(error)
+        });
+      }
+
       dispatch(deletePost(post.id))
       toast.success("The post has been deleted.");
       setShowDeleteConfirmation(false);
