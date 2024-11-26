@@ -27,6 +27,14 @@ export const addPosts = (posts, lastVisible) => {
 
 export const addNewPost = (post) => {
   return {
-  type: 'ADD_NEW_POST',
-  payload: post,}
+    type: "ADD_NEW_POST",
+    payload: post,
+  }
+};
+
+export const deletePost = (id) => {
+  return{
+    type: "DELETE_POST",
+    payload: id,
   };
+};

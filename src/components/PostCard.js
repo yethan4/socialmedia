@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { CommentCard, CreateComment } from "./";
 import { fetchUser } from "../services/fetchUser";
 import { formatTimestamp } from "../utils/timeUtils";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase/config";
+import { toast } from "react-toastify";
+import { deletePost } from "../actions/postsAction";
 
 
 export const PostCard = ({post}) => {
@@ -10,6 +15,18 @@ export const PostCard = ({post}) => {
   const [showComments, setShowComments] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [author, setAuthor] = useState([]);
+  const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state => state.authState.userInfo)
+
+  useEffect(() => {
+    if(userInfo.id === post.authorId){
+      setIsCurrentUserAuthor(true);
+    }
+  })
 
   useEffect(() => {
     fetchUser(post.authorId).then((user) => setAuthor(user));
@@ -17,8 +34,19 @@ export const PostCard = ({post}) => {
 
   const formattedTime = formatTimestamp(post.createdAt.seconds);
 
+  const handleDelete = async() => {
+    try{
+      await deleteDoc(doc(db, "posts", post.id));
+      dispatch(deletePost(post.id))
+      toast.success("The post has been deleted.");
+      setShowDeleteConfirmation(false);
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   return (
-    <div className="shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
+    <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
       <div className="flex items-center w-full mb-4">
         <img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" />
         <div className="flex flex-col">
@@ -26,9 +54,31 @@ export const PostCard = ({post}) => {
           <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formattedTime}</span>
         </div>
       </div>
+
+      <div className="absolute top-3 right-2">
+        { !isCurrentUserAuthor && !isBookmarked && (
+          <span className="text-xl dark:text-gray-300" onClick={() => setIsBookmarked(true)}>
+            <i className="bi bi-bookmark cursor-pointer"></i>
+          </span>
+        )}
+
+        { !isCurrentUserAuthor && isBookmarked && (
+          <span className="text-xl dark:text-gray-300" onClick={() => setIsBookmarked(false)}>
+            <i className="bi bi-bookmark-fill cursor-pointer"></i>
+          </span>
+        )}
+
+        { isCurrentUserAuthor && (
+          <span className="cursor-pointer text-lg rounded-full px-1 hover:text-red-500 dark:text-gray-300" onClick={() => setShowDeleteConfirmation(true)}>
+            <i className="bi bi-trash3"></i>
+          </span>
+        )}
+      </div>
       
-      { post.img && <div className="w-full mb-4 flex justify-center"><img src={post.img} alt="postImage" className="max-w-full max-h-[500px] rounded-lg shadow-sm" /></div>}
-      
+      { post.img && (
+        <div className="w-full mb-4 flex justify-center">
+          <img src={post.img} alt="postImage" className="max-w-full max-h-[500px] rounded-lg shadow-sm" />
+        </div>)}
 
       {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-2">{post.content}</div>}
 
@@ -65,6 +115,30 @@ export const PostCard = ({post}) => {
           <CreateComment />
         )
       }
+
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+            <p className="text-lg font-semibold text-gray-900 dark:text-gray-200 mb-4">
+              Are you sure you want to delete this post?
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirmation(false)}
+                className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
     </div>
   )

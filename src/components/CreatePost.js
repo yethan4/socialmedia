@@ -117,7 +117,7 @@ export const CreatePost = () => {
       </div>
       <div className="mt-3 flex justify-between">
         <div className="flex items-center gap-3">
-          <span className="relative flex items-center cursor-pointer" onClick={() => setShowPicker((prev) => (!prev))}>
+          <span className="relative flex items-center cursor-pointer z-30" onClick={() => setShowPicker((prev) => (!prev))}>
             <img src={emoji} alt="" className="w-6 h-6"/>
             <p className="ml-1 text-sm dark:text-gray-300">Emoji</p>
             {showPicker && <div className="absolute top-[-80px] m-auto"><EmojiPicker onEmojiClick={onEmojiClick} /></div>}

@@ -26,11 +26,16 @@ export const postsReducer = (state = initialState, action) => {
         ...state,
         loading: action.payload
       };
-    case 'ADD_NEW_POST':
+    case "ADD_NEW_POST":
       return {
         ...state,
         posts: [action.payload, ...state.posts], // Dodanie nowego posta na początku
       };
+    case "DELETE_POST":
+      return {
+        ...state,
+        posts: state.posts.filter((post) => post.id !== action.payload)
+      }
     default:
       return state;
   };
