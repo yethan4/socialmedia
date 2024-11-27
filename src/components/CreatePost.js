@@ -9,6 +9,7 @@ import { db } from "../firebase/config";
 import { uploadImage } from "../services/imageUploadService";
 import { toast } from "react-toastify";
 import { addNewPost } from "../actions/postsAction";
+import { Link } from "react-router-dom";
 
 
 export const CreatePost = () => {
@@ -96,10 +97,12 @@ export const CreatePost = () => {
   return (
     <form onSubmit={handleSubmit} className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px]">
       <div className="flex flex-col gap-2">
+        <Link to={`/profile/${userInfo?.id}`}>
         <span className="flex items-center gap-2">
           <img src={userInfo?.avatar} alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />
           <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
         </span>
+        </Link>
         {img.url &&  
         <div className="">
           <div className="bg-gray-300 w-fit relative">

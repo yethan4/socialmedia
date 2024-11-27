@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { DropDownMenu, DropDownMenuSm } from "../";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem("darkMode")) || false);
@@ -24,7 +25,7 @@ export const Header = () => {
       <nav className="bg-white border-gray-200 px-4 pt-2 pb-1 border-b-2 text-gray-800 dark:bg-gray-900 dark:text-slate-100 dark:border-gray-700">
         <div className="md flex justify-between">
           <div className="max-lg:hidden w-64 h-12 flex items-center gap-2">
-            <span className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span>
+            <Link to="/"><span className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span></Link>
             { userInfo && (
             <div className="relative flex">
               <i className="bi bi-search absolute top-2 left-2 text-gray-400"></i>
@@ -33,7 +34,7 @@ export const Header = () => {
             )}
           </div>
           <div className="lg:hidden h-12 pt-2">
-            <span className="text-2xl font-bold text-blue-800">SocialApp</span>
+            <Link to="/"><span className="text-2xl font-bold text-blue-800">SocialApp</span></Link>
             {userInfo && 
             <span>
               <i className="bi bi-search ml-1 rounded-full py-1 px-2 text-xl cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"></i>

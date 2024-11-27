@@ -9,6 +9,7 @@ import { db, storage } from "../firebase/config";
 import { toast } from "react-toastify";
 import { deletePost } from "../actions/postsAction";
 import { deleteObject, ref } from "firebase/storage";
+import { Link } from "react-router-dom";
 
 
 export const PostCard = ({post}) => {
@@ -58,13 +59,15 @@ export const PostCard = ({post}) => {
 
   return (
     <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
-      <div className="flex items-center w-full mb-4">
-        <img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" />
-        <div className="flex flex-col">
-          <span className="text-lg font-semibold text-gray-900 dark:text-gray-200">{author?.username}</span>
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formattedTime}</span>
+      <Link to={`/profile/${author?.id}`} className="flex items-center w-full"> 
+        <div className="flex items-center w-full mb-4">
+          <img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" />
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold text-gray-900 dark:text-gray-200">{author?.username}</span>
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formattedTime}</span>
+          </div>
         </div>
-      </div>
+      </Link>
 
       <div className="absolute top-3 right-2">
         { !isCurrentUserAuthor && !isBookmarked && (
