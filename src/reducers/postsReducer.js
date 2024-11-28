@@ -36,6 +36,24 @@ export const postsReducer = (state = initialState, action) => {
         ...state,
         posts: state.posts.filter((post) => post.id !== action.payload)
       }
+    case "LIKE_POST":
+      return {
+        ...state,
+        posts: state.posts.map((post) => 
+          post.id === action.payload 
+          ? { ...post, likesCount: post.likesCount + 1} 
+          : post
+        ),
+      }
+    case "DISLIKE_POST":
+      return {
+        ...state,
+        posts: state.posts.map((post) => 
+          post.id === action.payload 
+          ? { ...post, likesCount: post.likesCount - 1} 
+          : post
+        ),
+      }
     default:
       return state;
   };

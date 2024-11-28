@@ -4,10 +4,10 @@ import { CommentCard, CreateComment } from "./";
 import { fetchUser } from "../services/fetchUser";
 import { formatTimestamp } from "../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, increment, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "../firebase/config";
 import { toast } from "react-toastify";
-import { deletePost } from "../actions/postsAction";
+import { deletePost, dislikePost, likePost } from "../actions/postsAction";
 import { deleteObject, ref } from "firebase/storage";
 import { Link } from "react-router-dom";
 
@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 export const PostCard = ({post}) => {
   const [comments, setComments] = useState(true);
   const [showComments, setShowComments] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [liked, setLiked] = useState(null);
   const [author, setAuthor] = useState([]);
   const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -33,6 +33,23 @@ export const PostCard = ({post}) => {
   useEffect(() => {
     fetchUser(post.authorId).then((user) => setAuthor(user));
   }, [post.authorId])
+
+  useEffect(() => {
+    const fetchLike = async() => {
+      const q = query(
+        collection(db, "likes"), 
+        where("postId", "==", post.id),
+        where("userId", "==", userInfo.id),
+      );
+
+      const querySnapshot = await getDocs(q);
+      setLiked(querySnapshot.docs[0]?.id)
+    };
+    
+    fetchLike();
+  }, [post, userInfo])
+
+  console.log(liked)
 
   const formattedTime = formatTimestamp(post.createdAt.seconds);
 
@@ -52,6 +69,45 @@ export const PostCard = ({post}) => {
       dispatch(deletePost(post.id))
       toast.success("The post has been deleted.");
       setShowDeleteConfirmation(false);
+    }catch(err){
+      console.log(err)
+    }
+  };
+
+  const handleLike = async() => {
+    try{
+
+      const postRef = doc(db, "posts", post.id);
+
+      await updateDoc(postRef, {
+        likesCount: increment(1)
+      });
+
+      const likeRef = await addDoc(collection(db, "likes"), {
+        userId: userInfo.id,
+        postId: post.id,
+        timestamp: serverTimestamp()
+      });
+      dispatch(likePost(post.id))
+      setLiked(likeRef.id);
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  const handleDislike = async() => {
+    try{
+      
+      const document = doc(db, "likes", liked)
+      await deleteDoc(document);
+
+      const postRef = doc(db, "posts", post.id);
+      await updateDoc(postRef, {
+        likesCount: increment(-1)
+      });
+      dispatch(dislikePost(post.id))
+      setLiked(null);
+
     }catch(err){
       console.log(err)
     }
@@ -97,17 +153,25 @@ export const PostCard = ({post}) => {
       {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-2">{post.content}</div>}
 
       <div className="flex items-center text-sm font-medium justify-start w-full text-gray-600 dark:text-gray-300 mb-2 px-2">
-        <i className={isLiked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>
+        <i className={liked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>
         <span className="hover:underline cursor-pointer select-none">{post.likesCount}</span>
         <i className="bi bi-chat ml-4 mr-1"></i>
         <span className="hover:underline cursor-pointer select-none" onClick={() => setShowComments((prev) => !prev)}>{post.commentsCount}</span>
       </div>
 
       <div className="flex w-full border-t mt-2 dark:border-gray-500">
-        <div className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={() => setIsLiked((prev) => !prev)}>
-          <i className={isLiked ? "bi bi-heart-fill text-xl mr-1 text-red-600" : "bi bi-heart text-xl mr-1"}></i>
+        {liked ? (
+        <div className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={handleDislike}>
+          <i className="bi bi-heart-fill text-xl mr-1 text-red-600"></i>
           <p className="text-base">Like</p>
         </div>
+        ) : (
+        <div className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={handleLike}>
+          <i className="bi bi-heart text-xl mr-1"></i>
+          <p className="text-base">Like</p>
+        </div>
+        )}
+        
         <div onClick={() => setShowComments((prev) => !prev)} className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
           <i className="bi bi-chat text-xl mr-1"></i>
           <p className="text-base">Comment</p>
