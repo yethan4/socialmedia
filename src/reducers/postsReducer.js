@@ -54,6 +54,15 @@ export const postsReducer = (state = initialState, action) => {
           : post
         ),
       }
+    case "CREATE_POST":
+      return {
+        ...state,
+        posts: state.posts.map((post) => 
+          post.id === action.payload 
+          ? { ...post, commentsCount: post.likesCount + 1} 
+          : post
+        ),
+      }
     default:
       return state;
   };

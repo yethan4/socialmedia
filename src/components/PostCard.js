@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { CommentCard, CreateComment } from "./";
 import { fetchUser } from "../services/fetchUser";
 import { formatTimestamp } from "../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
-import { addDoc, collection, deleteDoc, doc, getDocs, increment, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "../firebase/config";
 import { toast } from "react-toastify";
 import { deletePost, dislikePost, likePost } from "../actions/postsAction";
@@ -13,8 +13,10 @@ import { Link } from "react-router-dom";
 
 
 export const PostCard = ({post}) => {
-  const [comments, setComments] = useState(true);
+  const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [scrollCommentToggle, setScrollCommentToggle] = useState(false);
   const [liked, setLiked] = useState(null);
   const [author, setAuthor] = useState([]);
   const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
@@ -24,11 +26,44 @@ export const PostCard = ({post}) => {
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo)
 
+  const commentsContainerRef = useRef(null);
+
+  useEffect(() => {
+    setCommentsCount(post.commentsCount);
+  }, [post]);
+
+  useEffect(() => {
+    if (commentsContainerRef.current) {
+      commentsContainerRef.current.scrollTop = commentsContainerRef.current.scrollHeight;
+    }
+  }, [scrollCommentToggle, showComments]);
+
+  useEffect(() => {
+    if(showComments){
+      try{
+        const q = query(
+          collection(db, "comments"),
+          where("postId", "==", post.id),
+          orderBy("createdAt", "asc")
+        )
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const fetchedComments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setComments(fetchedComments)
+          setCommentsCount(fetchedComments.length)
+        })
+
+      }catch(err){
+        console.log(err)
+      }
+    }
+  }, [showComments])
+
   useEffect(() => {
     if(userInfo.id === post.authorId){
       setIsCurrentUserAuthor(true);
     }
-  })
+  }, [userInfo])
 
   useEffect(() => {
     fetchUser(post.authorId).then((user) => setAuthor(user));
@@ -49,7 +84,6 @@ export const PostCard = ({post}) => {
     fetchLike();
   }, [post, userInfo])
 
-  console.log(liked)
 
   const formattedTime = formatTimestamp(post.createdAt.seconds);
 
@@ -113,17 +147,16 @@ export const PostCard = ({post}) => {
     }
   }
 
+
   return (
     <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
-      <Link to={`/profile/${author?.id}`} className="flex items-center w-full"> 
         <div className="flex items-center w-full mb-4">
-          <img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" />
+        <Link to={`/profile/${author?.id}`}><img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" /></Link>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold text-gray-900 dark:text-gray-200">{author?.username}</span>
+            <Link to={`/profile/${author?.id}`}><span className="text-lg font-semibold text-gray-900 dark:text-gray-200 w-fit">{author?.username}</span></Link>
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formattedTime}</span>
           </div>
-        </div>
-      </Link>
+        </div>  
 
       <div className="absolute top-3 right-2">
         { !isCurrentUserAuthor && !isBookmarked && (
@@ -156,43 +189,41 @@ export const PostCard = ({post}) => {
         <i className={liked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>
         <span className="hover:underline cursor-pointer select-none">{post.likesCount}</span>
         <i className="bi bi-chat ml-4 mr-1"></i>
-        <span className="hover:underline cursor-pointer select-none" onClick={() => setShowComments((prev) => !prev)}>{post.commentsCount}</span>
+        <span className="hover:underline cursor-pointer select-none" onClick={() => setShowComments((prev) => !prev)}>{commentsCount}</span>
       </div>
 
       <div className="flex w-full border-t mt-2 dark:border-gray-500">
         {liked ? (
-        <div className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={handleDislike}>
+        <div className="select-none flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={handleDislike}>
           <i className="bi bi-heart-fill text-xl mr-1 text-red-600"></i>
           <p className="text-base">Like</p>
         </div>
         ) : (
-        <div className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={handleLike}>
+        <div className="select-none flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-red-500" onClick={handleLike}>
           <i className="bi bi-heart text-xl mr-1"></i>
           <p className="text-base">Like</p>
         </div>
         )}
         
-        <div onClick={() => setShowComments((prev) => !prev)} className="flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+        <div onClick={() => setShowComments((prev) => !prev)} className="select-none flex-1 flex items-center justify-center py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
           <i className="bi bi-chat text-xl mr-1"></i>
           <p className="text-base">Comment</p>
         </div>
       </div>
-      {showComments && comments && (
-        <div className="max-h-[350px] border-t w-full flex flex-col overflow-y-auto dark-scrollbar always-scrollbar dark:border-gray-500">
-          
-          <CommentCard />
-          <CommentCard />
-          <CommentCard />
-          <CommentCard />
-          <CommentCard />
-          <CommentCard />
-        </div>
-      )}
-      {
-        showComments && (
-          <CreateComment />
+      {showComments && comments && 
+      <div 
+        ref={commentsContainerRef}
+        className="max-h-[350px] p-0 border-t w-full flex flex-col overflow-y-auto dark-scrollbar always-scrollbar dark:border-gray-500"
+      >
+      {comments.map((comment) => {
+        
+        return (
+          <CommentCard key={comment.id} comment={comment} />
         )
+      })}
+      </div>
       }
+      {showComments && (<CreateComment postId={post?.id} setScrollCommentToggle={setScrollCommentToggle}/>)}
 
       {showDeleteConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
