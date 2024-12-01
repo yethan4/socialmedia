@@ -78,9 +78,9 @@ export const CreateComment = ({postId, setScrollCommentToggle}) => {
               <i className="bi bi-send-fill text-blue-600 hover:text-blue-500"></i>
             </button>
           ):(
-            <button>
+            <span>
               <i className="bi bi-send-fill text-gray-400"></i>
-            </button>
+            </span>
           )}  
           
         </div>
