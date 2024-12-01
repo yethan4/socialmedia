@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
 
-import emoji from "../assets/emoji.png";
-import upload from "../assets/upload.png";
+import emoji from "../../assets/emoji.png";
+import upload from "../../assets/upload.png";
 import { useDispatch, useSelector } from "react-redux";
 import { addDoc, collection, getDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase/config";
-import { uploadImage } from "../services/imageUploadService";
+import { db } from "../../firebase/config";
+import { uploadImage } from "../../services/imageUploadService";
 import { toast } from "react-toastify";
-import { addNewPost } from "../actions/postsAction";
+import { addNewPost } from "../../actions/postsAction";
 import { Link } from "react-router-dom";
 
 

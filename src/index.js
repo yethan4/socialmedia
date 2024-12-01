@@ -7,6 +7,7 @@ import App from './App';
 import { createStore } from 'redux';
 import allReducers from './reducers';
 import { Provider } from 'react-redux';
+import { ScrollToTop } from './components';
 
 const store = createStore(
   allReducers,
@@ -17,6 +18,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <Router>
+      <ScrollToTop />
       <App />
     </Router>
   </Provider>

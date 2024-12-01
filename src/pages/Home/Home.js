@@ -10,9 +10,11 @@ import { CreatePost, PostCard } from "../../components";
 import { addPosts, setLoading, setPosts } from "../../actions/postsAction";
 
 import loadingGif from "../../assets/loading.gif"
+import { useTitle } from "../../hooks/useTitle";
 
 
 export const Home = () => {
+  useTitle()
   const dispatch = useDispatch();
   const posts = useSelector(state => state.postsState.posts);
   const lastVisible = useSelector(state => state.postsState.lastVisible);

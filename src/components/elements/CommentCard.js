@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { fetchUser } from "../services/fetchUser"
-import { formatTimestamp } from "../utils/timeUtils";
+import { fetchUser } from "../../services/fetchUser"
+import { formatTimestamp } from "../../utils/timeUtils";
 import { useSelector } from "react-redux";
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db } from "../../firebase/config";
+import { Link } from "react-router-dom";
 
 export const CommentCard = ({comment}) => {
   const [author, setAuthor] = useState(null);
@@ -41,10 +42,10 @@ export const CommentCard = ({comment}) => {
 
   return (
     <div className="mt-1 mb-3 flex h-fit dark:text-gray-200">
-      <img src={author?.avatar} alt="" className="w-8 h-8 min-w-8 object-cover rounded-full mt-2 cursor-pointer"/>
+      <Link to={`/profile/${author?.id}`}><img src={author?.avatar} alt="" className="w-8 h-8 min-w-8 object-cover rounded-full mt-2 cursor-pointer"/></Link>
       <div className="relative flex flex-col h-fit ml-1 mt-1 py-1 pl-3 pr-9 rounded-2xl bg-gray-100 dark:bg-gray-700">
         <div className="flex items-center">
-          <span className="font-bold text-sm hover:underline cursor-pointer">{author?.username}</span>
+          <Link to={`/profile/${author?.id}`} className="font-bold text-sm hover:underline cursor-pointer"><span>{author?.username}</span></Link>
           <span className="text-[8px] ml-1 mt-1 font-semibold dark:text-gray-400">{formattedTime}</span>
         </div>
         <span className="text-sm">{comment?.content}</span>

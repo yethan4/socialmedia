@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-import { CommentCard, CreateComment } from "./";
-import { fetchUser } from "../services/fetchUser";
-import { formatTimestamp } from "../utils/timeUtils";
+import { CommentCard, CreateComment } from "..";
+import { fetchUser } from "../../services/fetchUser";
+import { formatTimestamp } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { addDoc, collection, deleteDoc, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
-import { db, storage } from "../firebase/config";
+import { db, storage } from "../../firebase/config";
 import { toast } from "react-toastify";
-import { deletePost, dislikePost, likePost } from "../actions/postsAction";
+import { deletePost, dislikePost, likePost } from "../../actions/postsAction";
 import { deleteObject, ref } from "firebase/storage";
 import { Link } from "react-router-dom";
 
@@ -153,7 +153,7 @@ export const PostCard = ({post}) => {
         <div className="flex items-center w-full mb-4">
         <Link to={`/profile/${author?.id}`}><img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" /></Link>
           <div className="flex flex-col">
-            <Link to={`/profile/${author?.id}`}><span className="text-lg font-semibold text-gray-900 dark:text-gray-200 w-fit">{author?.username}</span></Link>
+            <Link to={`/profile/${author?.id}`}><span className="hover:underline text-lg font-semibold text-gray-900 dark:text-gray-200 w-fit">{author?.username}</span></Link>
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formattedTime}</span>
           </div>
         </div>  

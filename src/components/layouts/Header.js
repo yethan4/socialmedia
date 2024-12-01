@@ -20,12 +20,18 @@ export const Header = () => {
 
   },[darkMode])
 
+  const handleScrollTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   return (
     <header className="z-40 fixed left-0 right-0 top-0">
       <nav className="bg-white border-gray-200 px-4 pt-2 pb-1 border-b-2 text-gray-800 dark:bg-gray-900 dark:text-slate-100 dark:border-gray-700">
         <div className="md flex justify-between">
           <div className="max-lg:hidden w-64 h-12 flex items-center gap-2">
-            <Link to="/"><span className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span></Link>
+            <Link to="/">
+              <span onClick={handleScrollTop} className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span>
+            </Link>
             { userInfo && (
             <div className="relative flex">
               <i className="bi bi-search absolute top-2 left-2 text-gray-400"></i>

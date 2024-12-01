@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
 import loadingGif from "../../assets/loading.gif"
+import { useTitle } from '../../hooks/useTitle';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -23,6 +24,8 @@ export const Profile = () => {
   const loading = useSelector(state => state.postsState.loading); 
 
   const observerRef = useRef(null);
+
+  useTitle(`- Profile`)
 
   useEffect(() =>{
     if(id==userInfo.id){

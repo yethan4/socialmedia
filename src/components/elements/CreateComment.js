@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
 import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "firebase/firestore";
-import { auth, db } from "../firebase/config";
+import { auth, db } from "../../firebase/config";
 import { useSelector } from "react-redux";
 
 export const CreateComment = ({postId, setScrollCommentToggle}) => {
