@@ -1,3 +1,6 @@
+export { Header } from "./layouts/Header";
+export { Sidebar } from "./layouts/Sidebar";
+
 export { DropDownMenu } from "./elements/DropDownMenu";
 export { DropDownMenuSm } from "./elements/DropDownMenuSm";
 

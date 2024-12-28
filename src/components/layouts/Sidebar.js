@@ -1,13 +1,13 @@
-import bell from "../../../assets/bell.png";
-import bookmark from "../../../assets/bookmark.png";
-import calendar from "../../../assets/calendar.png";
-import chat from "../../../assets/chat.png";
-import friends from "../../../assets/friends.png";
-import group from "../../../assets/group.png";
-import happy from "../../../assets/happy.png";
-import pen from "../../../assets/pen.png";
-import activity from "../../../assets/activity.png";
-import settings from "../../../assets/settings.png";
+import bell from "../../assets/bell.png";
+import bookmark from "../../assets/bookmark.png";
+import calendar from "../../assets/calendar.png";
+import chat from "../../assets/chat.png";
+import friends from "../../assets/friends.png";
+import group from "../../assets/group.png";
+import happy from "../../assets/happy.png";
+import pen from "../../assets/pen.png";
+import activity from "../../assets/activity.png";
+import settings from "../../assets/settings.png";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -49,9 +49,11 @@ export const Sidebar = () => {
         </div>
 
         <div className="">
+          <Link to="/notifications">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
-            <img src={bell} className="h-6 w-6 mr-2" />notifications
+            <img src={bell} className="h-6 w-6 mr-2" />Notifications
           </div>
+          </Link>
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={settings} className="h-6 w-6 mr-2" />Settings
           </div>

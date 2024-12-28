@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { collection, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
-import { FriendsSidebar, Sidebar } from "./components";
-import { CreatePost, PostCard } from "../../components";
+import { FriendsSidebar } from "./components";
+import { CreatePost, PostCard, Sidebar } from "../../components";
 
 import { addPosts, setLoading, setPosts } from "../../actions/postsAction";
 

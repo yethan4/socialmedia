@@ -6,10 +6,3 @@ export const setNotifications = (notifications) => {
     }
   };
 };
-
-export const deleteNotification = (id) => {
-  return{
-    type: "DELETE_NOTIFICATION",
-    payload: id,
-  };
-};

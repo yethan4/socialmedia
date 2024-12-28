@@ -11,11 +11,6 @@ export const notificationsReducer = (state = initialState, action) => {
         notifications: action.payload.notifications,
         unreadCount: action.payload.notifications.length,
       };
-    case "DELETE_NOTIFICATION":
-      return{
-        ...state,
-        notifications: state.notifications.filter((notification) => notification.id !== action.payload)
-      };
     default:
       return state;
   }

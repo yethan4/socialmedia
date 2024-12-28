@@ -3,14 +3,11 @@ import { fetchDocument } from "../../services/fetchDocument";
 import { formatTimestamp } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { deleteNotification } from "../../actions/notificationsAction";
-import { useDispatch } from "react-redux";
 import { db } from "../../firebase/config";
 
-export const LikeNotificationCard = ({notification, setDropNotifications}) => {
+export const LikeNotificationCard = ({notification, setDropNotifications=""}) => {
   const [author, setAuthor] = useState(null);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const formattedTime = formatTimestamp(notification.timestamp.seconds);
@@ -27,8 +24,9 @@ export const LikeNotificationCard = ({notification, setDropNotifications}) => {
         await updateDoc(notificationRef, {
           seen: true
         });
-
-        setDropNotifications(false)
+        if(setDropNotifications){
+          setDropNotifications(false)
+        }
         navigate(`/post/${notification?.postId}`);
       }catch(e){
         console.log(e)
@@ -41,8 +39,6 @@ export const LikeNotificationCard = ({notification, setDropNotifications}) => {
     try{
       const document = doc(db, "notifications", id)
       await deleteDoc(document);
-
-      dispatch(deleteNotification(id));
 
     }catch(err){
       console.log(err)
@@ -62,7 +58,7 @@ export const LikeNotificationCard = ({notification, setDropNotifications}) => {
           <Link to={`/profile/${author?.id}`}>
             <span className="font-semibold mr-1 hover:underline">{author?.username}</span>
           </Link>
-          <span className="font-normal text-[10px]">{formattedTime}</span>
+          <span className={notification?.seen ? "font-normal text-[10px]" : "font-normal text-[10px] text-blue-600"}>{formattedTime}</span>
         </div>
         <span>
           just liked your post!
