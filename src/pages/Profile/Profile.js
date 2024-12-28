@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchUser } from '../../services/fetchUser';
+import { fetchDocument } from '../../services/fetchDocument';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { CreatePost, PostCard } from '../../components';
@@ -35,7 +35,7 @@ export const Profile = () => {
 
   useEffect(() => {
     if(id){
-      fetchUser(id).then((user) => {
+      fetchDocument(id, "users").then((user) => {
         setUserData(user);
       });
     }
@@ -148,7 +148,7 @@ export const Profile = () => {
   return (
     <div className="pt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
       {/* Background image */}
-      <div className="shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg">
+      <div className="relative shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg max-lg:pb-8">
         <div className="relative h-[35vh] bg-cover bg-center" style={{ backgroundImage: "url('/dog2.jpg')" }}>
           {/* User Avatar */}
           <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
@@ -163,10 +163,16 @@ export const Profile = () => {
         <div className="mt-16 text-center px-4 pb-6">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{userData?.username}</h2>
         </div>
+        <div className="flex max-lg:justify-center absolute bottom-2 left-1 right-1">
+          {/* <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200"><i class="bi bi-person-dash-fill mr-1"></i>Remove request</button> */}
+          {/* <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200"><i class="bi bi-person-fill-add mr-1"></i>Add Friend</button> */}
+          <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200"><i class="bi bi-person-check-fill mr-1"></i>Friends</button>
+          <button className="px-4 py-2 bg-blue-600 text-slate-50 "><i class="bi bi-chat mr-1"></i>Message</button>
+        </div>
       </div>
 
       <div className="flex mt-8">
-        <div className="sticky top-20 w-96 h-fit">
+        <div className="sticky max-lg:hidden top-20 w-96 h-fit">
           <div>
 
             <div className="w-full h-fit shadow dark:shadow-gray-800 dark:shadow-sm flex flex-col justify-center items-center px-4 py-6 dark:text-gray-200">
@@ -213,7 +219,7 @@ export const Profile = () => {
           </div>
         </div>
 
-        <div className="ml-16 flex-1 h-[1000px] dark:bg-gray-900">
+        <div className="lg:ml-16 flex-1 h-[1000px] dark:bg-gray-900">
           {isCurrentUser && <CreatePost />}
           <div className="mt-12 flex flex-col gap-3">
           { posts.map((post) => {

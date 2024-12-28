@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react"
-import { DropDownMenu, DropDownMenuSm } from "../";
-import { useSelector } from "react-redux";
+import { DropDownMenu, DropDownMenuSm, DropDownNotifications } from "../";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { db } from "../../firebase/config";
+import { setNotifications } from "../../actions/notificationsAction";
+import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem("darkMode")) || false);
   const [dropDwonMenu, setDropDwonMenu] = useState(false);
+  const [dropNotifications, setDropNotifications] = useState(false);
 
+  const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo);
+  const notificationsCounter = useSelector(state => state.notificationsState.unreadCount);
 
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
@@ -20,12 +26,44 @@ export const Header = () => {
 
   },[darkMode])
 
+  useEffect(() => {
+    if (!userInfo?.id) return;
+
+    const q = query(
+      collection(db, "notifications"),
+      where("toUserId", "==", userInfo.id),
+      where("seen", "==", false),
+      orderBy("timestamp", "desc")
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const newNotifications = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      dispatch(setNotifications(newNotifications));
+      console.log(newNotifications);
+    });
+
+    return () => unsubscribe();
+  }, [userInfo?.id, dispatch]);
+
   const handleScrollTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const showDropMenu = (state) => {
+    setDropNotifications(false);
+    setDropDwonMenu(state);
+  }
+
+  const showDropNotifications = (state) => {
+    setDropDwonMenu(false);
+    setDropNotifications(state);
+  }
+
   return (
-    <header className="z-40 fixed left-0 right-0 top-0">
+    <header className="z-40 fixed left-0 right-0 top-0 select-none">
       <nav className="bg-white border-gray-200 px-4 pt-2 pb-1 border-b-2 text-gray-800 dark:bg-gray-900 dark:text-slate-100 dark:border-gray-700">
         <div className="md flex justify-between">
           <div className="max-lg:hidden w-64 h-12 flex items-center gap-2">
@@ -62,11 +100,11 @@ export const Header = () => {
                   <p className="absolute top-0 right-1 text-xs rounded-full text-slate-100 bg-red-500 px-1 select-none">3</p>
                   <i className="bi bi-chat"></i>
                 </span>
-                <span className="relative rounded-full py-1 px-2 text-2xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <p className="absolute top-0 right-1 text-xs rounded-full text-slate-100 bg-red-500 px-1 select-none">8</p>
+                <span className="relative rounded-full py-1 px-2 text-2xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => showDropNotifications(!dropNotifications)}>
+                  <p className="absolute top-0 right-1 text-xs rounded-full text-slate-100 bg-red-500 px-1 select-none">{notificationsCounter>0 ? notificationsCounter : ""}</p>
                   <i className="bi bi-bell "></i>
                 </span>
-                <span className="rounded-full" onClick={() => setDropDwonMenu(!dropDwonMenu)}>
+                <span className="rounded-full" onClick={() => showDropMenu(!dropDwonMenu)}>
                   <img src={userInfo.avatar} alt="" className="object-cover w-9 h-9 mb-1 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700 hover:ring-2" />
                 </span>
               </>
@@ -88,6 +126,7 @@ export const Header = () => {
           </div>
           {dropDwonMenu && <DropDownMenu setDropDwonMenu={setDropDwonMenu} />}
           {dropDwonMenu && <DropDownMenuSm setDropDwonMenu={setDropDwonMenu} />}
+          {dropNotifications && <DropDownNotifications setDropNotifications={setDropNotifications} />}
         </div>
       </nav>
     </header>

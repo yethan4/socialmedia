@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { fetchUser } from "../../services/fetchUser"
+import { fetchDocument } from "../../services/fetchDocument"
 import { formatTimestamp } from "../../utils/timeUtils";
 import { useSelector } from "react-redux";
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
@@ -22,7 +22,7 @@ export const CommentCard = ({comment}) => {
   }, [userInfo])
 
   useEffect(() => {
-    fetchUser(comment.authorId).then((user) => {
+    fetchDocument(comment.authorId, "users").then((user) => {
       setAuthor(user)
     })
   }, [comment.authorId])

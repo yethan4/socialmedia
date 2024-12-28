@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
 import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase/config";
+import { db } from "../../firebase/config";
 import { useSelector } from "react-redux";
 
-export const CreateComment = ({postId, setScrollCommentToggle}) => {
+export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) => {
   const [commentText, setCommentText] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   
@@ -39,6 +39,15 @@ export const CreateComment = ({postId, setScrollCommentToggle}) => {
       content: commentText,
       createdAt: serverTimestamp(),
     });
+
+    const notificationRef = await addDoc(collection(db, "notifications"), {
+      fromUserId: userInfo.id,
+      toUserId: postAuthorId,
+      postId: postId,
+      timestamp: serverTimestamp(),
+      seen: false,
+      type: "comment",
+    })
 
     const postRef = doc(db, "posts", postId);
 

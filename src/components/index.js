@@ -8,4 +8,9 @@ export { CommentCard } from "./elements/CommentCard";
 export { CreateComment } from "./elements/CreateComment";
 
 export { Notification } from "./others/Notification";
-export { ScrollToTop } from "./others/ScrollToTop"
+export { ScrollToTop } from "./others/ScrollToTop";
+
+export { DropDownNotifications } from "./elements/DropDownNotifications";
+export { LikeNotificationCard } from "./elements/LikeNotificationCard";
+export { CommentNotificationCard } from "./elements/CommentNotificationCard";
+export { FriendRequestNotificationCard } from "./elements/FriendRequestNotificationCard";

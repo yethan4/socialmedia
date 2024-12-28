@@ -1,0 +1,29 @@
+import { useSelector } from "react-redux"
+import { CommentNotificationCard } from "../"
+import { LikeNotificationCard } from "../"
+import { FriendRequestNotificationCard } from "../"
+
+export const DropDownNotifications = ({setDropNotifications}) => {
+  const notifications = useSelector(state => state.notificationsState.notifications);
+
+  return (
+    <div className="max-sm:hidden absolute flex flex-col gap-2 top-[62px] right-2 w-96 pb-2 h-fit rounded border-b border-l shadow bg-white dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700">
+      <span className="text-xl font-semibold mt-2 ml-2  ">Notifications</span>
+      
+      {
+        notifications.map((notification) => {
+          if(notification.type=="like"){
+            return <LikeNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications}/>
+          }else if(notification.type=="comment"){
+            return <CommentNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
+          }else{
+            return <FriendRequestNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
+          }
+        })
+      }
+
+      {notifications.length == 0 && <div className="px-2">no new notifications</div>}
+
+    </div>
+  )
+}

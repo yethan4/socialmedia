@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { CommentCard, CreateComment } from "..";
-import { fetchUser } from "../../services/fetchUser";
+import { fetchDocument } from "../../services/fetchDocument";
 import { formatTimestamp } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { addDoc, collection, deleteDoc, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
@@ -66,7 +66,7 @@ export const PostCard = ({post}) => {
   }, [userInfo])
 
   useEffect(() => {
-    fetchUser(post.authorId).then((user) => setAuthor(user));
+    fetchDocument(post.authorId, "users").then((user) => setAuthor(user));
   }, [post.authorId])
 
   useEffect(() => {
@@ -122,6 +122,16 @@ export const PostCard = ({post}) => {
         postId: post.id,
         timestamp: serverTimestamp()
       });
+
+      const notificationRef = await addDoc(collection(db, "notifications"), {
+        fromUserId: userInfo.id,
+        toUserId: author.id,
+        postId: post.id,
+        timestamp: serverTimestamp(),
+        seen: false,
+        type: "like",
+      })
+
       dispatch(likePost(post.id))
       setLiked(likeRef.id);
     }catch(err){
@@ -223,7 +233,7 @@ export const PostCard = ({post}) => {
       })}
       </div>
       }
-      {showComments && (<CreateComment postId={post?.id} setScrollCommentToggle={setScrollCommentToggle}/>)}
+      {showComments && (<CreateComment postId={post?.id} postAuthorId={author?.id} setScrollCommentToggle={setScrollCommentToggle}/>)}
 
       {showDeleteConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
