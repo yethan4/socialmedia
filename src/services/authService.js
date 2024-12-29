@@ -2,10 +2,26 @@ import { createUserWithEmailAndPassword, signOut as firebaseSignOut, signInWithE
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
+
+export const watchUserDocument = (userId, dispatch) => {
+  const docRef = doc(db, "users", userId);
+  return onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      dispatch({
+        type: "UPDATE",
+        payload: docSnap.data(),
+      });
+    } else {
+      console.error("Document does not exist!");
+    }
+  });
+};
 
 export const initializeAuth = (dispatch) => {
-  auth.onAuthStateChanged(async(user) => {
+  let unsubscribeUserDoc = null;
+
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
       try {
         const docRef = doc(db, "users", user.uid);
@@ -16,13 +32,20 @@ export const initializeAuth = (dispatch) => {
             type: "LOGIN",
             payload: docSnap.data(),
           });
+
+          unsubscribeUserDoc = watchUserDocument(user.uid, dispatch);
         } else {
           throw new Error("No user document found.");
         }
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err.message);
       }
     } else {
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+        unsubscribeUserDoc = null;
+      }
+
       dispatch({
         type: "LOGOUT",
         payload: null,

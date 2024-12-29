@@ -21,13 +21,14 @@ export const FriendsNotificationCard = ({notification, setDropNotifications=""})
       try{
         const notificationRef = doc(db, "notifications", notification.id)
 
+        if(setDropNotifications){
+          setDropNotifications(false)
+        };
+
         await updateDoc(notificationRef, {
           seen: true
         });
-        if(setDropNotifications){
-          setDropNotifications(false)
-        }
-        navigate(`/profile/${author?.id}}`);
+        navigate(`/profile/${author?.id}`);
       }catch(e){
         console.log(e)
       }

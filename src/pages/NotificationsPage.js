@@ -2,7 +2,7 @@ import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/f
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { db } from "../firebase/config";
-import { CommentNotificationCard, FriendRequestNotificationCard, LikeNotificationCard } from "../components";
+import { CommentNotificationCard, FriendRequestNotificationCard, FriendsNotificationCard, LikeNotificationCard } from "../components";
 import { Sidebar } from "../components";
 
 export const NotificationsPage = () => {
@@ -57,8 +57,10 @@ export const NotificationsPage = () => {
               return <LikeNotificationCard key={notification.id} notification={notification} />
             }else if(notification.type=="comment"){
               return <CommentNotificationCard key={notification.id} notification={notification} />
-            }else{
+            }else if(notification.type=="friendReqeust"){
               return <FriendRequestNotificationCard key={notification.id} notification={notification} />
+            }else if(notification.type=="friends"){
+              return <FriendsNotificationCard key={notification.id} notification={notification} />
             }
           })
         }

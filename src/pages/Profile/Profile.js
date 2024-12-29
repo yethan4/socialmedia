@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/fetchDocument';
-import { addDoc, arrayUnion, collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, startAfter, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { CreatePost, FriendRequestNotificationCard, PostCard } from '../../components';
+import { CreatePost, PostCard } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
 import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
+import { addFriend, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export const Profile = () => {
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [friendStatus, setFriendStatus] = useState(null);
   const [friendRequestId, setFriendRequestId] = useState(null);
+  const [dropRemove, setDropRemove] = useState(false);
 
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo);
@@ -197,60 +199,28 @@ export const Profile = () => {
   }, [userInfo, id, isCurrentUser]);
 
   const handleSentRequest= async () => {
-    try {
-      await addDoc(collection(db, "notifications"), {
-        fromUserId: userInfo.id,
-        toUserId: id,
-        timestamp: serverTimestamp(),
-        seen: false,
-        type: "friendRequest",
-      });
-
-      await addDoc(collection(db, "friendRequests"), {
-        fromUserId: userInfo.id,
-        toUserId: id,
-        status: "pending",
-      });
-
-      setFriendStatus("pendingSent");
-    } catch (err) {
-      console.log(err);
-    }
+    await sentFriendRequest(userInfo.id, id);
+    setFriendStatus("pendingSent");
   };
 
+  const handleRejectRequest = async() => {
+    await rejectFriendRequest(userInfo.id, id, friendRequestId);
+    setFriendStatus("strangers");
+  }
+
   const handleAddFriend = async() => {
-    try{
+    await addFriend(userInfo.id, id, friendRequestId);
+    setFriendStatus("friends");
+  }
 
-      const currentUserDocRef = doc(db, "users", userInfo.id);
-      const userDocRef = doc(db, "users", id);
-      const friendRequestRef = doc(db, "friendRequests", friendRequestId);
+  const handleRemoveFriend = async() => {
+    await removeFriend(userInfo.id, id);
+    setFriendStatus("strangers");
+  }
 
-      await updateDoc(currentUserDocRef, {
-        friends: arrayUnion(id),
-      });
-
-      await updateDoc(userDocRef, {
-        friends: arrayUnion(userInfo.id),
-      });
-
-
-      await updateDoc(friendRequestRef, {
-        status: "accepted"
-      });
-
-      await addDoc(collection(db, "notifications"), {
-        fromUserId: userInfo.id,
-        toUserId: id,
-        timestamp: serverTimestamp(),
-        seen: false,
-        type: "friends",
-      })
-
-      setFriendStatus("friends")
-
-    }catch(err){
-      console.log(err);
-    }
+  const handleUndoRequest = async() => {
+    await undoFriendRequest(userInfo.id, id, friendRequestId);
+    setFriendStatus("strangers");
   }
 
   return (
@@ -271,7 +241,7 @@ export const Profile = () => {
         </div>
         <div className="flex max-lg:justify-center absolute bottom-2 left-1 right-1">
           {friendStatus === "pendingSent" && (
-            <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
+            <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleUndoRequest}>
               <i className="bi bi-person-dash-fill mr-1"></i>
               Remove request
             </button>
@@ -282,7 +252,7 @@ export const Profile = () => {
                 <i className="bi bi-person-fill-add mr-1"></i>
                 Accept
               </button>
-              <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
+              <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleRejectRequest}>
                 <i className="bi bi-person-dash-fill mr-1"></i>
                 Reject
               </button>
@@ -295,10 +265,15 @@ export const Profile = () => {
             </button>
           )}
           {friendStatus === "friends" && (
-            <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
-              <i className="bi bi-person-check-fill mr-1"></i>
-              Friends
-            </button>
+            <div className="relative" onClick={() => setDropRemove(!dropRemove)}>
+              <button className="pl-4 pr-2 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
+                <i className="bi bi-person-check-fill mr-1"></i>
+                Friends<i class="bi bi-three-dots ml-2"></i>
+              </button>
+              {dropRemove && <div className="absolute right-2 top-11 bg-gray-50 shadow w-28 text-center hover:bg-gray-200">
+                <button className="px-2 py-1 rounded" onClick={handleRemoveFriend}>Remove</button>
+              </div>}
+            </div>
           )}
           {!isCurrentUser && <button className="px-4 py-2 bg-blue-600 text-slate-50">
             <i className="bi bi-chat mr-1"></i>

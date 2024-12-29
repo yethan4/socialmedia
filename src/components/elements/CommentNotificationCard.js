@@ -21,13 +21,15 @@ export const CommentNotificationCard = ({notification, setDropNotifications=""})
       try{
         const notificationRef = doc(db, "notifications", notification.id)
 
+        if(setDropNotifications){
+          setDropNotifications(false)
+        };
+
         await updateDoc(notificationRef, {
           seen: true
         });
 
-        if(setDropNotifications){
-          setDropNotifications(false)
-        }
+        
         navigate(`/post/${notification?.postId}`);
       }catch(e){
         console.log(e)
