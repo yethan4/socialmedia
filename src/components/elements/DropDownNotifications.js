@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { CommentNotificationCard } from "../"
+import { CommentNotificationCard, FriendsNotificationCard } from "../"
 import { LikeNotificationCard } from "../"
 import { FriendRequestNotificationCard } from "../"
 
@@ -16,8 +16,10 @@ export const DropDownNotifications = ({setDropNotifications}) => {
             return <LikeNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications}/>
           }else if(notification.type=="comment"){
             return <CommentNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
-          }else{
+          }else if(notification.type=="friendRequest"){
             return <FriendRequestNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
+          }else if(notification.type=="friends"){
+            return <FriendsNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
           }
         })
       }

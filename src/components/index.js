@@ -17,3 +17,4 @@ export { DropDownNotifications } from "./elements/DropDownNotifications";
 export { LikeNotificationCard } from "./elements/LikeNotificationCard";
 export { CommentNotificationCard } from "./elements/CommentNotificationCard";
 export { FriendRequestNotificationCard } from "./elements/FriendRequestNotificationCard";
+export { FriendsNotificationCard } from "./elements/FriendsNotificationCard";
