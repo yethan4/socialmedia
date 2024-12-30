@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/fetchDocument';
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { CreatePost, PostCard } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
 import { addFriend, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
+import { uploadImage } from '../../services/imageUploadService';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -20,6 +21,14 @@ export const Profile = () => {
   const [friendStatus, setFriendStatus] = useState(null);
   const [friendRequestId, setFriendRequestId] = useState(null);
   const [dropRemove, setDropRemove] = useState(false);
+  const [bgImg, setBgImg] = useState({
+    file: null,
+    url: "",
+  })
+  const [avatarImg, setAvatarImg] = useState({
+    file: null,
+    url: "",
+  })
 
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo);
@@ -66,9 +75,16 @@ export const Profile = () => {
     if (id) {
       fetchUserDetails(id).then((details) => {
         setUserDetails(details);
+        setBgImg({file: "", url: details.bgImg})
       });
     }
   }, [id]);
+
+  useEffect(() => {
+    console.log(bgImg)
+  }, [bgImg])
+
+  
 
   useEffect(() => {
     const fetchUserPosts = async (id) => {
@@ -93,7 +109,7 @@ export const Profile = () => {
       }
     };
     fetchUserPosts(id);
-  }, [id]);
+  }, [id, dispatch]);
 
   const loadMorePosts = async () => {
     if (!lastVisible) {
@@ -223,16 +239,92 @@ export const Profile = () => {
     setFriendStatus("strangers");
   }
 
+  const handleBgImage = (event) => {
+    if (event.target.files[0]){
+      setBgImg({
+        file: event.target.files[0],
+        url: URL.createObjectURL(event.target.files[0]),
+      })
+    }
+  }
+
+  const handleCancelBgImg = () => {
+    setBgImg({
+      url: userDetails?.bgImg || ""
+    })
+  }
+
+  const handleSaveBgImg = async() => {
+    let imgUrl = "";
+  
+    try{
+      if(bgImg.file){
+        imgUrl = await uploadImage(bgImg.file); 
+      }
+  
+      const docRef = doc(db, "userDetails", userInfo.id);
+  
+      await updateDoc(docRef, {
+        bgImg: imgUrl 
+      });
+  
+      setBgImg({ url: imgUrl });
+    }catch(err){
+      console.log(err);
+    }
+  };
+
   return (
     <div className="pt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
       <div className="relative shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg max-lg:pb-8">
-        <div className="relative h-[35vh] bg-cover bg-center" style={{ backgroundImage: "url('/dog2.jpg')" }}>
-          <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-            <img
-              src={userData?.avatar}
-              alt="User Avatar"
-              className="w-48 h-48 rounded-full border-4 border-white object-cover"
+        <div 
+          className="relative h-[35vh] bg-cover bg-center border-b" 
+          style={{ backgroundImage: `url(${bgImg?.url})` }}
+        >
+        {isCurrentUser && (
+          <>
+            {/* Hidden file input */}
+            <input
+              type="file"
+              id="bgImg"
+              className="hidden"
+              onChange={handleBgImage}
             />
+            {/* Button to trigger the file input */}
+            <label
+              htmlFor="bgImg"
+              className="bg-gray-100 dark:bg-gray-600 dark:text-slate-50 w-40 py-2 px-2 opacity-30 hover:opacity-70 cursor-pointer flex items-center"
+            >
+              Change Photo
+              <i className="ml-1 bi bi-pencil-square"></i>
+            </label>
+            {bgImg?.url && bgImg?.url !== userDetails?.bgImg && (
+            <div className="absolute top-0 right-0">
+              <button 
+                className="bg-green-400 text-white px-2 py-2 opacity-50 hover:opacity-70"
+                onClick={handleSaveBgImg}
+              >
+                Save
+              </button>
+              <button 
+                className="bg-gray-400 text-white px-2 py-2 opacity-50 hover:opacity-70"
+                onClick={handleCancelBgImg}
+              >
+                Cancel
+              </button>
+            </div>
+            )}
+          </>
+        )}
+          <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+            <div className="relative">
+              <img
+                src={userData?.avatar}
+                alt="User Avatar"
+                className="w-48 h-48 rounded-full border-4 border-white object-cover"
+              />
+              {isCurrentUser && <button className="absolute bottom-4 right-4 max-sm:px-3 max-sm:py-2 px-2 py-1 bg-gray-700 text-slate-50 rounded-full hover:bg-gray-500"><i className="bi bi-pencil-square"></i></button>}
+            </div>
           </div>
         </div>
 
@@ -268,7 +360,7 @@ export const Profile = () => {
             <div className="relative" onClick={() => setDropRemove(!dropRemove)}>
               <button className="pl-4 pr-2 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
                 <i className="bi bi-person-check-fill mr-1"></i>
-                Friends<i class="bi bi-three-dots ml-2"></i>
+                Friends<i className="bi bi-three-dots ml-2"></i>
               </button>
               {dropRemove && <div className="absolute right-2 top-11 bg-gray-50 shadow w-28 text-center hover:bg-gray-200">
                 <button className="px-2 py-1 rounded" onClick={handleRemoveFriend}>Remove</button>
@@ -284,11 +376,13 @@ export const Profile = () => {
 
       <div className="flex mt-8">
         <div className="sticky max-lg:hidden top-20 w-96 h-fit">
-          <div>
-            <div className="w-full h-fit shadow dark:shadow-gray-800 dark:shadow-sm flex flex-col justify-center items-center px-4 py-6 dark:text-gray-200">
-              <span className="font-semibold mb-1">About Me</span>
-              <span>{userDetails?.aboutMe}</span>
+          <div className="w-full h-fit shadow dark:shadow-gray-800 dark:shadow-sm flex flex-col justify-center items-center px-4 py-6 dark:text-gray-200">
+            <div className="font-semibold mb-1">
+              <span>About Me</span>
+              {isCurrentUser && <button className="max-sm:px-3 max-sm:py-2 px-2 py-1 ml-2 bg-gray-700 text-slate-50 rounded-full hover:bg-gray-500"><i className="bi bi-pencil-square"></i></button>}
             </div>
+            <span>{userDetails?.aboutMe}
+            </span>
           </div>
         </div>
 
