@@ -6,7 +6,7 @@ import upload from "../../assets/upload.png";
 import { useDispatch, useSelector } from "react-redux";
 import { addDoc, collection, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { uploadImage } from "../../services/imageUploadService";
+import { uploadImage } from "../../services/imageService";
 import { toast } from "react-toastify";
 import { addNewPost } from "../../actions/postsAction";
 import { Link } from "react-router-dom";
@@ -95,7 +95,7 @@ export const CreatePost = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px]">
+    <form onSubmit={handleSubmit} className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px] mb-4">
       <div className="flex flex-col gap-2">
         <Link to={`/profile/${userInfo?.id}`}>
         <span className="flex items-center gap-2">
