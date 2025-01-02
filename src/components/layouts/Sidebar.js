@@ -25,9 +25,11 @@ export const Sidebar = () => {
         </Link>
 
         <div className="border-b dark:border-gray-700 mt-2 pb-3">
-          <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
-            <img src={friends} className="h-6 w-6 mr-2" />Friends
-          </div>
+          <Link to="/friends">
+            <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
+              <img src={friends} className="h-6 w-6 mr-2" />Friends
+            </div>
+          </Link>
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={group} className="h-6 w-6 mr-2" />Groups
           </div>

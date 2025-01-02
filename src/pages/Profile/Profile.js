@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/fetchDocument';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { CreatePost, PostCard } from '../../components';
+import { CreatePost, FriendCard, PostCard } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
@@ -15,6 +15,7 @@ import { deleteImage, uploadImage } from '../../services/imageService';
 export const Profile = () => {
   const { id } = useParams();
 
+  const [activeTab, setActiveTab] = useState("posts");
   const [userData, setUserData] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
@@ -367,6 +368,8 @@ export const Profile = () => {
     }
   }
 
+  const activeTabClass = "text-gray-800 py-2 px-6 border-b-2 cursor-pointer dark:text-slate-100";
+  const tabClass = "text-gray-600 py-2 px-6 text-xl cursor-pointer dark:text-slate-300"
 
   return (
     <div className="pt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
@@ -526,15 +529,34 @@ export const Profile = () => {
         </div>
 
         <div className="lg:ml-16 flex-1 h-[1000px] dark:bg-gray-900">
-          {isCurrentUser && <CreatePost />}
-          <div className="mt-0 flex flex-col gap-3">
-            {posts.map((post) => (
-              <PostCard post={post} key={post.id} />
-            ))}
+
+          <div className="z-30 sticky top-14 pt-2 mb-2 bg-white border-b-2 flex justify-center text-2xl font-semibold dark:bg-gray-900 dark:border-gray-700">
+            <div className={activeTab==="posts" ? activeTabClass : tabClass} onClick={() => setActiveTab("posts")}>Posts</div>
+            <div className={activeTab==="friends" ? activeTabClass : tabClass}  onClick={() => setActiveTab("friends")}>Friends({userData?.friends.length})</div>
           </div>
-          <div ref={observerRef} className="h-20 flex justify-center mb-10">
-            <img src={loadingGif} alt="loading gif" className="h-8" />
+
+         {activeTab==="posts" ? (
+          <>
+            {isCurrentUser && <CreatePost />}
+            <div className="mt-0 flex flex-col gap-3">
+              {posts.map((post) => (
+                <PostCard post={post} key={post.id} />
+              ))}
+            </div>
+            <div ref={observerRef} className="h-20 flex justify-center mb-10">
+              <img src={loadingGif} alt="loading gif" className="h-8" />
+            </div>
+          </>
+        ) : (
+          <div className="flex gap-x-4 justify-center gap-y-2 flex-wrap pb-16">
+            {
+              userData.friends && 
+              userData.friends.map((friendId) =>( 
+                <FriendCard friendId={friendId} />
+              ))
+            }
           </div>
+        )}
         </div>
       </div>
     </div>
