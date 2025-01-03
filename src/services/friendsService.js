@@ -211,3 +211,56 @@ export const undoFriendRequest = async(currentUserId, userId, friendRequestId=""
     console.log(err)
   }
 }
+
+export const checkFriendStatus = async(currentUser, userId) => {
+  if(currentUser.id === userId) {
+    return {
+      status: "",
+      requestId: "",
+    }
+  } else if (currentUser.friends.includes(userId)) {
+    return {
+      status: "friends",
+      requestId: "",
+    };
+  } else {
+    try {
+      const sentRequests = query(
+        collection(db, "friendRequests"),
+        where("status", "==", "pending"),
+        where("fromUserId", "==", currentUser.id),
+        where("toUserId", "==", userId)
+      );
+      const receivedRequests = query(
+        collection(db, "friendRequests"),
+        where("status", "==", "pending"),
+        where("fromUserId", "==", userId),
+        where("toUserId", "==", currentUser.id)
+      );
+
+      const sentSnapshot = await getDocs(sentRequests);
+      const receivedSnapshot = await getDocs(receivedRequests);
+
+      if (!sentSnapshot.empty) {
+        const docS = sentSnapshot.docs[0];
+        return {
+          status: "pendingSent",
+          requestId: docS.id,
+        };
+      } else if (!receivedSnapshot.empty) {
+        const docR = receivedSnapshot.docs[0];
+        return {
+          status: "pendingReceived",
+          requestId: docR.id,
+        };
+      } else {
+        return {
+          status: "strangers",
+          requestId: "",
+        };
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}

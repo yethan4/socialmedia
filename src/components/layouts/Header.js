@@ -63,7 +63,7 @@ export const Header = () => {
   }
 
   return (
-    <header className="z-40 fixed left-0 right-0 top-0 select-none">
+    <header className="z-50 fixed left-0 right-0 top-0 select-none">
       <nav className="bg-white border-gray-200 px-4 pt-2 pb-1 border-b-2 text-gray-800 dark:bg-gray-900 dark:text-slate-100 dark:border-gray-700">
         <div className="md flex justify-between">
           <div className="max-lg:hidden w-64 h-12 flex items-center gap-2">

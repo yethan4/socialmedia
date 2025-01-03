@@ -3,13 +3,13 @@ import { useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/fetchDocument';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { CreatePost, FriendCard, PostCard } from '../../components';
+import { CreatePost, FriendCard, PostCard} from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
 import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
-import { addFriend, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
+import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
 import { deleteImage, uploadImage } from '../../services/imageService';
 
 export const Profile = () => {
@@ -40,189 +40,21 @@ export const Profile = () => {
   const lastVisible = useSelector(state => state.postsState.lastVisible);
   const loading = useSelector(state => state.postsState.loading);
 
+  const scrollTargetRef = useRef();
   const observerRef = useRef(null);
   const aboutMeRef = useRef();
 
+  const activeTabClass = "text-gray-800 py-2 px-6 border-b-2 cursor-pointer dark:text-slate-100";
+  const tabClass = "text-gray-600 py-2 px-6 text-xl cursor-pointer dark:text-slate-300";
+
   useTitle(`- Profile`);
 
-  useEffect(() => {
-    if (id === userInfo.id) {
-      setIsCurrentUser(true);
-    } else {
-      setIsCurrentUser(false);
-    }
-  }, [id, userInfo]);
-
-  useEffect(() => {
-    if (id) {
-      fetchDocument(id, "users").then((user) => {
-        setUserData(user);
-      });
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const fetchUserDetails = async (id) => {
-      try {
-        const docRef = doc(db, "userDetails", id);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          return docSnap.data();
-        } else {
-          console.log("No such document");
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    if (id) {
-      fetchUserDetails(id).then((details) => {
-        setUserDetails(details);
-        setBgImg({ file: "", url: details.bgImg });
-        setTextAboutMe(details.aboutMe);
-      });
-    }
-  }, [id]);
-
-  
-
-  useEffect(() => {
-    const fetchUserPosts = async (id) => {
-      dispatch(setLoading(true));
-      try {
-        const postsRef = collection(db, "posts");
-        const q = query(postsRef,
-          where("authorId", "==", id),
-          orderBy("createdAt", "desc"),
-          limit(5)
-        );
-        const querySnapshot = await getDocs(q);
-
-        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-        dispatch(setPosts(posts, lastVisible));
-        return posts;
-
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUserPosts(id);
-  }, [id, dispatch]);
-
-  const loadMorePosts = async () => {
-    if (!lastVisible) {
-      console.warn("Brak kolejnych postów do załadowania.");
-      return;
-    }
-
-    dispatch(setLoading(true));
-
-    try {
-      const postsRef = collection(db, "posts");
-      const q = query(postsRef,
-        where("authorId", "==", id),
-        orderBy("createdAt", "desc"),
-        startAfter(lastVisible),
-        limit(5)
-      );
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-        dispatch(addPosts(posts, newLastVisible));
-      } else {
-        console.log("Brak więcej postów do załadowania.");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      dispatch(setLoading(false));
-    }
+  //to be corrected
+  const changeTab = (tabName) => {
+    //scrollTo
+    setActiveTab(tabName);
   };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && lastVisible && !loading) {
-          loadMorePosts();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [lastVisible, loading]);
-
-  useEffect(() => {
-    const checkFriendStatus = async () => {
-      let status = "strangers";
-      if(userInfo.id === id) {
-        status = "";
-      } else if (userInfo.friends.includes(id)) {
-        status = "friends";
-      } else {
-        try {
-          const sentRequests = query(
-            collection(db, "friendRequests"),
-            where("status", "==", "pending"),
-            where("fromUserId", "==", userInfo.id),
-            where("toUserId", "==", id)
-          );
-          const receivedRequests = query(
-            collection(db, "friendRequests"),
-            where("status", "==", "pending"),
-            where("fromUserId", "==", id),
-            where("toUserId", "==", userInfo.id)
-          );
-  
-          const sentSnapshot = await getDocs(sentRequests);
-          const receivedSnapshot = await getDocs(receivedRequests);
-  
-          if (!sentSnapshot.empty) {
-            status = "pendingSent";
-            const docS = sentSnapshot.docs[0];
-            setFriendRequestId(docS.id);
-          } else if (!receivedSnapshot.empty) {
-            const docR = receivedSnapshot.docs[0];
-            setFriendRequestId(docR.id);
-            status = "pendingReceived";
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-  
-      setFriendStatus(status);
-    };
-  
-    if (userInfo) {
-      checkFriendStatus();
-    } else {
-      setFriendStatus(null);
-    }
-  }, [userInfo, id, isCurrentUser]);
-
-  useEffect(() => {
-    const textarea = aboutMeRef.current;
-    if (textarea) {
-        textarea.style.height = "auto"; 
-        textarea.style.height = `${textarea.scrollHeight}px`; 
-    }
-  }, [textAboutMe, isAboutMeEdit]); 
+  //
 
   const handleSentRequest= async () => {
     await sentFriendRequest(userInfo.id, id);
@@ -232,22 +64,22 @@ export const Profile = () => {
   const handleRejectRequest = async() => {
     await rejectFriendRequest(userInfo.id, id, friendRequestId);
     setFriendStatus("strangers");
-  }
+  };
 
   const handleAddFriend = async() => {
     await addFriend(userInfo.id, id, friendRequestId);
     setFriendStatus("friends");
-  }
+  };
 
   const handleRemoveFriend = async() => {
     await removeFriend(userInfo.id, id);
     setFriendStatus("strangers");
-  }
+  };
 
   const handleUndoRequest = async() => {
     await undoFriendRequest(userInfo.id, id, friendRequestId);
     setFriendStatus("strangers");
-  }
+  };
 
   const handleBgImage = (event) => {
     if (event.target.files[0]){
@@ -256,7 +88,7 @@ export const Profile = () => {
         url: URL.createObjectURL(event.target.files[0]),
       })
     }
-  }
+  };
 
   const handleAvatarImage = (event) => {
     if (event.target.files[0]){
@@ -265,19 +97,19 @@ export const Profile = () => {
         url: URL.createObjectURL(event.target.files[0]),
       })
     }
-  }
+  };
 
   const handleCancelBgImg = () => {
     setBgImg({
       url: userDetails.bgImg || ""
     })
-  }
+  };
 
   const handleCancelAvatarImg = () => {
     setAvatarImg({
       url: userDetails.bgImg || ""
     })
-  }
+  };
 
   const handleSaveBgImg = async() => {
     setLoadingData(true)
@@ -366,13 +198,152 @@ export const Profile = () => {
     }finally{
       setLoadingData(false);
     }
-  }
+  };
 
-  const activeTabClass = "text-gray-800 py-2 px-6 border-b-2 cursor-pointer dark:text-slate-100";
-  const tabClass = "text-gray-600 py-2 px-6 text-xl cursor-pointer dark:text-slate-300"
+  useEffect(() => {
+    if (id === userInfo.id) {
+      setIsCurrentUser(true);
+    } else {
+      setIsCurrentUser(false);
+    }
+  }, [id, userInfo]);
+
+  useEffect(() => {
+    if (id) {
+      fetchDocument(id, "users").then((user) => {
+        setUserData(user);
+      });
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const fetchUserDetails = async (id) => {
+      try {
+        const docRef = doc(db, "userDetails", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          return docSnap.data();
+        } else {
+          console.log("No such document");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (id) {
+      fetchUserDetails(id).then((details) => {
+        setUserDetails(details);
+        setBgImg({ file: "", url: details?.bgImg ? details.bgImg : "" });
+        setTextAboutMe(details?.aboutMe ? details.aboutMe : "");
+      });
+    }
+  }, [id]);
+
+  
+
+  useEffect(() => {
+    const fetchUserPosts = async (id) => {
+      dispatch(setLoading(true));
+      try {
+        const postsRef = collection(db, "posts");
+        const q = query(postsRef,
+          where("authorId", "==", id),
+          orderBy("createdAt", "desc"),
+          limit(5)
+        );
+        const querySnapshot = await getDocs(q);
+
+        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        dispatch(setPosts(posts, lastVisible));
+        return posts;
+
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchUserPosts(id);
+  }, [id, dispatch]);
+
+  const loadMorePosts = async () => {
+    if (!lastVisible) {
+      console.warn("Brak kolejnych postów do załadowania.");
+      return;
+    }
+
+    dispatch(setLoading(true));
+
+    try {
+      const postsRef = collection(db, "posts");
+      const q = query(postsRef,
+        where("authorId", "==", id),
+        orderBy("createdAt", "desc"),
+        startAfter(lastVisible),
+        limit(5)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        dispatch(addPosts(posts, newLastVisible));
+      } else {
+        console.log("Brak więcej postów do załadowania.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && lastVisible && !loading) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [lastVisible, loading, loadMorePosts]);
+
+  useEffect(() => {
+    const checkStatus = async() => {
+      const {status, requestId} = await checkFriendStatus(userInfo, id);
+      setFriendStatus(status);
+      setFriendRequestId(requestId)
+    }
+
+    if(userInfo && id && !isCurrentUser){
+      checkStatus()
+    }
+  }, [userInfo, id, isCurrentUser]);
+
+  useEffect(() => {
+    const textarea = aboutMeRef.current;
+    if (textarea) {
+        textarea.style.height = "auto"; 
+        textarea.style.height = `${textarea.scrollHeight}px`; 
+    }
+  }, [textAboutMe, isAboutMeEdit]); 
 
   return (
-    <div className="pt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
+    <div className="mt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
       <div className="relative shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg max-lg:pb-8">
         <div 
           className="relative h-[35vh] bg-cover bg-center border-b" 
@@ -528,15 +499,15 @@ export const Profile = () => {
           </div>
         </div>
 
-        <div className="lg:ml-16 flex-1 h-[1000px] dark:bg-gray-900">
+        <div className="lg:ml-16 flex-1 dark:bg-gray-900">
 
-          <div className="z-30 sticky top-14 pt-2 mb-2 bg-white border-b-2 flex justify-center text-2xl font-semibold dark:bg-gray-900 dark:border-gray-700">
-            <div className={activeTab==="posts" ? activeTabClass : tabClass} onClick={() => setActiveTab("posts")}>Posts</div>
-            <div className={activeTab==="friends" ? activeTabClass : tabClass}  onClick={() => setActiveTab("friends")}>Friends({userData?.friends.length})</div>
+          <div className="z-40 sticky top-14 pt-2 mb-2 bg-white border-b-2 flex justify-center text-2xl font-semibold dark:bg-gray-900 dark:border-gray-700">
+            <div className={activeTab==="posts" ? activeTabClass : tabClass} onClick={() => changeTab("posts")}>Posts</div>
+            <div className={activeTab==="friends" ? activeTabClass : tabClass}  onClick={() => changeTab("friends")}>Friends({userData?.friends.length})</div>
           </div>
-
+          <div ref={scrollTargetRef} className="w-full h-2"></div>
          {activeTab==="posts" ? (
-          <>
+          <section>
             {isCurrentUser && <CreatePost />}
             <div className="mt-0 flex flex-col gap-3">
               {posts.map((post) => (
@@ -546,16 +517,16 @@ export const Profile = () => {
             <div ref={observerRef} className="h-20 flex justify-center mb-10">
               <img src={loadingGif} alt="loading gif" className="h-8" />
             </div>
-          </>
+          </section>
         ) : (
-          <div className="flex gap-x-4 justify-center gap-y-2 flex-wrap pb-16">
+          <section className="flex gap-x-4 h-[100vh] justify-center gap-y-2  sm:flex-wrap pb-16 ">
             {
-              userData.friends && 
+              userData?.friends && 
               userData.friends.map((friendId) =>( 
-                <FriendCard friendId={friendId} />
+                <FriendCard key={friendId} friendId={friendId} />
               ))
             }
-          </div>
+          </section>
         )}
         </div>
       </div>
