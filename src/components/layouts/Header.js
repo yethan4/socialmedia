@@ -1,20 +1,35 @@
 import { useEffect, useState } from "react"
-import { DropDownMenu, DropDownMenuSm, DropDownNotifications } from "../";
+import { DropDownMenu, DropDownMenuSm, DropDownNotifications, SearchBar, SearchBarSm } from "../";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../firebase/config";
 import { setNotifications } from "../../actions/notificationsAction";
-import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 
 export const Header = () => {
   const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem("darkMode")) || false);
   const [dropDwonMenu, setDropDwonMenu] = useState(false);
   const [dropNotifications, setDropNotifications] = useState(false);
+  const [inputSearchBar, setInputSearchBar] = useState("");
 
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo);
   const notificationsCounter = useSelector(state => state.notificationsState.unreadCount);
 
+  const showDropMenu = (state) => {
+    setDropNotifications(false);
+    setDropDwonMenu(state);
+  };
+
+  const showDropNotifications = (state) => {
+    setDropDwonMenu(false);
+    setDropNotifications(state);
+  };
+
+  const handleScrollTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
 
@@ -47,42 +62,25 @@ export const Header = () => {
 
     return () => unsubscribe();
   }, [userInfo?.id, dispatch]);
-
-  const handleScrollTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  const showDropMenu = (state) => {
-    setDropNotifications(false);
-    setDropDwonMenu(state);
-  }
-
-  const showDropNotifications = (state) => {
-    setDropDwonMenu(false);
-    setDropNotifications(state);
-  }
+  
 
   return (
     <header className="z-50 fixed left-0 right-0 top-0 select-none">
       <nav className="bg-white border-gray-200 px-4 pt-2 pb-1 border-b-2 text-gray-800 dark:bg-gray-900 dark:text-slate-100 dark:border-gray-700">
         <div className="md flex justify-between">
-          <div className="max-lg:hidden w-64 h-12 flex items-center gap-2">
+          <div className="max-md:hidden w-64 h-12 flex items-center gap-2">
             <Link to="/">
               <span onClick={handleScrollTop} className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span>
             </Link>
             { userInfo && (
-            <div className="relative flex">
-              <i className="bi bi-search absolute top-2 left-2 text-gray-400"></i>
-              <input name="search" type="text" className="w-64 pl-8 py-2 text-md text-gray-700 shadow rounded-xl outline-none focus:ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700" placeholder="Search" autoComplete="off" />
-            </div>
+              <SearchBar inputSearchBar={inputSearchBar} setInputSearchBar={setInputSearchBar} />
             )}
           </div>
-          <div className="lg:hidden h-12 pt-2">
+          <div className="md:hidden flex h-12 pt-2">
             <Link to="/"><span className="text-2xl font-bold text-blue-800">SocialApp</span></Link>
-            {userInfo && 
-            <span>
-              <i className="bi bi-search ml-1 rounded-full py-1 px-2 text-xl cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"></i>
-            </span>}
+            {userInfo && (
+              <SearchBarSm inputSearchBar={inputSearchBar} setInputSearchBar={setInputSearchBar} />
+            )}
           </div>
           <div className="flex items-center gap-2">
             { userInfo && (

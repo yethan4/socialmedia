@@ -3,6 +3,8 @@ export { Sidebar } from "./layouts/Sidebar";
 
 export { DropDownMenu } from "./elements/DropDownMenu";
 export { DropDownMenuSm } from "./elements/DropDownMenuSm";
+export { SearchBar } from "./elements/SearchBar/SearchBar";
+export { SearchBarSm } from "./elements/SearchBar/SearchBarSm";
 
 export { CreatePost } from "./elements/CreatePost";
 export { PostCard } from "./elements/PostCard";
