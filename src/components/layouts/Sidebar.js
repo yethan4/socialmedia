@@ -56,9 +56,11 @@ export const Sidebar = () => {
             <img src={bell} className="h-6 w-6 mr-2" />Notifications
           </div>
           </Link>
+          <Link to="/settings">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={settings} className="h-6 w-6 mr-2" />Settings
           </div>
+          </Link>
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={pen} className="h-6 w-6 mr-2" />My Posts
           </div>

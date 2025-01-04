@@ -19,17 +19,19 @@ export const DropDownMenu = ({setDropDwonMenu}) => {
           <span>{userInfo?.username}</span>
         </div>
       </Link>
+      <Link to="/settings">
       <div className="px-4 py-3 rounded cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700">
         <i className="bi bi-gear text-xl"></i>
         <span className="ml-2 text-md">Settings</span>
       </div>
+      </Link>
       <div className="px-4 py-3 rounded cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700">
         <i className="bi bi-journal text-xl"></i>
         <span className="ml-2 text-md">Activity</span>
       </div>
-      <div className="px-4 py-3 rounded cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700">
+      <div className="px-4 py-3 rounded cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700" onClick={handleLogout}>
         <i className="bi bi-door-closed text-xl"></i>
-        <span className="ml-2 text-md" onClick={handleLogout}>Logout</span>
+        <span className="ml-2 text-md">Logout</span>
       </div>
     </div>
   )
