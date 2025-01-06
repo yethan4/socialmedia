@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Home, Login, Register, Profile, PostPage, NotificationsPage, FriendsPage, SettingsPage } from "../pages";
+import { Home, Login, Register, Profile, PostPage, NotificationsPage, FriendsPage, SettingsPage, PageNotFound } from "../pages";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 
@@ -14,6 +14,8 @@ export const AllRoutes = () => {
       <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       <Route path="/friends" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+
+      <Route path="/*" element={<ProtectedRoute><PageNotFound /></ProtectedRoute>} />
 
       {/* logged out only */}
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
