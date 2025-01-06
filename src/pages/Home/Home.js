@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { collection, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
@@ -15,10 +15,12 @@ import { useTitle } from "../../hooks/useTitle";
 
 export const Home = () => {
   useTitle()
+  const [noMorePosts, setNoMorePosts] = useState(false);
+
   const dispatch = useDispatch();
   const posts = useSelector(state => state.postsState.posts);
   const lastVisible = useSelector(state => state.postsState.lastVisible);
-  const loading = useSelector(state => state.postsState.loading); 
+  const loading = useSelector(state => state.postsState.loading);
 
   const observerRef = useRef(null);
 
@@ -47,7 +49,7 @@ export const Home = () => {
 
   const loadMorePosts = async () => {
     if (!lastVisible) {
-      console.warn("Brak kolejnych postów do załadowania.");
+      setNoMorePosts(true);
       return;
     }
   
@@ -64,7 +66,7 @@ export const Home = () => {
   
         dispatch(addPosts(posts, newLastVisible));
       } else {
-        console.log("Brak więcej postów do załadowania.");
+        setNoMorePosts(true);
       }
     } catch (err) {
       console.error(err);
@@ -106,9 +108,11 @@ export const Home = () => {
             })}
           </div>
           {/* Element obserwowany na dole */}
-          <div ref={observerRef} className="h-20 flex justify-center mb-10">
-            <img src={loadingGif} alt="loading gif" className="h-8" />
-          </div>
+          {!noMorePosts && (
+            <div ref={observerRef} className="h-20 flex justify-center mb-10">
+              <img src={loadingGif} alt="loading gif" className="h-8" />
+            </div>
+          )}
         </div>
       </div>
       <FriendsSidebar />

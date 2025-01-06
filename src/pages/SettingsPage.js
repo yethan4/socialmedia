@@ -3,7 +3,7 @@ import { Sidebar } from "../components";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword} from "firebase/auth";
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase/config";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { Link } from "react-router-dom";
 
 export const SettingsPage = () => {
@@ -67,6 +67,13 @@ export const SettingsPage = () => {
     }
 
     try {
+      const usersRef = collection(db, "users");
+      const qName = query(usersRef, where("username", "==", newUsername));
+      const queryNameSnapshot = await getDocs(qName);
+      if (!queryNameSnapshot.empty){
+        return toast.warn("Select another username")
+      }
+
       const userDocRef = doc(db, "users", user.uid);
       await updateDoc(userDocRef, {
         username: newUsername
@@ -91,7 +98,7 @@ export const SettingsPage = () => {
   return (
     <div className="flex h-full w-full pt-20 dark:bg-gray-900">
       <Sidebar />
-      <div className="bg-gray-0 px-14 max-sm:px-2 h-full flex-1 w-full max-w-[1000px] sm:min-w-[480px]">
+      <div className="bg-gray-0 px-14 max-sm:px-2 h-full flex-1 w-full sm:min-w-[480px]">
         <div className="flex flex-col items-center border-b pb-4">
           {/* Change Password Section */}
           <div

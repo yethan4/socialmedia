@@ -33,6 +33,7 @@ export const Profile = () => {
   })
   const [isAboutMeEdit, setIsAboutMeEdit] = useState(false);
   const [textAboutMe, setTextAboutMe] = useState("");
+  const [noMorePosts, setNoMorePosts] = useState(false);
 
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo);
@@ -270,7 +271,7 @@ export const Profile = () => {
 
   const loadMorePosts = async () => {
     if (!lastVisible) {
-      console.warn("Brak kolejnych postów do załadowania.");
+      setNoMorePosts(true);
       return;
     }
 
@@ -292,7 +293,7 @@ export const Profile = () => {
 
         dispatch(addPosts(posts, newLastVisible));
       } else {
-        console.log("Brak więcej postów do załadowania.");
+        setNoMorePosts(true);
       }
     } catch (err) {
       console.error(err);
@@ -509,14 +510,16 @@ export const Profile = () => {
          {activeTab==="posts" ? (
           <section>
             {isCurrentUser && <CreatePost />}
-            <div className="mt-0 flex flex-col gap-3">
+            <div className="mt-0 flex flex-col gap-3 pb-10">
               {posts.map((post) => (
                 <PostCard post={post} key={post.id} />
               ))}
             </div>
-            <div ref={observerRef} className="h-20 flex justify-center mb-10">
-              <img src={loadingGif} alt="loading gif" className="h-8" />
-            </div>
+            {!noMorePosts && (
+              <div ref={observerRef} className="h-20 flex justify-center mb-10">
+                <img src={loadingGif} alt="loading gif" className="h-8" />
+              </div>
+            )}
           </section>
         ) : (
           <section className="flex gap-x-4 h-[100vh] justify-center gap-y-2  sm:flex-wrap pb-16 ">
