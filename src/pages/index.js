@@ -6,4 +6,6 @@ export { PostPage } from './PostPage';
 export { NotificationsPage } from './NotificationsPage';
 export { FriendsPage } from "./FriendsPage";
 export { SettingsPage } from "./SettingsPage";
+export { MyActivityPage } from "./MyActivityPage/MyActivityPage";
+
 export { PageNotFound } from "./PageNotFound";

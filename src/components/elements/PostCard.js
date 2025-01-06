@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { deletePost, dislikePost, likePost } from "../../actions/postsAction";
 import { deleteObject, ref } from "firebase/storage";
 import { Link } from "react-router-dom";
+import { firebaseDislike, firebaseLike} from "../../services/likeService";
 
 
 export const PostCard = ({post}) => {
@@ -110,46 +111,20 @@ export const PostCard = ({post}) => {
 
   const handleLike = async() => {
     try{
-
-      const postRef = doc(db, "posts", post.id);
-
-      await updateDoc(postRef, {
-        likesCount: increment(1)
-      });
-
-      const likeRef = await addDoc(collection(db, "likes"), {
-        userId: userInfo.id,
-        postId: post.id,
-        timestamp: serverTimestamp()
-      });
-
-      const notificationRef = await addDoc(collection(db, "notifications"), {
-        fromUserId: userInfo.id,
-        toUserId: author.id,
-        postId: post.id,
-        timestamp: serverTimestamp(),
-        seen: false,
-        type: "like",
-      })
-
-      dispatch(likePost(post.id))
-      setLiked(likeRef.id);
+      const likeResponse =await firebaseLike(userInfo.id, post.id, author.id);
+      dispatch(likePost(post.id));
+      setLiked(likeResponse)
     }catch(err){
       console.log(err)
     }
+    
+
   }
 
   const handleDislike = async() => {
     try{
-      
-      const document = doc(db, "likes", liked)
-      await deleteDoc(document);
-
-      const postRef = doc(db, "posts", post.id);
-      await updateDoc(postRef, {
-        likesCount: increment(-1)
-      });
-      dispatch(dislikePost(post.id))
+      await firebaseDislike(liked, post.id);
+      dispatch(dislikePost(post.id));
       setLiked(null);
 
     }catch(err){

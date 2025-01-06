@@ -90,7 +90,7 @@ export const SettingsPage = () => {
     <input
       type={type}
       placeholder={placeholder}
-      className="w-80 pl-8 py-2 text-md text-gray-700 shadow rounded-xl outline-none focus:ring-2 ring-gray-200 dark:bg-gray-800 dark:text-slate-100 dark:ring-gray-700"
+      className="w-full pl-8 py-2 text-md text-gray-700 shadow rounded-xl outline-none focus:ring-2 ring-gray-200 dark:bg-gray-800 dark:text-slate-100 dark:ring-gray-700"
       ref={inputRef}
     />
   );
@@ -98,13 +98,16 @@ export const SettingsPage = () => {
   return (
     <div className="flex h-full w-full pt-20 dark:bg-gray-900">
       <Sidebar />
-      <div className="bg-gray-0 px-14 max-sm:px-2 h-full flex-1 w-full sm:min-w-[480px]">
-        <div className="flex flex-col items-center border-b pb-4">
+      <div className="bg-gray-0 px-14 max-sm:px-2 h-full flex-1 w-full sm:min-w-[480px] max-w-[1024px] mx-auto">
+        <div className="flex flex-col border-b w-full pb-4">
           {/* Change Password Section */}
           <div
-            className="flex items-center hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800"
+            className="flex items-center w-full hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800"
             onClick={choice === "changePassword" ? () => setChoice("") : () => setChoice("changePassword")}
           >
+            <span className="text-xl pb-1 mb-1 mr-2 px-2 pt-1 bg-amber-400 text-white rounded-full dark:bg-amber-500">
+              <i className="bi bi-key"></i>
+            </span>
             <span className="text-2xl mb-1">Change password</span>
             {choice === "changePassword" ? (
               <span>
@@ -117,7 +120,7 @@ export const SettingsPage = () => {
             )}
           </div>
           {choice === "changePassword" && (
-            <div className="mt-4 flex flex-col items-center gap-4">
+            <div className="mt-4 flex items-center flex-col gap-4">
               <InputField type="password" placeholder="Enter your current password" inputRef={currentPasswordRef} />
               <InputField type="password" placeholder="Enter new password" inputRef={newPasswordRef} />
               <InputField type="password" placeholder="Repeat new password" inputRef={repeatPasswordRef} />
@@ -135,11 +138,14 @@ export const SettingsPage = () => {
         </div>
 
         {/* Change Username Section */}
-        <div className="border-b pt-5 pb-4 flex flex-col items-center">
+        <div className="border-b pt-5 flex flex-col w-full pb-4">
           <div
-            className="flex items-center hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800"
+            className="flex items-center w-full hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800"
             onClick={choice === "changeUsername" ? () => setChoice("") : () => setChoice("changeUsername")}
           >
+            <span className="text-xl pb-1 mb-1 mr-2 px-2 pt-1 bg-gray-600 text-white rounded-full">
+              <i className="bi bi-person"></i>
+            </span>
             <span className="text-2xl mb-1">Change username</span>
             {choice === "changeUsername" ? (
               <span>
@@ -166,23 +172,28 @@ export const SettingsPage = () => {
         </div>
 
         {/* Notifications */}
-        <div className="border-b pt-5 pb-4 flex flex-col items-center">
+        <div className="border-b pt-5 flex flex-col w-full pb-4">
           <Link to="/notifications">
-          <div className="flex items-center hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800">
-            <span className="text-2xl mb-1">All notifications</span>
-            <i class="bi bi-arrow-up-right ml-2"></i>
-          </div>
+            <div className="flex items-center w-full hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800">
+              <span className="text-xl pb-1 mb-1 mr-2 px-2 pt-1 bg-red-500 text-white rounded-full dark:bg-red-600">
+                <i className="bi bi-bell"></i>
+              </span>
+              <span className="text-2xl mb-1">All notifications</span>
+              <i className="bi bi-arrow-up-right ml-2"></i>
+            </div>
           </Link>
         </div>
-        
-        {/* Your Friends */}
-        <div className="border-b pt-5 pb-4 flex flex-col items-center">
-          <Link to="/friends">
-          <div className="flex items-center hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800">
-            <span className="text-2xl mb-1">Friends
-            </span>
-            <i class="bi bi-arrow-up-right ml-2"></i>
-          </div>
+
+        {/* Activity */}
+        <div className="border-b pt-5 flex flex-col w-full pb-4">
+          <Link to="/my-activity">
+            <div className="flex items-center w-full hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800">
+              <span className="text-xl pb-1 mb-1 mr-2 px-2 pt-1 bg-green-500 text-white rounded-full dark:bg-green-600">
+                <i className="bi bi-activity"></i>
+              </span>
+              <span className="text-2xl mb-1">Activity</span>
+              <i className="bi bi-arrow-up-right ml-2"></i>
+            </div>
           </Link>
         </div>
       </div>

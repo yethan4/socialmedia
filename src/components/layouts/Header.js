@@ -57,7 +57,6 @@ export const Header = () => {
         ...doc.data(),
       }));
       dispatch(setNotifications(newNotifications));
-      console.log(newNotifications);
     });
 
     return () => unsubscribe();
