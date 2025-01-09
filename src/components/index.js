@@ -22,3 +22,4 @@ export { FriendRequestNotificationCard } from "./elements/FriendRequestNotificat
 export { FriendsNotificationCard } from "./elements/FriendsNotificationCard";
 
 export { FriendCard } from "./elements/FriendCard";
+export { UserCard } from "./elements/UserCard";

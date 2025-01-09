@@ -10,7 +10,7 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
 
   const navigate = useNavigate();
 
-  const formattedTime = formatTimestamp(notification.timestamp.seconds);
+  const formattedTime = formatTimestamp(notification.timestamp?.seconds);
 
   useEffect(() => {
     fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));

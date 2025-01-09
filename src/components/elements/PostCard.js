@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { CommentCard, CreateComment } from "..";
+import { CommentCard, CreateComment, UserCard } from "..";
 import { fetchDocument } from "../../services/fetchDocument";
 import { formatTimestamp } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +19,8 @@ export const PostCard = ({post}) => {
   const [commentsCount, setCommentsCount] = useState(0);
   const [scrollCommentToggle, setScrollCommentToggle] = useState(false);
   const [liked, setLiked] = useState(null);
+  const [showLikes, setShowLikes] = useState(false);
+  const [likesList, setLikesList] = useState([]);
   const [author, setAuthor] = useState([]);
   const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -132,6 +134,27 @@ export const PostCard = ({post}) => {
     }
   }
 
+  const handleLikesDisplay = async () => {
+    setShowLikes(true);
+    try{
+
+      const q = query(
+        collection(db, "likes"),
+        where("postId", "==", post.id),
+        orderBy("timestamp", "desc"),
+     );
+     const querySnapshot = await getDocs(q);
+
+     if(!querySnapshot.empty){
+      const likesResponse = querySnapshot.docs.map((doc) => ({id: doc.id, ...doc.data() }));
+      setLikesList(likesResponse);
+     }
+
+    }catch(err){
+      console.log(err)
+    }
+  };
+
 
   return (
     <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
@@ -172,9 +195,31 @@ export const PostCard = ({post}) => {
 
       <div className="flex items-center text-sm font-medium justify-start w-full text-gray-600 dark:text-gray-300 mb-2 px-2">
         <i className={liked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>
-        <span className="hover:underline cursor-pointer select-none">{post.likesCount}</span>
+        <span 
+          className={post?.likesCount ? "hover:underline cursor-pointer select-none" : "select-none"}
+          onClick={() => {
+            if (post?.likesCount!=0) {
+              handleLikesDisplay();
+            }
+          }}
+        >{post.likesCount}</span>
         <i className="bi bi-chat ml-4 mr-1"></i>
         <span className="hover:underline cursor-pointer select-none" onClick={() => setShowComments((prev) => !prev)}>{commentsCount}</span>
+        {/*list who liked */}
+        {showLikes && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="z-40 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto w-[400px] h-[500px] flex flex-col gap-1 pt-8 pb-2 px-2 rounded-xl bg-gray-100 dark:bg-gray-800 overflow-y-auto dark-scrollbar always-scrollbar">
+              <span className="absolute top-2 right-2 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700" onClick={() => setShowLikes(false)}>
+                <i className="bi bi-x-lg"></i>
+              </span>
+              <span className="text-center text-lg font-medium select-none">Likes({post.likesCount})</span>
+              {likesList && likesList.map((like) => (
+                <UserCard key={like.userId} userId={like.userId}/>
+              ))}
+            </div>
+            
+          </div>
+        )}
       </div>
 
       <div className="flex w-full border-t mt-2 dark:border-gray-500">
@@ -201,7 +246,6 @@ export const PostCard = ({post}) => {
         className="max-h-[350px] p-0 border-t w-full flex flex-col overflow-y-auto dark-scrollbar always-scrollbar dark:border-gray-500"
       >
       {comments.map((comment) => {
-        
         return (
           <CommentCard key={comment.id} comment={comment} />
         )

@@ -15,14 +15,16 @@ export const firebaseLike = async (userId, postId, authorId) => {
       timestamp: serverTimestamp()
     });
 
-    const notificationRef = await addDoc(collection(db, "notifications"), {
-      fromUserId: userId,
-      toUserId: authorId,
-      postId: postId,
-      timestamp: serverTimestamp(),
-      seen: false,
-      type: "like",
-    })
+    if(userId!=authorId){
+      await addDoc(collection(db, "notifications"), {
+        fromUserId: userId,
+        toUserId: authorId,
+        postId: postId,
+        timestamp: serverTimestamp(),
+        seen: false,
+        type: "like",
+      })
+    }
 
     return likeRef.id
   }catch(err){

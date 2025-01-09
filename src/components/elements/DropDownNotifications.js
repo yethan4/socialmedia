@@ -7,7 +7,7 @@ export const DropDownNotifications = ({setDropNotifications}) => {
   const notifications = useSelector(state => state.notificationsState.notifications);
 
   return (
-    <div className="max-sm:w-full max-sm:px-2 absolute flex flex-col gap-2 top-[62px] right-2 w-96 pb-2 h-fit rounded border-b border-l shadow bg-white dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700">
+    <div className="max-sm:w-full max-sm:px-2 absolute flex flex-col gap-2 top-[62px] right-2 w-96 pb-2 h-fit max-h-[400px] rounded border-b border-l shadow bg-white dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 overflow-y-auto dark-scrollbar always-scrollbar">
       <span className="text-xl font-semibold mt-2 ml-2  ">Notifications</span>
       
       {

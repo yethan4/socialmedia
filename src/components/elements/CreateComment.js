@@ -33,21 +33,23 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
     e.preventDefault()
 
     try{
-    const docRef = await addDoc(collection(db, "comments"), {
+    await addDoc(collection(db, "comments"), {
       authorId: userInfo.id,
       postId: postId,
       content: commentText,
       createdAt: serverTimestamp(),
     });
 
-    const notificationRef = await addDoc(collection(db, "notifications"), {
-      fromUserId: userInfo.id,
-      toUserId: postAuthorId,
-      postId: postId,
-      timestamp: serverTimestamp(),
-      seen: false,
-      type: "comment",
-    })
+    if(userInfo.id!=postAuthorId){
+      await addDoc(collection(db, "notifications"), {
+        fromUserId: userInfo.id,
+        toUserId: postAuthorId,
+        postId: postId,
+        timestamp: serverTimestamp(),
+        seen: false,
+        type: "comment",
+      })
+    }
 
     const postRef = doc(db, "posts", postId);
 
