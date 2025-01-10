@@ -4,7 +4,7 @@ import { CommentCard, CreateComment, UserCard } from "..";
 import { fetchDocument } from "../../services/fetchDocument";
 import { formatTimestamp } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
-import { addDoc, collection, deleteDoc, doc, getDocs, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "../../firebase/config";
 import { toast } from "react-toastify";
 import { deletePost, dislikePost, likePost } from "../../actions/postsAction";
@@ -60,13 +60,13 @@ export const PostCard = ({post}) => {
         console.log(err)
       }
     }
-  }, [showComments])
+  }, [showComments, post])
 
   useEffect(() => {
     if(userInfo.id === post.authorId){
       setIsCurrentUserAuthor(true);
     }
-  }, [userInfo])
+  }, [userInfo, post])
 
   useEffect(() => {
     fetchDocument(post.authorId, "users").then((user) => setAuthor(user));
@@ -86,6 +86,12 @@ export const PostCard = ({post}) => {
     
     fetchLike();
   }, [post, userInfo])
+
+  useEffect(() => {
+    if(userInfo){
+      if (userInfo.bookmarks.includes(post.id)) setIsBookmarked(true);
+    }
+  }, [userInfo, post])
 
 
   const formattedTime = formatTimestamp(post.createdAt.seconds);
@@ -155,6 +161,32 @@ export const PostCard = ({post}) => {
     }
   };
 
+  const handleBookmark = async () => {
+    setIsBookmarked(true)
+    try{
+      const docRef = doc(db, "users", userInfo.id);
+
+      await updateDoc(docRef, {
+        bookmarks: arrayUnion(post.id)
+      });
+    }catch(err){
+      console.log(err)
+    }
+  };
+
+  const handleUnBookmark = async () => {
+    setIsBookmarked(false)
+    try{
+      const docRef = doc(db, "users", userInfo.id);
+
+      await updateDoc(docRef, {
+        bookmarks: arrayRemove(post.id)
+      });
+    }catch(err){
+      console.log(err)
+    }
+  };
+
 
   return (
     <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
@@ -168,13 +200,13 @@ export const PostCard = ({post}) => {
 
       <div className="absolute top-3 right-2">
         { !isCurrentUserAuthor && !isBookmarked && (
-          <span className="text-xl dark:text-gray-300" onClick={() => setIsBookmarked(true)}>
+          <span className="text-xl dark:text-gray-300" onClick={handleBookmark}>
             <i className="bi bi-bookmark cursor-pointer"></i>
           </span>
         )}
 
         { !isCurrentUserAuthor && isBookmarked && (
-          <span className="text-xl dark:text-gray-300" onClick={() => setIsBookmarked(false)}>
+          <span className="text-xl dark:text-gray-300" onClick={handleUnBookmark}>
             <i className="bi bi-bookmark-fill cursor-pointer"></i>
           </span>
         )}
@@ -198,7 +230,7 @@ export const PostCard = ({post}) => {
         <span 
           className={post?.likesCount ? "hover:underline cursor-pointer select-none" : "select-none"}
           onClick={() => {
-            if (post?.likesCount!=0) {
+            if (post?.likesCount!==0) {
               handleLikesDisplay();
             }
           }}

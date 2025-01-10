@@ -184,6 +184,19 @@ export const SettingsPage = () => {
           </Link>
         </div>
 
+        {/* Bookmarks */}
+        <div className="border-b pt-5 flex flex-col w-full pb-4">
+          <Link to="/bookmarks">
+            <div className="flex items-center w-full hover:bg-gray-50 px-10 py-2 rounded-xl select-none cursor-pointer dark:bg-gray-900 dark:text-slate-50 dark:hover:bg-gray-800">
+              <span className="text-xl pb-1 mb-1 mr-2 px-2 pt-1 bg-blue-500 text-white rounded-full dark:bg-blue-600">
+                <i className="bi bi-bookmark"></i>
+              </span>
+              <span className="text-2xl mb-1">Bookmarks</span>
+              <i className="bi bi-arrow-up-right ml-2"></i>
+            </div>
+          </Link>
+        </div>
+
         {/* Activity */}
         <div className="border-b pt-5 flex flex-col w-full pb-4">
           <Link to="/my-activity">
@@ -196,6 +209,7 @@ export const SettingsPage = () => {
             </div>
           </Link>
         </div>
+
       </div>
     </div>
   );

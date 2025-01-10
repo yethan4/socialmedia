@@ -78,6 +78,7 @@ export const registerUser = async(username, email, password) => {
       avatar: "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9",
       id: res.user.uid,
       friends: [],
+      bookmarks: [],
     };
 
     const userDetails = {
