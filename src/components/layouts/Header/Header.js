@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import { DropDownMenu, DropDownMenuSm, DropDownNotifications, SearchBar, SearchBarSm } from "../";
+import { DropDownMenu, DropDownMenuSm, DropDownNotifications, SearchBar, SearchBarSm } from "../../";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { db } from "../../firebase/config";
-import { setNotifications } from "../../actions/notificationsAction";
+import { db } from "../../../firebase/config";
+import { setNotifications } from "../../../actions/notificationsAction";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 
 export const Header = () => {

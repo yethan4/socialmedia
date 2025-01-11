@@ -1,5 +1,5 @@
 import { AllRoutes } from "./routes/AllRoutes";
-import { Header } from './components/layouts/Header';
+import { Header } from './components';
 import { Notification } from "./components";
 import { useEffect } from "react";
 import { initializeAuth } from "./services/authService";

@@ -1,4 +1,4 @@
-export { Header } from "./layouts/Header";
+export { Header } from "./layouts/Header/Header";
 export { Sidebar } from "./layouts/Sidebar";
 
 export { DropDownMenu } from "./elements/DropDownMenu";

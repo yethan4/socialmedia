@@ -8,5 +8,6 @@ export { FriendsPage } from "./FriendsPage";
 export { SettingsPage } from "./SettingsPage";
 export { MyActivityPage } from "./MyActivityPage/MyActivityPage";
 export { BookmarksPage } from "./BookmarksPage";
+export { ChatsPage } from "./ChatsPage/ChatsPage";
 
 export { PageNotFound } from "./PageNotFound";
