@@ -1,8 +1,9 @@
 import { createUserWithEmailAndPassword, signOut as firebaseSignOut, signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
-import { auth, db } from "../firebase/config";
+import { auth, database, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
-import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { ref, onValue, onDisconnect, set } from "firebase/database";
 
 export const watchUserDocument = (userId, dispatch) => {
   const docRef = doc(db, "users", userId);
@@ -34,6 +35,7 @@ export const initializeAuth = (dispatch) => {
           });
 
           unsubscribeUserDoc = watchUserDocument(user.uid, dispatch);
+          monitorUserPresence(user.uid);
         } else {
           throw new Error("No user document found.");
         }
@@ -106,4 +108,19 @@ export const signOutUser = async (dispatch) => {
   }
 };
 
+//monitor user presence
+export const monitorUserPresence = (userId) => {
+  const amOnlineRef = ref(database, ".info/connected");
+  const userRef = ref(database, `/presence/${userId}`); 
 
+  onValue(amOnlineRef, (snapshot) => {
+    if (snapshot.val() === true) {
+      set(userRef, true)
+
+      onDisconnect(userRef).set({
+        online: false,
+        lastActive: Date.now(),
+      });
+    }
+  });
+};
