@@ -2,8 +2,8 @@ import { createUserWithEmailAndPassword, signOut as firebaseSignOut, signInWithE
 import { toast } from "react-toastify";
 import { auth, database, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
-import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { ref, onValue, onDisconnect, set } from "firebase/database";
+import { arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { ref, onValue, onDisconnect, set, update } from "firebase/database";
 
 export const watchUserDocument = (userId, dispatch) => {
   const docRef = doc(db, "users", userId);
@@ -90,6 +90,9 @@ export const registerUser = async(username, email, password) => {
 
     await setDoc(doc(db, "users", res.user.uid), newUserData)
     await setDoc(doc(db, "userDetails", res.user.uid), userDetails);
+    await setDoc(doc(db, "userchats", res.user.uid), {
+      chats: [],
+    });
     toast.success("Account created! You are now logged in.");
   } catch(err){
     toast.error(err.message);

@@ -4,28 +4,12 @@ import { ref, onValue } from "firebase/database"; // importujemy onValue
 import { fetchDocument } from "../../../services/fetchDocument";
 import { formatTimestamp } from "../../../utils/timeUtils";
 import { Link } from "react-router-dom";
+import { useUserPresence } from "../../../hooks/useUserPresence";
 
 export const FriendSidebarCard = ({ userId }) => {
   const [userData, setUserData] = useState([]);
-  const [isOnline, setIsOnline] = useState(false); 
-  const [lastActive, setLastActive] = useState(null);
-
-  useEffect(() => {
-    const userRef = ref(database, `/presence/${userId}`);
-
-    const unsubscribe = onValue(userRef, (snapshot) => {
-      if (snapshot.val() === true) {
-        setIsOnline(true); // if user is online
-      } else {
-        
-        setIsOnline(false); // if user is offline
-        const formattedTime = formatTimestamp(snapshot.val().lastActive/1000);
-        setLastActive(formattedTime)
-      }
-    });
-
-    return () => unsubscribe();
-  }, [userId]); 
+  
+  const { isOnline, lastActive } = useUserPresence(userId);
 
   useEffect(() => {
       fetchDocument(userId, "users").then((user) => setUserData(user))
