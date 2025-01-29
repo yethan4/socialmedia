@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/fetchDocument';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
@@ -11,6 +11,7 @@ import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
 import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
 import { deleteImage, uploadImage } from '../../services/imageService';
+import { createNewChat } from '../../services/chatService';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -35,6 +36,7 @@ export const Profile = () => {
   const [textAboutMe, setTextAboutMe] = useState("");
   const [noMorePosts, setNoMorePosts] = useState(false);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo);
   const posts = useSelector(state => state.postsState.posts);
@@ -200,6 +202,12 @@ export const Profile = () => {
       setLoadingData(false);
     }
   };
+
+  const handleMessage = async () => {
+    await createNewChat();
+    
+    navigate(`/chats/${userData.id}`)
+  }
 
   useEffect(() => {
     if (id === userInfo.id) {
@@ -467,7 +475,8 @@ export const Profile = () => {
               </div>}
             </div>
           )}
-          {!isCurrentUser && <button className="px-4 py-2 bg-blue-600 text-slate-50">
+          {!isCurrentUser && 
+          <button className="px-4 py-2 bg-blue-600 text-slate-50" onClick={handleMessage}>
             <i className="bi bi-chat mr-1"></i>
             Message
           </button>}

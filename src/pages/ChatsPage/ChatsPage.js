@@ -1,16 +1,37 @@
 import { addDoc, collection, doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
-import { Sidebar } from "../../components";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
 import { useSelector } from "react-redux";
 import { ChatPreview, ChatView } from "./components";
+import { useParams } from "react-router-dom";
+import { useTitle } from '../../hooks/useTitle';
 
 export const ChatsPage = () => {
+  const { id } = useParams();
+
   const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState("");
 
   const userInfo = useSelector(state => state.authState.userInfo)
   
+  useTitle("- Chats")
+
+  useEffect(() => {
+    const findChatById = () => {
+      const chat = chats.find(chat => chat.withUserId === id);
+      if(chat) {
+        setCurrentChat(chat)
+        
+      }else{
+        if(chats.length>0){
+          setCurrentChat(chats[0])
+        }
+      }
+    }
+
+    findChatById();
+  }, [chats, id])
+
   useEffect(() => {
     const unSub = onSnapshot(
       doc(db, "userchats", userInfo.id),
@@ -19,10 +40,6 @@ export const ChatsPage = () => {
 
         const sortedChats = items.sort((a, b) => b.updatedAt - a.updatedAt);
       setChats(sortedChats);
-
-      if (sortedChats.length > 0) {
-        setCurrentChat(sortedChats[0]);
-      }
       }
     );
 
@@ -53,9 +70,9 @@ export const ChatsPage = () => {
           </div>
 
           {/* Chats */}
-          <div className="flex flex-col mt-3">
+          <div className="flex flex-col mt-3 gap-1">
             {chats && chats.map((chat) => (
-              <ChatPreview key={chat.chatId} chat={chat} />
+              <ChatPreview key={chat.chatId} chat={chat} currentChat={currentChat} />
             ))}
           </div>
         </div>

@@ -1,6 +1,7 @@
-import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { toast } from "react-toastify";
+import { createNewChat } from "./chatService";
 
 const checkFriendRequestId = async (currentUserId, userId) => {
   try{
@@ -94,7 +95,6 @@ export const addFriend = async(currentUserId, userId, friendRequestId="") => {
       friends: arrayUnion(currentUserId),
     });
 
-
     await updateDoc(friendRequestRef, {
       status: "accepted"
     });
@@ -106,8 +106,11 @@ export const addFriend = async(currentUserId, userId, friendRequestId="") => {
       seen: false,
       type: "friends",
     })
+    
+    //create a new chat between users if it doesn't exist
+    await createNewChat()
+    
 
-    //setFriendStatus("friends");
     toast.success("You are friends now!");
 
   }catch(err){

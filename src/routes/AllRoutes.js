@@ -18,6 +18,7 @@ export const AllRoutes = () => {
       <Route path="/my-activity/:section"  element={<ProtectedRoute><MyActivityPage /></ProtectedRoute>} />
       <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
       <Route path="/chats" element={<ProtectedRoute><ChatsPage /></ProtectedRoute>} />
+      <Route path="/chats/:id" element={<ProtectedRoute><ChatsPage /></ProtectedRoute>} />
 
       <Route path="/*" element={<ProtectedRoute><PageNotFound /></ProtectedRoute>} />
 

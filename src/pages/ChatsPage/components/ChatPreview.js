@@ -3,11 +3,13 @@ import { useSelector } from "react-redux"
 import { fetchDocument } from "../../../services/fetchDocument";
 import { useUserPresence } from "../../../hooks/useUserPresence";
 import { formatTimestamp } from "../../../utils/timeUtils";
+import { Link } from "react-router-dom";
 
-export const ChatPreview = ({chat}) => {
+export const ChatPreview = ({chat, currentChat}) => {
   const [withUserInfo, setWithUserInfo] = useState();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const { isOnline, lastActive } = useUserPresence(chat.withUserId);
+  const { isOnline } = useUserPresence(chat.withUserId);
 
   const currentUser = useSelector(state => state.authState.userInfo)
 
@@ -19,10 +21,19 @@ export const ChatPreview = ({chat}) => {
     })
   }, [chat])
 
+  useEffect(() => {
+    if(currentChat.chatId===chat.chatId) {
+      setIsOpen(true)
+    }else{
+      setIsOpen(false)
+    }
+  }, [currentChat, chat])
 
+  console.log(currentChat, chat)
 
   return (
-    <div className="flex py-2 px-1 cursor-pointer rounded-md hover:bg-gray-300 dark:hover:bg-gray-700">
+    <Link to={`/chats/${chat.withUserId}`}>
+    <div className={isOpen ? "flex py-2 px-1 mr-1 cursor-pointer rounded-md shadow bg-gray-200 dark:bg-gray-800" : "flex py-2 px-1 mr-1 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"}>
       <div className="relative w-fit h-fit">
         <img
           src={withUserInfo?.avatar}
@@ -58,5 +69,6 @@ export const ChatPreview = ({chat}) => {
         
       </div>
     </div>
+    </Link>
   )
 }
