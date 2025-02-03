@@ -53,10 +53,10 @@ export const ChatsPage = () => {
 
 
   return (
-    <div className="flex pt-20 h-screen"> 
+    <div className="flex pt-[62px] h-screen"> 
       <div className="flex-1 flex mt-0 pl-2 dark:text-slate-100">
-        <div className="w-[350px]">
-          <div className="mb-2 text-center text-xl text-gray-900 font-semibold dark:text-gray-100">Chats</div>
+        <div className="lg:w-[350px] max-lg:w-[60px]">
+          <div className="mb-2 mt-4 text-center text-xl text-gray-900 font-semibold dark:text-gray-100">Chats</div>
 
           <div className="relative flex flex-col">
             <i className="bi bi-search absolute top-1 left-2 text-gray-400"></i>
@@ -78,10 +78,6 @@ export const ChatsPage = () => {
         </div>
         
         {currentChat && <ChatView chatId={currentChat.chatId} chatPartnerId={currentChat.withUserId} /> }
-        {/* Główny div */}
-        
-
-
       </div>
     </div>
   );

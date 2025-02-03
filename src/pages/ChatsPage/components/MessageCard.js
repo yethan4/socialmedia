@@ -7,9 +7,9 @@ export const MessageCard = ({message, chatPartner}) => {
   return (
     <>
       {!chatPartner ? (
-      <div className="max-w-[400px] ml-auto">
+      <div className="max-w-[1000px] ml-auto">
         {message.img && (<img src={message.img} className="mb-2 rounded-xl max-h-[400px]" />)}
-        {message.text && (<div className="bg-blue-600 text-slate-50 w-fit max-w-[300px] ml-auto px-2 py-2 rounded-xl">
+        {message.text && (<div className="bg-blue-600 text-slate-50 w-fit max-w-[1000px] ml-auto px-2 py-2 rounded-xl">
           {message.text}
         </div>)}
       </div>
@@ -18,10 +18,10 @@ export const MessageCard = ({message, chatPartner}) => {
         <div className="h-fit mt-auto pb-1">
           <img src={chatPartner.avatar} alt="" className="w-8 h-8 object-cover rounded-full mr-2 "/>
         </div>
-        <div className="max-w-[300px]">
+        <div className="max-w-[1000px]">
           {message.img && (<img src={message.img} className="mb-2 rounded-xl max-h-[400px]" />)}
           {message.text && 
-          (<div className="bg-gray-200 w-fit max-w-[800px] mr-10 px-2 py-2 rounded-xl dark:bg-gray-700 dark:text-slate-50">
+          (<div className="bg-gray-200 w-fit max-w-[1000px] mr-10 px-2 py-2 rounded-xl dark:bg-gray-700 dark:text-slate-50">
           {message.text}
           </div>)}
         </div>

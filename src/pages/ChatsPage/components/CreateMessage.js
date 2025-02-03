@@ -91,6 +91,7 @@ export const CreateMessage = ({chatId, chatPartnerId}) => {
             userChatsData.chats[chatIndex].lastMessage = "Photo sent.";
           }
           userChatsData.chats[chatIndex].isSeen = id === currentUser.id ? true : false;
+          userChatsData.chats[chatIndex].receiverId = chatPartnerId
           userChatsData.chats[chatIndex].updatedAt = Date.now();
 
           await updateDoc(userChatsRef, {
