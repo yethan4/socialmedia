@@ -72,36 +72,35 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
           createdAt: new Date(),
           ...(imgUrl && { img: imgUrl }),
         }),
+        seenBy: [currentUser.id]
       });
 
       const userIDs = [currentUser.id, chatPartnerId];
 
-      userIDs.forEach(async (id) => {
+      for (const id of userIDs) {
         const userChatsRef = doc(db, "userchats", id);
         const userChatsSnapshot = await getDoc(userChatsRef);
-
+      
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
-
+      
           const chatIndex = userChatsData.chats.findIndex(
             (c) => c.chatId === chatId
           );
-
-          if (text !== "") {
-            userChatsData.chats[chatIndex].lastMessage = text;
-          } else {
-            userChatsData.chats[chatIndex].lastMessage = "Photo sent.";
+      
+          if (chatIndex !== -1) {
+            userChatsData.chats[chatIndex].lastMessage =
+              text !== "" ? text : "Photo sent.";
+            userChatsData.chats[chatIndex].isSeen = id === currentUser.id ? true : false;
+            userChatsData.chats[chatIndex].receiverId = chatPartnerId;
+            userChatsData.chats[chatIndex].updatedAt = Date.now();
+      
+            await updateDoc(userChatsRef, {
+              chats: userChatsData.chats,
+            });
           }
-          userChatsData.chats[chatIndex].isSeen =
-            id === currentUser.id ? false : true;
-          userChatsData.chats[chatIndex].receiverId = chatPartnerId;
-          userChatsData.chats[chatIndex].updatedAt = Date.now();
-
-          await updateDoc(userChatsRef, {
-            chats: userChatsData.chats,
-          });
         }
-      });
+      }
     } catch (err) {
       console.log(err);
     } finally {

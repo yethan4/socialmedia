@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { fetchDocument } from "../../../services/fetchDocument";
 import { Link } from "react-router-dom";
 import { firebaseDislike, firebaseLike } from "../../../services/likeService";
-import { formatTimestamp } from "../../../utils/timeUtils";
+import { formatTimeAgo } from "../../../utils/timeUtils";
 
 export const UserLikeCard = ({like}) => {
   const [postAuthorData, setPostAuthorData] = useState([]);
@@ -11,7 +11,7 @@ export const UserLikeCard = ({like}) => {
 
   const userInfo = useSelector(state => state.authState.userInfo);
 
-  const formattedTime = formatTimestamp(like.timestamp.seconds);
+  const formattedTime = formatTimeAgo(like.timestamp.seconds);
 
   useEffect(() => {
     const fetchAuthorData = async() => {

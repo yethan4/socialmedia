@@ -1,41 +1,8 @@
-import { collection, endAt, getDocs, limit, orderBy, query, startAt } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { db } from "../../../firebase/config";
 import { UserCard } from "./UserCard";
+import useSearchUsers from "../../../hooks/useSearchUsers";
 
-export const SearchBar = ({inputSearchBar, setInputSearchBar}) => {
-  const [searchResult, setSearchResult] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!inputSearchBar.trim()) {
-        setSearchResult([]);
-        return;
-      }
-
-      const q = query(
-        collection(db, "users"),
-        orderBy("username"),
-        startAt(inputSearchBar),
-        endAt(inputSearchBar + "\uf8ff"),
-        limit(5)
-      );
-
-      try {
-        const querySnapshot = await getDocs(q);
-        const results = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          username: doc.data().username,
-          avatar: doc.data().avatar,
-        }));
-        setSearchResult(results);
-      } catch (err) {
-        console.error("Error fetching search results:", err);
-      }
-    };
-
-    fetchData();
-  }, [inputSearchBar]);
+export const SearchBar = ({ inputSearchBar, setInputSearchBar }) => {
+  const searchResult = useSearchUsers(inputSearchBar); 
 
   return (
     <div className="relative flex flex-col">
@@ -53,7 +20,7 @@ export const SearchBar = ({inputSearchBar, setInputSearchBar}) => {
         <div className="absolute top-[50px] right-0 max-h-96 w-96 py-2 flex flex-col gap-1 bg-white shadow rounded overflow-y-auto dark:bg-gray-800 dark:border-b dark:border-r dark:border-gray-700">
           {searchResult.length > 0 ? (
             searchResult.map((user) => (
-              <UserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} setSearchResult={setSearchResult}/>
+              <UserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} />
             ))
           ) : (
             <p className="px-4 py-2 text-gray-500">No results found.</p>

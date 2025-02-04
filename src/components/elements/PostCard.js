@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { CommentCard, CreateComment, UserCard } from "..";
 import { fetchDocument } from "../../services/fetchDocument";
-import { formatTimestamp } from "../../utils/timeUtils";
+import { formatTimeAgo } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "../../firebase/config";
@@ -94,7 +94,7 @@ export const PostCard = ({post}) => {
   }, [userInfo, post])
 
 
-  const formattedTime = formatTimestamp(post.createdAt.seconds);
+  const formattedTime = formatTimeAgo(post.createdAt.seconds);
 
   const handleDelete = async() => {
     try{

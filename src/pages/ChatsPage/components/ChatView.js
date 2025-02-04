@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CreateMessage, MessageCard, ChatInfo } from './';
-import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { fetchDocument } from '../../../services/fetchDocument';
 import { useSelector } from 'react-redux';
 import { useUserPresence } from '../../../hooks/useUserPresence';
 import { Link } from 'react-router-dom';
-import { motion } from "framer-motion";
 import { TypingIndicator } from '../../../animations/TypingIndicator';
+import { formatDisplayDate } from '../../../utils/timeUtils';
 
-export const ChatView = ({ chatId, isSeen, chatPartnerId }) => {
+export const ChatView = ({ chatId, chatPartnerId }) => {
   const [chat, setChat] = useState({ messages: [] });
   const [chatPartner, setChatPartner] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showChatInfo, setShowChatInfo] = useState(false);
+  const [isSeen, setIsSeen] = useState(false);
 
   const endRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -25,6 +26,8 @@ export const ChatView = ({ chatId, isSeen, chatPartnerId }) => {
   useEffect(() => {
     setIsFirstLoad(true)
   }, [chatId])
+
+
 
   useEffect(() => {
     if (endRef.current && chat.messages.length > 0) {
@@ -77,10 +80,10 @@ export const ChatView = ({ chatId, isSeen, chatPartnerId }) => {
   }, []);
 
   useEffect(() => {
-    const updateSeenStatus = async (chatPartnerId, chatId) => {
+    const updateCurrentUserSeenStatus = async (userId, chatId) => {
       if(document.hidden) return;
 
-      const docRef = doc(db, "userchats", chatPartnerId);
+      const docRef = doc(db, "userchats", userId);
 
       try{
         const docSnap = await getDoc(docRef);
@@ -90,16 +93,67 @@ export const ChatView = ({ chatId, isSeen, chatPartnerId }) => {
           const updatedChats = data.chats.map(chat => chat.chatId === chatId ? { ...chat, isSeen:true } : chat)
 
           await updateDoc(docRef, { chats: updatedChats });
-          console.log("dziala")
         }
       }catch(err){
         console.log(err)
       }
     }
 
-    updateSeenStatus(chatPartnerId, chatId)
+    updateCurrentUserSeenStatus(currentUser.id, chatId)
     
   }, [chat.messages, chatId, chatPartnerId, document.hidden])
+
+
+  useEffect(() => {
+    if (!chatId || !currentUser) return;
+
+    const updateSeenBy = async () => {
+      if (document.hidden) return;
+
+      try {
+        const chatRef = doc(db, "chats", chatId);
+        await updateDoc(chatRef, {
+          seenBy: arrayUnion(currentUser.id),
+        });
+      } catch (error) {
+        console.error("Error updating seenBy:", error);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateSeenBy();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    
+    updateSeenBy();
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [chat, currentUser]); 
+
+
+
+
+
+  useEffect(() => {
+    if (!chatId) return;
+
+    const chatRef = doc(db, "chats", chatId);
+
+    const unsubscribe = onSnapshot(chatRef, (chatSnapshot) => {
+      if (!chatSnapshot.exists()) return;
+
+      const seenBy = chatSnapshot.data().seenBy || [];
+      setIsSeen(seenBy.includes(chatPartnerId));
+    });
+
+    return () => unsubscribe(); 
+  }, [chatId, chatPartnerId]);
+
 
   return (
     <div className="flex-1 h-full border-l flex dark:border-gray-700">
@@ -146,16 +200,24 @@ export const ChatView = ({ chatId, isSeen, chatPartnerId }) => {
           ref={chatContainerRef}
           className="mt-3 flex gap-2 flex-col w-full px-4 flex-1 overflow-y-auto dark-scrollbar always-scrollbar"
         >
-          {chat.messages &&
-            chatPartner &&
-            currentUser &&
-            chat.messages.map((message, index) =>
-              message.senderId === currentUser.id ? (
-                <MessageCard key={index} message={message} />
-              ) : (
-                <MessageCard key={index} message={message} chatPartner={chatPartner} />
-              )
-            )}
+          {chat.messages.map((message, index) => {
+          const prevMessage = index>0 ? chat.messages[index - 1] : null;
+          const formattedDate = (index === 0 || (prevMessage && (message.createdAt.seconds - prevMessage.createdAt.seconds) > 600))
+          ? formatDisplayDate(message.createdAt.seconds)
+          : null;
+
+          
+          return (
+            <>
+            {formattedDate && <div className="w-full text-center text-xs my-2">{formattedDate}</div>}
+            <MessageCard
+              key={index}
+              message={message}
+              chatPartner={message.senderId !== currentUser.id ? chatPartner : null}
+            />
+            </>
+          );
+        })}
 
           {!isSeen && chat?.messages[chat?.messages?.length - 1]?.senderId === currentUser.id && (
             <span className="ml-auto mt-[-4px] text-sm dark:text-gray-400">

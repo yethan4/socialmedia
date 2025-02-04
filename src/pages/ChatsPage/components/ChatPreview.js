@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { fetchDocument } from "../../../services/fetchDocument";
 import { useUserPresence } from "../../../hooks/useUserPresence";
-import { formatTimestamp } from "../../../utils/timeUtils";
+import { formatTimeAgo } from "../../../utils/timeUtils";
 import { Link } from "react-router-dom";
 
 export const ChatPreview = ({chat, currentChat}) => {
@@ -13,7 +13,7 @@ export const ChatPreview = ({chat, currentChat}) => {
 
   const currentUser = useSelector(state => state.authState.userInfo)
 
-  const lastMessageTime = formatTimestamp(chat.updatedAt/1000)
+  const lastMessageTime = formatTimeAgo(chat.updatedAt/1000)
 
   useEffect(() => {
     fetchDocument(chat.withUserId, "users").then((user) => {
@@ -28,7 +28,7 @@ export const ChatPreview = ({chat, currentChat}) => {
       setIsOpen(false)
     }
   }, [currentChat, chat])
-
+  
   return (
     <Link to={`/chats/${chat.withUserId}`}>
       <div className={isOpen ? "flex py-2 px-1 mr-1 cursor-pointer rounded-md shadow bg-gray-200 dark:bg-gray-800 max-lg:hidden" : "flex py-2 px-1 mr-1 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 max-lg:hidden"}>
@@ -69,7 +69,7 @@ export const ChatPreview = ({chat, currentChat}) => {
       </div>
 
       <div className={isOpen ? "flex py-2 px-1 mr-1 cursor-pointer rounded-md shadow bg-gray-200 dark:bg-gray-800 lg:hidden" : "flex py-2 px-1 mr-1 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 lg:hidden"}>
-        <div className="relative w-fit h-fit">
+        <div className={chat.isSeen ? "relative w-fit h-fit" : "relative w-fit h-fit bg-blue-500 rounded-xl"}>
           <img
             src={withUserInfo?.avatar}
             alt=""

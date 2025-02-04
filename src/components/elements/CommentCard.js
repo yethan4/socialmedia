@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { fetchDocument } from "../../services/fetchDocument"
-import { formatTimestamp } from "../../utils/timeUtils";
+import { formatTimeAgo } from "../../utils/timeUtils";
 import { useSelector } from "react-redux";
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
@@ -13,7 +13,7 @@ export const CommentCard = ({comment}) => {
 
   const userInfo = useSelector(state => state.authState.userInfo);
 
-  const formattedTime = formatTimestamp(comment.createdAt?.seconds);
+  const formattedTime = formatTimeAgo(comment.createdAt?.seconds);
 
   useEffect(() => {
     if(userInfo.id === comment.authorId){

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchDocument } from "../../services/fetchDocument";
-import { formatTimestamp } from "../../utils/timeUtils";
+import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase/config";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
@@ -10,7 +10,7 @@ export const CommentNotificationCard = ({notification, setDropNotifications=""})
 
   const navigate = useNavigate();
 
-  const formattedTime = formatTimestamp(notification.timestamp.seconds);
+  const formattedTime = formatTimeAgo(notification.timestamp.seconds);
 
   useEffect(() => {
     fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));

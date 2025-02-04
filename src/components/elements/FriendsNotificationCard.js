@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { formatTimestamp } from "../../utils/timeUtils";
+import { formatTimeAgo } from "../../utils/timeUtils";
 import { fetchDocument } from "../../services/fetchDocument";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
@@ -10,7 +10,7 @@ export const FriendsNotificationCard = ({notification, setDropNotifications=""})
 
   const navigate = useNavigate();
 
-  const formattedTime = formatTimestamp(notification.timestamp.seconds);
+  const formattedTime = formatTimeAgo(notification.timestamp.seconds);
 
   useEffect(() => {
     fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));

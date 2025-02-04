@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ref, onValue } from "firebase/database";
 import { database } from "../firebase/config";
-import { formatTimestamp } from "../utils/timeUtils";
+import { formatTimeAgo } from "../utils/timeUtils";
 
 export const useUserPresence = (userId) => {
   const [isOnline, setIsOnline] = useState(false);
@@ -18,7 +18,7 @@ export const useUserPresence = (userId) => {
       } else {
         setIsOnline(false);
         if (presenceData?.lastActive) {
-          setLastActive(formatTimestamp(presenceData.lastActive / 1000));
+          setLastActive(formatTimeAgo(presenceData.lastActive / 1000));
         }
       }
     });

@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
-import { formatTimestamp } from '../../../utils/timeUtils';
+import { formatTimeAgo } from '../../../utils/timeUtils';
 import { Link } from 'react-router-dom';
 
 export const ChatInfo = ({chat, chatPartner}) => {
   const [option, setOption] = useState("");
 
-  const createdTime = formatTimestamp(chat?.createdAt?.seconds)
+  const createdTime = formatTimeAgo(chat?.createdAt?.seconds)
   
   const messagesWithImages = chat?.messages?.filter(msg => msg?.img)
 
   return (
-    <div className="w-96 border-l-2 dark:border-gray-700">
+    <div className="max-lg:w-64 lg:w-96 border-l-2 dark:border-gray-700">
       
       <Link to={`/profile/${chatPartner?.id}`}>
       <div className="flex flex-col items-center justify-center mt-4">

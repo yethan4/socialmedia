@@ -204,10 +204,11 @@ export const Profile = () => {
   };
 
   const handleMessage = async () => {
-    await createNewChat();
+    await createNewChat(userInfo.id, userData.id);
     
     navigate(`/chats/${userData.id}`)
   }
+
 
   useEffect(() => {
     if (id === userInfo.id) {

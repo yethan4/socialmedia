@@ -1,15 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
-export const UserCard = ({ user, setInputSearchBar, setSearchResult, setIsSearching }) => {
+export const UserCard = ({ user, setInputSearchBar, setIsSearching }) => {
   const navigate = useNavigate();
 
   const handleClick = (userId) => {
-    setInputSearchBar("");
-    setSearchResult([]);
+    setInputSearchBar(""); 
     if (setIsSearching) {
-      setIsSearching(false);
+      setIsSearching(false);  
     }
-    navigate(`/profile/${userId}`);
+    navigate(`/profile/${userId}`);  
   };
 
   return (
