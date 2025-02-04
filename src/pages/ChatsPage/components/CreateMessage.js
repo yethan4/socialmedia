@@ -1,17 +1,17 @@
-import EmojiPicker from 'emoji-picker-react';
-import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux';
+import EmojiPicker from "emoji-picker-react";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 import emoji from "../../../assets/emoji.png";
-import { uploadImage } from '../../../services/imageService';
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
+import { uploadImage } from "../../../services/imageService";
+import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../../firebase/config";
 
-export const CreateMessage = ({chatId, chatPartnerId}) => {
+export const CreateMessage = ({ chatId, chatPartnerId }) => {
   const [text, setText] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const [img, setImg] = useState({ file: null, url: "" });
-  const [isSending, setIsSending] = useState(false);  
+  const [isSending, setIsSending] = useState(false);
   const currentUser = useSelector((state) => state.authState.userInfo);
   const textareaRef = useRef();
 
@@ -54,9 +54,9 @@ export const CreateMessage = ({chatId, chatPartnerId}) => {
 
     if (text === "" && img.url === "") return;
 
-    if (isSending) return;  
+    if (isSending) return;
 
-    setIsSending(true);  
+    setIsSending(true);
 
     let imgUrl = null;
 
@@ -83,15 +83,18 @@ export const CreateMessage = ({chatId, chatPartnerId}) => {
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
 
-          const chatIndex = userChatsData.chats.findIndex((c) => c.chatId === chatId);
+          const chatIndex = userChatsData.chats.findIndex(
+            (c) => c.chatId === chatId
+          );
 
           if (text !== "") {
             userChatsData.chats[chatIndex].lastMessage = text;
           } else {
             userChatsData.chats[chatIndex].lastMessage = "Photo sent.";
           }
-          userChatsData.chats[chatIndex].isSeen = id === currentUser.id ? true : false;
-          userChatsData.chats[chatIndex].receiverId = chatPartnerId
+          userChatsData.chats[chatIndex].isSeen =
+            id === currentUser.id ? false : true;
+          userChatsData.chats[chatIndex].receiverId = chatPartnerId;
           userChatsData.chats[chatIndex].updatedAt = Date.now();
 
           await updateDoc(userChatsRef, {
@@ -107,9 +110,37 @@ export const CreateMessage = ({chatId, chatPartnerId}) => {
         url: "",
       });
       setText("");
-      setIsSending(false);  
+      setIsSending(false);
     }
   };
+
+  useEffect(() => {
+    const updateCurrentlyTyping = async () => {
+      const chatRef = doc(db, "chats", chatId);
+      const chatSnapshot = await getDoc(chatRef);
+  
+      if (!chatSnapshot.exists()) return;
+  
+      const chatData = chatSnapshot.data();
+      const currentlyTyping = chatData.currentlyTyping || [];
+  
+      const shouldBeTyping = text.length > 0 || img.url;
+  
+      if (shouldBeTyping && !currentlyTyping.includes(currentUser.id)) {
+        await updateDoc(chatRef, {
+          currentlyTyping: arrayUnion(currentUser.id),
+        });
+      } else if (!shouldBeTyping && currentlyTyping.includes(currentUser.id)) {
+        await updateDoc(chatRef, {
+          currentlyTyping: arrayRemove(currentUser.id),
+        });
+      }
+    };
+  
+    updateCurrentlyTyping();
+  }, [text, img?.url, chatId, currentUser.id]);
+  
+
 
   return (
     <form className="mt-auto">
@@ -145,8 +176,16 @@ export const CreateMessage = ({chatId, chatPartnerId}) => {
 
           <div className="bg-gray-100 flex justify-between px-4 w-full rounded-xl dark:bg-gray-700 ">
             <div className="flex gap-2">
-              <input type="file" id="img" className="hidden" onChange={handleImage} />
-              <label htmlFor="img" className="flex items-center cursor-pointer justify-center">
+              <input
+                type="file"
+                id="img"
+                className="hidden"
+                onChange={handleImage}
+              />
+              <label
+                htmlFor="img"
+                className="flex items-center cursor-pointer justify-center"
+              >
                 <span className="rounded-full text-[24px] text-blue-700 dark:text-gray-200">
                   <i className="bi bi-image"></i>
                 </span>

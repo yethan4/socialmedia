@@ -50,8 +50,6 @@ export const ChatsPage = () => {
     }
   }, [userInfo.id]);
 
-
-
   return (
     <div className="flex pt-[62px] h-screen"> 
       <div className="flex-1 flex mt-0 pl-2 dark:text-slate-100">
@@ -77,7 +75,7 @@ export const ChatsPage = () => {
           </div>
         </div>
         
-        {currentChat && <ChatView chatId={currentChat.chatId} chatPartnerId={currentChat.withUserId} /> }
+        {currentChat && <ChatView chatId={currentChat.chatId} isSeen={currentChat.isSeen} chatPartnerId={currentChat.withUserId} /> }
       </div>
     </div>
   );
