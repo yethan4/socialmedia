@@ -279,7 +279,7 @@ export const PostCard = ({post}) => {
       >
       {comments.map((comment) => {
         return (
-          <CommentCard key={comment.id} comment={comment} />
+          <CommentCard key={comment.id} comment={comment} postAuthorId={author?.id} />
         )
       })}
       </div>

@@ -12,17 +12,15 @@ import { useTitle } from '../../hooks/useTitle';
 import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
 import { deleteImage, uploadImage } from '../../services/imageService';
 import { createNewChat } from '../../services/chatService';
+import { useFriendStatus } from '../../hooks/useFriendStatus';
 
 export const Profile = () => {
   const { id } = useParams();
 
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
   const [userData, setUserData] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
-  const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const [friendStatus, setFriendStatus] = useState(null);
-  const [friendRequestId, setFriendRequestId] = useState(null);
-  const [dropRemove, setDropRemove] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const [bgImg, setBgImg] = useState({
     file: null,
@@ -51,6 +49,17 @@ export const Profile = () => {
   const tabClass = "text-gray-600 py-2 px-6 text-xl cursor-pointer dark:text-slate-300";
 
   useTitle(`- Profile`);
+  console.log(id)
+  const {
+      friendStatus,
+      dropRemove,
+      setDropRemove,
+      handleSentRequest,
+      handleRejectRequest,
+      handleAddFriend,
+      handleRemoveFriend,
+      handleUndoRequest
+    } = useFriendStatus(id);
 
   //to be corrected
   const changeTab = (tabName) => {
@@ -58,31 +67,6 @@ export const Profile = () => {
     setActiveTab(tabName);
   };
   //
-
-  const handleSentRequest= async () => {
-    await sentFriendRequest(userInfo.id, id);
-    setFriendStatus("pendingSent");
-  };
-
-  const handleRejectRequest = async() => {
-    await rejectFriendRequest(userInfo.id, id, friendRequestId);
-    setFriendStatus("strangers");
-  };
-
-  const handleAddFriend = async() => {
-    await addFriend(userInfo.id, id, friendRequestId);
-    setFriendStatus("friends");
-  };
-
-  const handleRemoveFriend = async() => {
-    await removeFriend(userInfo.id, id);
-    setFriendStatus("strangers");
-  };
-
-  const handleUndoRequest = async() => {
-    await undoFriendRequest(userInfo.id, id, friendRequestId);
-    setFriendStatus("strangers");
-  };
 
   const handleBgImage = (event) => {
     if (event.target.files[0]){
@@ -219,11 +203,14 @@ export const Profile = () => {
   }, [id, userInfo]);
 
   useEffect(() => {
-    if (id) {
-      fetchDocument(id, "users").then((user) => {
-        setUserData(user);
-      });
+    if (!id) return
+
+    const fetchUser = async() => {
+      const user = await fetchDocument(id, "users");
+      setUserData(user);
     }
+
+    fetchUser();
   }, [id]);
 
   useEffect(() => {
@@ -331,18 +318,6 @@ export const Profile = () => {
       }
     };
   }, [lastVisible, loading, loadMorePosts]);
-
-  useEffect(() => {
-    const checkStatus = async() => {
-      const {status, requestId} = await checkFriendStatus(userInfo, id);
-      setFriendStatus(status);
-      setFriendRequestId(requestId)
-    }
-
-    if(userInfo && id && !isCurrentUser){
-      checkStatus()
-    }
-  }, [userInfo, id, isCurrentUser]);
 
   useEffect(() => {
     const textarea = aboutMeRef.current;

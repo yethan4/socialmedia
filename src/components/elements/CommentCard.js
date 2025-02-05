@@ -6,18 +6,18 @@ import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { Link } from "react-router-dom";
 
-export const CommentCard = ({comment}) => {
+export const CommentCard = ({comment, postAuthorId}) => {
   const [author, setAuthor] = useState(null);
-  const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
-  const [showOptions, setShowOption] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   const userInfo = useSelector(state => state.authState.userInfo);
 
   const formattedTime = formatTimeAgo(comment.createdAt?.seconds);
 
   useEffect(() => {
-    if(userInfo.id === comment.authorId){
-      setIsCurrentUserAuthor(true);
+    if(userInfo.id === comment.authorId || postAuthorId === userInfo.id){
+      setCanEdit(true);
     }
   }, [userInfo])
 
@@ -63,9 +63,9 @@ export const CommentCard = ({comment}) => {
           {formattedTime}
         </span>
       </div>
-      {isCurrentUserAuthor && (
+      {canEdit && (
         <span
-          onClick={() => setShowOption(!showOptions)}
+          onClick={() => setShowOptions(!showOptions)}
           className="cursor-pointer text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
         >
           <i className="bi bi-three-dots"></i>
