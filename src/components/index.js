@@ -1,4 +1,4 @@
-export { Header } from "./layouts/Header/Header";
+export { Header } from "./layouts/Header";
 export { Sidebar } from "./layouts/Sidebar";
 
 export { DropDownMenu } from "./elements/DropDownMenu";
@@ -23,3 +23,5 @@ export { FriendsNotificationCard } from "./elements/FriendsNotificationCard";
 
 export { FriendCard } from "./elements/FriendCard";
 export { UserCard } from "./elements/UserCard";
+
+export { ImageViewer } from "./elements/ImageViewer";

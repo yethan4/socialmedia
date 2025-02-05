@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { CommentCard, CreateComment, UserCard } from "..";
+import { CommentCard, CreateComment, ImageViewer, UserCard } from "..";
 import { fetchDocument } from "../../services/fetchDocument";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
@@ -220,7 +220,7 @@ export const PostCard = ({post}) => {
       
       { post.img && (
         <div className="w-full mb-4 flex justify-center">
-          <img src={post.img} alt="postImage" className="max-w-full max-h-[500px] rounded-lg shadow-sm" />
+          <ImageViewer src={post.img} alt="postImage" className="max-w-full max-h-[500px] rounded-lg shadow-sm" />
         </div>)}
 
       {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-2">{post.content}</div>}

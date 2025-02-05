@@ -202,7 +202,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
         >
           {chat.messages.map((message, index) => {
           const prevMessage = index>0 ? chat.messages[index - 1] : null;
-          const formattedDate = (index === 0 || (prevMessage && (message.createdAt.seconds - prevMessage.createdAt.seconds) > 600))
+          const formattedDate = (index === 0 || (prevMessage && (message.createdAt.seconds - prevMessage.createdAt.seconds) > 1000))
           ? formatDisplayDate(message.createdAt.seconds)
           : null;
 
