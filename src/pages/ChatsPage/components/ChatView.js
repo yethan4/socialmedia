@@ -67,7 +67,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
     const handleScroll = () => {
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        const isBottom = scrollHeight - (scrollTop + clientHeight) < 40; // Margines błędu
+        const isBottom = scrollHeight - (scrollTop + clientHeight) < 40; 
         setIsAtBottom(isBottom);
         //console.log('ScrollTop:', scrollTop, 'ScrollHeight:', scrollHeight, 'ClientHeight:', clientHeight, 'IsBottom:', isBottom);
       }

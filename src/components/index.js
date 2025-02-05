@@ -25,3 +25,4 @@ export { FriendCard } from "./elements/FriendCard";
 export { UserCard } from "./elements/UserCard";
 
 export { ImageViewer } from "./elements/ImageViewer";
+export { DropDownChats } from "./elements/DropDownChats";

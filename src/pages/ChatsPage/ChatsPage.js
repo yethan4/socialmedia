@@ -1,54 +1,41 @@
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ChatPreview, ChatView } from "./components";
 import { useParams } from "react-router-dom";
 import { useTitle } from "../../hooks/useTitle";
 import useSearchUsers from "../../hooks/useSearchUsers";
+import { setCurrentChat, setLoading } from "../../actions/chatsAction";
 
 export const ChatsPage = () => {
   const { id } = useParams();
-  const [chats, setChats] = useState([]);
-  const [currentChat, setCurrentChat] = useState("");
   const [input, setInput] = useState("");
   const [filteredChats, setFilteredChats] = useState([]);
 
-  const userInfo = useSelector((state) => state.authState.userInfo);
-  const searchResults = useSearchUsers(input); // Korzystamy z hooka do wyszukiwania użytkowników
+  const dispatch = useDispatch();
+  const { chats, currentChat, loading }= useSelector(state => state.chatsState)
 
+  const searchResults = useSearchUsers(input);
+  
   useTitle("- Chats");
 
   useEffect(() => {
-    const findChatById = () => {
-      const chat = chats.find((chat) => chat.withUserId === id);
-      if (chat) {
-        setCurrentChat(chat);
-      } else {
-        if (chats.length > 0) {
-          setCurrentChat(chats[0]);
-        }
-      }
-    };
-
-    findChatById();
-  }, [chats, id]);
-
-  useEffect(() => {
-    const unSub = onSnapshot(doc(db, "userchats", userInfo.id), async (res) => {
-      const items = res.data()?.chats;
-      if(items){
-        const sortedChats = items.sort((a, b) => b.updatedAt - a.updatedAt);
-        setChats(sortedChats)
-      };
-    });
-
-    if (userInfo.id) {
-      return () => {
-        unSub();
-      };
+    if (!id || !chats.length) return; 
+  
+    dispatch(setLoading(true));
+  
+    const chat = chats.find((chat) => chat.withUserId === id);
+    if (chat) {
+      dispatch(setCurrentChat(chat));
+    } else if (chats.length > 0) {
+      dispatch(setCurrentChat(chats[0]));
+    } else {
+      dispatch(setCurrentChat(null));
     }
-  }, [userInfo.id]);
+  
+    dispatch(setLoading(false));
+  }, [id, chats]);
 
   useEffect(() => {
     if (searchResults.length > 0) {
@@ -86,7 +73,7 @@ export const ChatsPage = () => {
 
           {/* Chats */}
           <div className="flex flex-col mt-3 gap-1">
-            {filteredChats.length > 0 ? (
+            {filteredChats?.length > 0 ? (
               filteredChats.map((chat) => (
                 <ChatPreview
                   key={chat.chatId}
@@ -99,8 +86,9 @@ export const ChatsPage = () => {
             )}
           </div>
         </div>
-
-        {currentChat && (
+        { loading && <div>
+          Loading</div>}
+        {currentChat && !loading && (
           <ChatView
             chatId={currentChat.chatId}
             chatPartnerId={currentChat.withUserId}

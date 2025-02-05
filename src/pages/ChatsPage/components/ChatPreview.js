@@ -22,7 +22,7 @@ export const ChatPreview = ({chat, currentChat}) => {
   }, [chat])
 
   useEffect(() => {
-    if(currentChat.chatId===chat.chatId) {
+    if(currentChat?.chatId===chat?.chatId) {
       setIsOpen(true)
     }else{
       setIsOpen(false)
@@ -49,11 +49,12 @@ export const ChatPreview = ({chat, currentChat}) => {
 
         <div className="ml-2 flex flex-col">
           <div className="flex items-center">
-            <span>{withUserInfo?.username}</span>
+            <span className={!chat.isSeen && "font-bold"}>{withUserInfo?.username}</span>
             <span className="h-fit w-fit">
               <i className="bi bi-dot"></i>
             </span>
             <span className="text-[9px]">{lastMessageTime}</span>
+            {!chat.isSeen && (<span className="mb-1 ml-2 w-1 h-1 rounded-full bg-blue-500"></span>)}
           </div>
           {chat.receiverId === currentUser.id ? (
           <span className={chat.isSeen ? "max-w-[270px] text-xs overflow-hidden text-ellipsis whitespace-nowrap" : "max-w-[270px] text-xs font-bold overflow-hidden text-ellipsis whitespace-nowrap"}>
