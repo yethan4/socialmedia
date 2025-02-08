@@ -54,7 +54,7 @@ export const CommentNotificationCard = ({notification, setDropNotifications=""})
       onClick={handleDivClick} 
     >
       <Link to={`/profile/${author?.id}`}>
-        <img src={author?.avatar} alt="" className="w-12 h-12 rounded-full" />
+        <img src={author?.avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
       </Link>
       <div className="flex flex-col ml-2">
         <div>

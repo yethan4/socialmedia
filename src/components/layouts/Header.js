@@ -82,7 +82,7 @@ export const Header = () => {
 
   //fetching chats
   useEffect(() => {
-    if (!userInfo.id) return; 
+    if (!userInfo) return;
   
     try {
       const unSub = onSnapshot(
@@ -110,7 +110,7 @@ export const Header = () => {
     } catch (error) {
       console.error("Błąd w useEffect:", error);
     }
-  }, [userInfo.id]);
+  }, [userInfo?.id]);
 
 
   return (

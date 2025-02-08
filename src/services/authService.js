@@ -66,7 +66,7 @@ export const signInUser = async(email, password) => {
 
     toast.success("You are now logged in.")
   }catch(err){
-    toast.error(err.message)
+    toast.error("Invalid email or password")
   }
 };
 

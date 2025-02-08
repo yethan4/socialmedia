@@ -15,7 +15,8 @@ export const createNewChat = async (currentUserId, userId) => {
       const chatRef = await addDoc(collection(db, "chats"), {
         createdAt: serverTimestamp(),
         messages: [],
-        currentlyTyping: []
+        currentlyTyping: [],
+        seenBy: []
       });
       await updateDoc(currentUserChatsRef, {
         chats: arrayUnion({

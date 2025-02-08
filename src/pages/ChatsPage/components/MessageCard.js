@@ -47,7 +47,7 @@ export const MessageCard = ({ message, chatPartner }) => {
         </div>
       ) : (
         <div 
-          className="flex relative group"
+          className="flex relative group w-fit"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
