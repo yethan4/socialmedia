@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { fetchDocument } from "../../services/fetchDocument";
+import { useCallback, useEffect, useState } from "react";
+import { deleteDocument, fetchDocument } from "../../services/oneDocumentService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../../firebase/config";
@@ -16,37 +16,33 @@ export const CommentNotificationCard = ({notification, setDropNotifications=""})
     fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));
   }, [notification?.fromUserId])
 
-  const handleDivClick = async(e) => {
-    if (!e.target.closest("a")) {
-      try{
-        const notificationRef = doc(db, "notifications", notification.id)
+  const handleDivClick = useCallback(
+    async (e) => {
+      if (!e.target.closest("a")) {
+        try {
+          const notificationRef = doc(db, "notifications", notification.id);
 
-        if(setDropNotifications){
-          setDropNotifications(false)
-        };
+          if (setDropNotifications) {
+            setDropNotifications(false);
+          }
 
-        await updateDoc(notificationRef, {
-          seen: true
-        });
+          await updateDoc(notificationRef, {
+            seen: true,
+          });
 
-        
-        navigate(`/post/${notification?.postId}`);
-      }catch(e){
-        console.log(e)
+          navigate(`/post/${notification?.postId}`);
+        } catch (e) {
+          console.log(e);
+        }
       }
-    }
-  };
+    },
+    [notification.id, notification.postId, setDropNotifications, navigate]
+  );
 
-  const handleDelete = async(e, id) => {
+  const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
-    try{
-      const document = doc(db, "notifications", id)
-      await deleteDoc(document);
-
-    }catch(err){
-      console.log(err)
-    }
-  }
+    await deleteDocument("notifications", id);
+  }, []);
 
   return (
     <div

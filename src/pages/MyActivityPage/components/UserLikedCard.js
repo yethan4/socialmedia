@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
-import { fetchDocument } from "../../../services/fetchDocument";
+import { fetchDocument } from "../../../services/oneDocumentService";
 import { Link } from "react-router-dom";
 import { firebaseDislike, firebaseLike } from "../../../services/likeService";
 import { formatTimeAgo } from "../../../utils/timeUtils";

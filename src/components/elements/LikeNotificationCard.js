@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { fetchDocument } from "../../services/fetchDocument";
+import { useCallback, useEffect, useState } from "react";
+import { deleteDocument, fetchDocument } from "../../services/oneDocumentService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
@@ -35,16 +35,10 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
     }
   };
   
-  const handleDelete = async(e, id) => {
+  const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
-    try{
-      const document = doc(db, "notifications", id)
-      await deleteDoc(document);
-
-    }catch(err){
-      console.log(err)
-    }
-  }
+    await deleteDocument("notifications", id);
+  }, []);
 
   return (
     <div

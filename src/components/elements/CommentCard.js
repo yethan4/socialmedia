@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { fetchDocument } from "../../services/fetchDocument"
+import { useCallback, useEffect, useState } from "react"
+import { fetchDocument } from "../../services/oneDocumentService"
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useSelector } from "react-redux";
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
@@ -27,7 +27,7 @@ export const CommentCard = ({comment, postAuthorId}) => {
     })
   }, [comment.authorId])
 
-  const handleDeleteComment = async() => {
+  const handleDeleteComment = useCallback(async() => {
     try{
       const document = doc(db, "comments", comment.id)
       await deleteDoc(document)
@@ -36,10 +36,11 @@ export const CommentCard = ({comment, postAuthorId}) => {
       await updateDoc(postRef, {
         commentsCount: increment(-1)
       });
+      setShowOptions(false);
     }catch(err){
       console.log(err)
     }
-  }
+  }, [comment.id, comment.postId])
 
   return (
     <div className="mt-1 mb-3 flex items-start dark:text-gray-200">

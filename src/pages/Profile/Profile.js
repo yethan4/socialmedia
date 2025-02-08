@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchDocument } from '../../services/fetchDocument';
+import { fetchDocument } from '../../services/oneDocumentService';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { CreatePost, FriendCard, PostCard} from '../../components';

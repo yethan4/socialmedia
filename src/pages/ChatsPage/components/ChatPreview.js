@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { fetchDocument } from "../../../services/fetchDocument";
+import { fetchDocument } from "../../../services/oneDocumentService";
 import { useUserPresence } from "../../../hooks/useUserPresence";
 import { formatTimeAgo } from "../../../utils/timeUtils";
 import { Link } from "react-router-dom";

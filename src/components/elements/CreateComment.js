@@ -1,16 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
 import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useSelector } from "react-redux";
+import { useInputHandler } from "../../hooks/useInputHandler";
 
 export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) => {
-  const [commentText, setCommentText] = useState("");
-  const [showPicker, setShowPicker] = useState(false);
+  const {
+      text,
+      setText,
+      showPicker,
+      setShowPicker,
+      textareaRef,
+      handleChange,
+      onEmojiClick,
+    } = useInputHandler();
   
-  const userInfo = useSelector(state => state.authState.userInfo)
-
-  const textareaRef = useRef();
+    const userInfo = useSelector(state => state.authState.userInfo)
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -18,52 +24,45 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
         textarea.style.height = "40px"; 
         textarea.style.height = `${textarea.scrollHeight}px`; 
     }
-  }, [commentText]); 
+  }, [text]); 
 
-  const handleChange = (event) => {
-      setCommentText(event.target.value);
-  };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-  const onEmojiClick = (event) => {
-    setCommentText((prev) => prev + event.emoji);
-    setShowPicker(false);
-  };
+      try {
+        await addDoc(collection(db, "comments"), {
+          authorId: userInfo.id,
+          postId: postId,
+          content: text,
+          createdAt: serverTimestamp(),
+        });
 
-  const handleSubmit = async(e) => {
-    e.preventDefault()
+        if (userInfo.id !== postAuthorId) {
+          await addDoc(collection(db, "notifications"), {
+            fromUserId: userInfo.id,
+            toUserId: postAuthorId,
+            postId: postId,
+            timestamp: serverTimestamp(),
+            seen: false,
+            type: "comment",
+          });
+        }
 
-    try{
-    await addDoc(collection(db, "comments"), {
-      authorId: userInfo.id,
-      postId: postId,
-      content: commentText,
-      createdAt: serverTimestamp(),
-    });
+        const postRef = doc(db, "posts", postId);
+        await updateDoc(postRef, {
+          commentsCount: increment(1),
+        });
 
-    if(userInfo.id!=postAuthorId){
-      await addDoc(collection(db, "notifications"), {
-        fromUserId: userInfo.id,
-        toUserId: postAuthorId,
-        postId: postId,
-        timestamp: serverTimestamp(),
-        seen: false,
-        type: "comment",
-      })
-    }
-
-    const postRef = doc(db, "posts", postId);
-
-    await updateDoc(postRef, {
-      commentsCount: increment(1)
-    });
-
-    setCommentText("");
-    setShowPicker(false);
-    setScrollCommentToggle((prev) => !prev)
-  }catch(err){
-    console.log(err);
-  }
-  }
+        setText("");
+        setShowPicker(false);
+        setScrollCommentToggle((prev) => !prev);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [text, postId, postAuthorId, setScrollCommentToggle, userInfo.id]
+  );
 
 
   return (
@@ -72,7 +71,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
         <div className="flex w-full">
         <img src={userInfo?.avatar} alt="user" className="w-8 h-8 rounded-full object-cover" />
         <textarea
-        value={commentText} 
+        value={text} 
         ref={textareaRef} 
         onChange={handleChange} 
         type="text" 
@@ -84,7 +83,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
             <i className="bi bi-emoji-smile dark:text-gray-300"></i>
             {showPicker && <div className="absolute top-[-80px] m-auto"><EmojiPicker onEmojiClick={onEmojiClick} /></div>}
           </span>
-          {commentText ? (
+          {text ? (
             <button type="submit">
               <i className="bi bi-send-fill text-blue-600 hover:text-blue-500"></i>
             </button>

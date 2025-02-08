@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CreateMessage, MessageCard, ChatInfo } from './';
 import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
-import { fetchDocument } from '../../../services/fetchDocument';
+import { fetchDocument } from '../../../services/oneDocumentService';
 import { useSelector } from 'react-redux';
 import { useUserPresence } from '../../../hooks/useUserPresence';
 import { Link } from 'react-router-dom';

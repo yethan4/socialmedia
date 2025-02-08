@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../utils/timeUtils";
-import { fetchDocument } from "../../services/fetchDocument";
-import { useEffect, useState } from "react";
+import { fetchDocument } from "../../services/oneDocumentService";
+import { useCallback, useEffect, useState } from "react";
 import { db } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
@@ -20,7 +20,7 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
     fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));
   }, [notification?.fromUserId])
 
-  const handleDivClick = async(e) => {
+  const handleDivClick = useCallback(async(e) => {
     if (!e.target.closest("a")) {
       try{
         if(setDropNotifications){
@@ -31,25 +31,25 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
         console.log(e)
       }
     }
-  };
+  }, [notification]);
 
-  const handleDelete = async(e) => {
+  const handleDelete = useCallback(async(e) => {
     e.stopPropagation();
     try{
       await rejectFriendRequest(userInfo.id, notification.fromUserId)
     }catch(err){
       console.log(err)
     }
-  }
+  }, [userInfo.id, notification.fromUserId])
 
-  const handleAccept = async(e) => {
+  const handleAccept = useCallback(async(e) => {
     e.stopPropagation();
     try{
       await addFriend(userInfo.id, notification.fromUserId)
     }catch(err){
       console.log(err)
     }
-  }
+  }, [userInfo.id, notification.fromUserId])
 
   return (
     <div 

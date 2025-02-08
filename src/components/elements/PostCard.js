@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { CommentCard, CreateComment, ImageViewer, UserCard } from "..";
-import { fetchDocument } from "../../services/fetchDocument";
+import { fetchDocument } from "../../services/oneDocumentService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore";

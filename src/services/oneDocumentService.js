@@ -1,5 +1,5 @@
 import { db } from "../firebase/config";
-import { doc, getDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
 
 export const fetchDocument = async(id, colName) => {
   try{
@@ -15,3 +15,12 @@ export const fetchDocument = async(id, colName) => {
     console.log(err)
   }  
 }
+
+export const deleteDocument = async (collectionName, id) => {
+  try {
+    const document = doc(db, collectionName, id);
+    await deleteDoc(document);
+  } catch (err) {
+    console.log(err);
+  }
+};

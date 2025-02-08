@@ -10,20 +10,26 @@ import { uploadImage } from "../../services/imageService";
 import { toast } from "react-toastify";
 import { addNewPost } from "../../actions/postsAction";
 import { Link } from "react-router-dom";
-
+import { useInputHandler } from "../../hooks/useInputHandler";
 
 export const CreatePost = () => {
-  const [text, setText] = useState("");
-  const [showPicker, setShowPicker] = useState(false);
-  const [img, setImg] = useState({
-    file: null,
-    url: "",
-  });
+  const {
+      text,
+      setText,
+      showPicker,
+      setShowPicker,
+      img,
+      setImg,
+      textareaRef,
+      handleChange,
+      onEmojiClick,
+      handleImage,
+      handleRemoveImage,
+    } = useInputHandler();
 
   const dispatch = useDispatch();
 
   const userInfo = useSelector(state => state.authState.userInfo)
-  const textareaRef = useRef();
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -32,32 +38,6 @@ export const CreatePost = () => {
         textarea.style.height = `${textarea.scrollHeight}px`; 
     }
   }, [text]); 
-
-  const handleChange = (event) => {
-      setText(event.target.value);
-  };
-
-  const onEmojiClick = (event) => {
-    setText((prev) => prev + event.emoji);
-    setShowPicker(false);
-  };
-
-  const handleImage = (event) => {
-    if (event.target.files[0]){
-      setImg({
-        file: event.target.files[0],
-        url: URL.createObjectURL(event.target.files[0]),
-      });
-    }
-    event.target.value = ""
-  };
-
-  const handleRemoveImage = () => {
-    setImg({
-      file: null,
-      url: "",
-    })
-  }
 
   const handleSubmit = async(e) => {
     e.preventDefault();

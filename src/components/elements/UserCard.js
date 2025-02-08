@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchDocument } from '../../services/fetchDocument';
+import { fetchDocument } from '../../services/oneDocumentService';
 
 export const UserCard = ({userId}) => {
   const [userData, setUserData] = useState([]);

@@ -6,14 +6,25 @@ import emoji from "../../../assets/emoji.png";
 import { uploadImage } from "../../../services/imageService";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/config";
+import { useInputHandler } from "../../../hooks/useInputHandler";
 
 export const CreateMessage = ({ chatId, chatPartnerId }) => {
-  const [text, setText] = useState("");
-  const [showPicker, setShowPicker] = useState(false);
-  const [img, setImg] = useState({ file: null, url: "" });
   const [isSending, setIsSending] = useState(false);
   const currentUser = useSelector((state) => state.authState.userInfo);
-  const textareaRef = useRef();
+
+  const {
+    text,
+    setText,
+    showPicker,
+    setShowPicker,
+    img,
+    setImg,
+    textareaRef,
+    handleChange,
+    onEmojiClick,
+    handleImage,
+    handleRemoveImage,
+  } = useInputHandler();
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -22,32 +33,6 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   }, [text]);
-
-  const handleChange = (event) => {
-    setText(event.target.value);
-  };
-
-  const onEmojiClick = (event) => {
-    setText((prev) => prev + event.emoji);
-    setShowPicker(false);
-  };
-
-  const handleImage = (event) => {
-    if (event.target.files[0]) {
-      setImg({
-        file: event.target.files[0],
-        url: URL.createObjectURL(event.target.files[0]),
-      });
-    }
-    event.target.value = "";
-  };
-
-  const handleRemoveImage = () => {
-    setImg({
-      file: null,
-      url: "",
-    });
-  };
 
   const handleSend = async (e) => {
     e.preventDefault();
