@@ -101,7 +101,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
 
     updateCurrentUserSeenStatus(currentUser.id, chatId)
     
-  }, [chat.messages, chatId, chatPartnerId, document.hidden])
+  }, [chat.messages, chatId, chatPartnerId, currentUser.id])
 
 
   useEffect(() => {

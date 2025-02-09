@@ -140,7 +140,7 @@ export const Profile = () => {
       }
 
       
-      if(userInfo.avatar != "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9"){ 
+      if(userInfo.avatar !== "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9"){ 
         await deleteImage(userInfo.avatar);
       }
   

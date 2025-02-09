@@ -6,9 +6,10 @@ import { db } from "../../firebase/config";
 import { setNotifications } from "../../actions/notificationsAction";
 import { collection, doc, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { setChats, setLoading } from "../../actions/chatsAction";
+import { useDarkMode } from "../../hooks/useDarkMode";
 
 export const Header = () => {
-  const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem("darkMode")) || false);
+  const {darkMode, setDarkMode} = useDarkMode();
   const [dropDwonMenu, setDropDwonMenu] = useState(false);
   const [dropNotifications, setDropNotifications] = useState(false);
   const [dropChats, setDropChats] = useState(false);  
@@ -48,17 +49,6 @@ export const Header = () => {
     if(isChatsPage) setDropChats(false); 
   }, [isChatsPage])
   
-  useEffect(() => {
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
-
-    if(darkMode){
-      document.documentElement.classList.add('dark');
-    }else{
-      document.documentElement.classList.remove('dark');
-    }
-
-  },[darkMode])
-
   useEffect(() => {
     if (!userInfo?.id) return;
 

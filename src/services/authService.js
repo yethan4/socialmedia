@@ -2,8 +2,8 @@ import { createUserWithEmailAndPassword, signOut as firebaseSignOut, signInWithE
 import { toast } from "react-toastify";
 import { auth, database, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
-import { arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { ref, onValue, onDisconnect, set, update } from "firebase/database";
+import { doc, getDoc, onSnapshot, setDoc} from "firebase/firestore";
+import { ref, onValue, onDisconnect, set} from "firebase/database";
 
 export const watchUserDocument = (userId, dispatch) => {
   const docRef = doc(db, "users", userId);

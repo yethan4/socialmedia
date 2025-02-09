@@ -1,6 +1,4 @@
-import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../firebase/config";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatPreview, ChatView } from "./components";
 import { useParams } from "react-router-dom";

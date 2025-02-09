@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { collection, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
+import Skeleton from 'react-loading-skeleton'
+
 import { FriendsSidebar } from "./components";
 import { CreatePost, PostCard, Sidebar } from "../../components";
 

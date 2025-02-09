@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { database } from "../../../firebase/config";
-import { ref, onValue } from "firebase/database"; // importujemy onValue
 import { fetchDocument } from "../../../services/oneDocumentService";
-import { formatTimestamp } from "../../../utils/timeUtils";
 import { Link } from "react-router-dom";
 import { useUserPresence } from "../../../hooks/useUserPresence";
 

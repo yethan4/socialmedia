@@ -4,6 +4,7 @@ import { Notification } from "./components";
 import { useEffect } from "react";
 import { initializeAuth } from "./services/authService";
 import { useDispatch, useSelector } from "react-redux";
+import { HeaderSkeleton, HomeSkeleton } from "./components/skeletons";
 
 function App() {
   const dispatch = useDispatch()
@@ -22,7 +23,10 @@ function App() {
           <Notification />
         </>
       ) : (
-        <div>LOADING</div>
+        <>
+          <HeaderSkeleton />
+          <HomeSkeleton />
+        </>
       )}
 
       
