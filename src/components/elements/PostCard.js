@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CommentCard, CreateComment, ImageViewer, UserCard } from "..";
 import { fetchDocument } from "../../services/oneDocumentService";
@@ -42,25 +42,26 @@ export const PostCard = ({post}) => {
   }, [scrollCommentToggle, showComments]);
 
   useEffect(() => {
-    if(showComments){
-      try{
+    if (showComments) {
+      try {
         const q = query(
           collection(db, "comments"),
           where("postId", "==", post.id),
           orderBy("createdAt", "asc")
-        )
-
+        );
+  
         const unsubscribe = onSnapshot(q, (snapshot) => {
           const fetchedComments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setComments(fetchedComments)
-          setCommentsCount(fetchedComments.length)
-        })
-
-      }catch(err){
-        console.log(err)
+          setComments(fetchedComments);
+          setCommentsCount(fetchedComments.length);
+        });
+  
+        return () => unsubscribe();
+      } catch (err) {
+        console.log(err);
       }
     }
-  }, [showComments, post])
+  }, [showComments, post]);
 
   useEffect(() => {
     if(userInfo.id === post.authorId){
@@ -96,7 +97,7 @@ export const PostCard = ({post}) => {
 
   const formattedTime = formatTimeAgo(post.createdAt.seconds);
 
-  const handleDelete = async() => {
+  const handleDelete = useCallback(async() => {
     try{
       await deleteDoc(doc(db, "posts", post.id));
 
@@ -115,9 +116,9 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-  };
+  }, [post.id, post.img, dispatch]);
 
-  const handleLike = async() => {
+  const handleLike = useCallback(async() => {
     try{
       const likeResponse =await firebaseLike(userInfo.id, post.id, author.id);
       dispatch(likePost(post.id));
@@ -125,11 +126,9 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-    
+  }, [userInfo.id, post.id, author.id])
 
-  }
-
-  const handleDislike = async() => {
+  const handleDislike = useCallback(async() => {
     try{
       await firebaseDislike(liked, post.id);
       dispatch(dislikePost(post.id));
@@ -138,12 +137,11 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-  }
+  }, [post.id, dispatch])
 
-  const handleLikesDisplay = async () => {
+  const handleLikesDisplay = useCallback(async () => {
     setShowLikes(true);
     try{
-
       const q = query(
         collection(db, "likes"),
         where("postId", "==", post.id),
@@ -159,9 +157,9 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-  };
+  }, [post.id, dispatch]);
 
-  const handleBookmark = async () => {
+  const handleBookmark = useCallback(async () => {
     setIsBookmarked(true)
     try{
       const docRef = doc(db, "users", userInfo.id);
@@ -172,9 +170,9 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-  };
+  }, [userInfo.id, post.id]);
 
-  const handleUnBookmark = async () => {
+  const handleUnBookmark = useCallback(async () => {
     setIsBookmarked(false)
     try{
       const docRef = doc(db, "users", userInfo.id);
@@ -185,7 +183,7 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-  };
+  }, [userInfo.id, post.id]);
 
 
   return (

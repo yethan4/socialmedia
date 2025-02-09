@@ -16,7 +16,7 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
     fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));
   }, [notification?.fromUserId])
 
-  const handleDivClick = async(e) => {
+  const handleDivClick = useCallback(async(e) => {
     if (!e.target.closest("a")) {
       try{
         const notificationRef = doc(db, "notifications", notification.id)
@@ -33,7 +33,7 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
         console.log(e)
       }
     }
-  };
+  }, [notification.id]);
   
   const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();

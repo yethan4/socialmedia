@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from "../services/friendsService";
 import { useSelector } from "react-redux";
 import { fetchDocument } from "../services/oneDocumentService";
@@ -12,59 +12,59 @@ export const useFriendStatus = (friendId) => {
 
   const userInfo = useSelector(state => state.authState.userInfo);
 
-  const handleSentRequest= async () => {
-      await sentFriendRequest(userInfo.id, friendId);
-      setFriendStatus("pendingSent");
-    };
-  
-  const handleRejectRequest = async() => {
+  const handleSentRequest = useCallback(async () => {
+    await sentFriendRequest(userInfo.id, friendId);
+    setFriendStatus("pendingSent");
+  }, [userInfo.id, friendId]);
+
+  const handleRejectRequest = useCallback(async () => {
     await rejectFriendRequest(userInfo.id, friendId, friendRequestId);
     setFriendStatus("strangers");
-  };
+  }, [userInfo.id, friendId, friendRequestId]);
 
-  const handleAddFriend = async() => {
+  const handleAddFriend = useCallback(async () => {
     await addFriend(userInfo.id, friendId, friendRequestId);
     setFriendStatus("friends");
-  };
+  }, [userInfo.id, friendId, friendRequestId]);
 
-  const handleRemoveFriend = async() => {
+  const handleRemoveFriend = useCallback(async () => {
     await removeFriend(userInfo.id, friendId);
     setFriendStatus("strangers");
-  };
+  }, [userInfo.id, friendId]);
 
-  const handleUndoRequest = async() => {
+  const handleUndoRequest = useCallback(async () => {
     await undoFriendRequest(userInfo.id, friendId, friendRequestId);
     setFriendStatus("strangers");
-  };
+  }, [userInfo.id, friendId, friendRequestId]);
 
   useEffect(() => {
     if (!friendId) return;
 
-    const fetchFriendInfo = async() => {
-      const user = await fetchDocument(friendId, "users")
-      setFriendInfo(user)
-    }
-    
+    const fetchFriendInfo = async () => {
+      const user = await fetchDocument(friendId, "users");
+      setFriendInfo(user);
+    };
+
     fetchFriendInfo();
-  }, [friendId])
+  }, [friendId]);
 
   useEffect(() => {
-      if(userInfo && friendId && userInfo.id === friendId){
-        setIsCurrentUser(true);
-      }
-    }, [userInfo], [friendId])
-  
+    if (userInfo && friendId && userInfo.id === friendId) {
+      setIsCurrentUser(true);
+    }
+  }, [userInfo, friendId]); // Poprawione dependencies
+
   useEffect(() => {
-      const checkStatus = async() => {
-        const {status, requestId} = await checkFriendStatus(userInfo, friendId);
-        setFriendStatus(status);
-        setFriendRequestId(requestId);
-      }
-  
-      if(userInfo && friendId && !isCurrentUser){
-        checkStatus()
-      }
-    }, [userInfo, friendId, isCurrentUser]);
+    const checkStatus = async () => {
+      const { status, requestId } = await checkFriendStatus(userInfo, friendId);
+      setFriendStatus(status);
+      setFriendRequestId(requestId);
+    };
+
+    if (userInfo && friendId && !isCurrentUser) {
+      checkStatus();
+    }
+  }, [userInfo, friendId, isCurrentUser]);
 
   return {
     friendStatus,
@@ -75,6 +75,6 @@ export const useFriendStatus = (friendId) => {
     handleRejectRequest,
     handleAddFriend,
     handleRemoveFriend,
-    handleUndoRequest
+    handleUndoRequest,
   };
-}
+};

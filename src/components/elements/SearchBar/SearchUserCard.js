@@ -1,15 +1,16 @@
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const UserCard = ({ user, setInputSearchBar, setIsSearching }) => {
+export const SearchUserCard = ({ user, setInputSearchBar, setIsSearching }) => {
   const navigate = useNavigate();
 
-  const handleClick = (userId) => {
+  const handleClick = useCallback((userId) => {
     setInputSearchBar(""); 
     if (setIsSearching) {
       setIsSearching(false);  
     }
     navigate(`/profile/${userId}`);  
-  };
+  }, []);
 
   return (
     <div

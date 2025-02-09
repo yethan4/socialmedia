@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { fetchDocument } from "../../../services/oneDocumentService";
 import { Link } from "react-router-dom";
@@ -33,7 +33,7 @@ export const UserLikeCard = ({like}) => {
     
   }, [])
 
-  const handleLike = async() => {
+  const handleLike = useCallback(async() => {
     try{
       const likeResponse = await firebaseLike(userInfo.id, like.postId, postAuthorData?.id);
       setLikeId(likeResponse);
@@ -42,18 +42,17 @@ export const UserLikeCard = ({like}) => {
     }
     
 
-  }
+  }, [userInfo.id, like.postId, postAuthorData?.id])
 
-  const handleDislike = async() => {
+  const handleDislike = useCallback(async() => {
     try{
       await firebaseDislike(likeId, like.postId);
       setLikeId("");
     }catch(err){
       console.log(err)
     }
-  }
+  }, [likeId, like.postId])
 
-  console.log(like.timestamp)
 
   return (
     <div className="relative flex flex-col pt-2 pl-2 pr-12 shadow dark:shadow-gray-700">

@@ -16,7 +16,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
       onEmojiClick,
     } = useInputHandler();
   
-    const userInfo = useSelector(state => state.authState.userInfo)
+  const userInfo = useSelector(state => state.authState.userInfo)
 
   useEffect(() => {
     const textarea = textareaRef.current;

@@ -1,7 +1,7 @@
 import { collection, endAt, getDocs, limit, orderBy, query, startAt } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../../firebase/config";
-import { UserCard } from "./UserCard";
+import { SearchUserCard } from "./SearchUserCard";
 
 export const SearchBarSm = ({inputSearchBar, setInputSearchBar}) => {
   const [isSearching, setIsSearching] = useState(false);
@@ -57,7 +57,7 @@ export const SearchBarSm = ({inputSearchBar, setInputSearchBar}) => {
           <div className="flex flex-col w-full mt-2 pb-4">
             {searchResult.length > 0 && (
               searchResult.map((user) => (
-                <UserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} setSearchResult={setSearchResult} setIsSearching={setIsSearching}/>
+                <SearchUserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} setSearchResult={setSearchResult} setIsSearching={setIsSearching}/>
               ))
             )}
             {searchResult.length == 0 && inputSearchBar && (
