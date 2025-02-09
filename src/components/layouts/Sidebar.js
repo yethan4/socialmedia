@@ -32,17 +32,21 @@ export const Sidebar = () => {
         <Link to="/friends">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={friends} className="h-6 w-6 mr-2" alt="Friends icon" />
-            Friends
+            <span>Friends</span>
           </div>
         </Link>
-        <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
+        <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded relative">
           <img src={group} className="h-6 w-6 mr-2" alt="Groups icon" />
-          Groups
+          <span>Groups</span>
+          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+            Soon
+          </span>
         </div>
+
         <Link to="/chats">
         <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
           <img src={chat} className="h-6 w-6 mr-2" alt="Chats icon" />
-          Chats
+          <span>Chats</span>
         </div>
         </Link>
       </div>
@@ -51,7 +55,7 @@ export const Sidebar = () => {
         <Link to="/bookmarks">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={bookmark} className="h-6 w-6 mr-2" alt="Bookmarks icon" />
-            Bookmarks
+            <span>Bookmarks</span>
           </div>
         </Link>
         <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
@@ -60,7 +64,10 @@ export const Sidebar = () => {
         </div>
         <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
           <img src={happy} className="h-6 w-6 mr-2" alt="Mems icon" />
-          Mems
+          <span>Mems</span>
+          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+            Soon
+          </span>
         </div>
       </div>
 
@@ -68,25 +75,25 @@ export const Sidebar = () => {
         <Link to="/notifications">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={bell} className="h-6 w-6 mr-2" alt="Notifications icon" />
-            Notifications
+            <span>Notifications</span>
           </div>
         </Link>
         <Link to="/settings">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={settings} className="h-6 w-6 mr-2" alt="Settings icon" />
-            Settings
+            <span>Settings</span>
           </div>
         </Link>
         <Link to={`/profile/${userInfo.id}`}>
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={pen} className="h-6 w-6 mr-2" alt="My Posts icon" />
-            My Posts
+            <span>My Posts</span>
           </div>
         </Link>
         <Link to="/my-activity">
           <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
             <img src={activity} className="h-6 w-6 mr-2" alt="My Activity icon" />
-            My Activity
+            <span>My Activity</span>
           </div>
         </Link>
       </div>

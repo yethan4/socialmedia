@@ -1,24 +1,24 @@
-import { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
+import { useCallback, useRef, useState } from "react";
 import { formatDisplayDate } from "../../../utils/timeUtils";
 import { ImageViewer } from "../../../components";
 
 export const MessageCard = ({ message, chatPartner }) => {
   const formattedTime = formatDisplayDate(message.createdAt.seconds);
-
   const [showTime, setShowTime] = useState(false);
-  let hoverTimeout;
+  const hoverTimeoutRef = useRef(null);
 
   const handleMouseEnter = useCallback(() => {
-    hoverTimeout = setTimeout(() => {
+    hoverTimeoutRef.current = setTimeout(() => {
       setShowTime(true);
     }, 500);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    clearTimeout(hoverTimeout);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
     setShowTime(false);
-  }, [hoverTimeout]);
+  }, []);
 
   return (
     <>

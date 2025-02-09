@@ -66,41 +66,6 @@ export const SearchBarSm = ({inputSearchBar, setInputSearchBar}) => {
           </div>
         </div>
       )}
-
-      {/* {isSearching && (
-        <inputSearchBar
-          name="search"
-          type="text"
-          className="absolute w-64 pl-8 py-2 text-md text-gray-700 shadow rounded-xl outline-none focus:ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700"
-          placeholder="Search"
-          autoComplete="off"
-          onChange={(e) => setinputSearchBar(e.target.value)}
-        />
-      )}
-      {inputSearchBar && (
-        <div className="absolute top-[50px] right-0 max-h-96 w-96 pt-2 flex flex-col gap-1 bg-white shadow rounded overflow-y-auto">
-          {searchResult.length > 0 ? (
-            searchResult.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center px-2 py-1 cursor-pointer hover:bg-gray-50"
-                onClick={() => handleClick(user.id)}
-              >
-                <img
-                  src={user.avatar}
-                  alt={user.username}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <span className="ml-4 font-semibold text-lg">
-                  {user.username}
-                </span>
-              </div>
-            ))
-          ) : (
-            <p className="px-4 py-2 text-gray-500">No results found.</p>
-          )}
-        </div>
-      )} */}
     </div>
   );
 };

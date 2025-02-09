@@ -10,7 +10,7 @@ export const SearchUserCard = ({ user, setInputSearchBar, setIsSearching }) => {
       setIsSearching(false);  
     }
     navigate(`/profile/${userId}`);  
-  }, []);
+  }, [navigate, setInputSearchBar, setIsSearching]);
 
   return (
     <div

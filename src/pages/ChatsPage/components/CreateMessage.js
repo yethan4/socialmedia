@@ -1,5 +1,5 @@
 import EmojiPicker from "emoji-picker-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import emoji from "../../../assets/emoji.png";
@@ -32,7 +32,7 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
-  }, [text]);
+  }, [text, textareaRef]);
 
   const handleSend = async (e) => {
     e.preventDefault();

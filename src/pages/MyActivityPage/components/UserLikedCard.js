@@ -31,7 +31,7 @@ export const UserLikeCard = ({like}) => {
 
     fetchAuthorData();
     
-  }, [])
+  }, [like.postId])
 
   const handleLike = useCallback(async() => {
     try{

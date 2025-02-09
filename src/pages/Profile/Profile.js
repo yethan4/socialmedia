@@ -9,7 +9,6 @@ import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
 import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
-import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from '../../services/friendsService';
 import { deleteImage, uploadImage } from '../../services/imageService';
 import { createNewChat } from '../../services/chatService';
 import { useFriendStatus } from '../../hooks/useFriendStatus';
