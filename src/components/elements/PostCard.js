@@ -25,6 +25,8 @@ export const PostCard = ({post}) => {
   const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [changeVisibility, setChangeVisibility] = useState(false);
+  const [visibilityStatus, setVisibilityStatus] = useState(post.visibility);
 
   const dispatch = useDispatch();
   const userInfo = useSelector(state => state.authState.userInfo)
@@ -185,13 +187,60 @@ export const PostCard = ({post}) => {
     }
   }, [userInfo.id, post.id]);
 
+  const handleChangeVisibility = useCallback(async () => {
+    try {
+      const docRef = doc(db, "posts", post.id); // Poprawione wywołanie doc()
+      
+      const newStatus = visibilityStatus == "friends" ? "public" : "friends"
+      await updateDoc(docRef, {
+        visibility: newStatus
+      });
+  
+      setVisibilityStatus(newStatus);
+      setChangeVisibility(false);
+    } catch (error) {
+      console.log("Błąd podczas aktualizacji:", error);
+    }
+  }, [userInfo.id, post.id, visibilityStatus]);
 
   return (
     <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
         <div className="flex items-center w-full mb-4">
+          
         <Link to={`/profile/${author?.id}`}><img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" /></Link>
+          
           <div className="flex flex-col">
-            <Link to={`/profile/${author?.id}`}><span className="hover:underline text-lg font-semibold text-gray-900 dark:text-gray-200 w-fit">{author?.username}</span></Link>
+            <div className="flex items-center gap-1">
+              <Link to={`/profile/${author?.id}`}><span className="hover:underline text-lg font-semibold text-gray-900 dark:text-gray-200 w-fit">{author?.username}</span></Link>
+              <div className="relative">
+              {isCurrentUserAuthor ? (
+                <div 
+                  onClick={() => setChangeVisibility(!changeVisibility)}
+                  className="z-30 text-xs flex gap-1 bg-gray-200 px-1 rounded-xl dark:text-gray-100 dark:bg-gray-700 cursor-pointer select-none"
+                >
+                  <i className={visibilityStatus === "friends" ? "bi bi-people" : "bi bi-globe"}></i>
+                  <span>{visibilityStatus}</span>
+                  <span className="text-xs"><i className={changeVisibility ? "bi bi-caret-up-fill" : "bi bi-caret-down-fill"}></i></span>
+                </div>
+              ) : (
+                <div  
+                  className="z-30 text-xs flex gap-1 bg-gray-200 px-1 rounded-xl dark:text-gray-100 dark:bg-gray-700 cursor-default select-none"
+                >
+                  <i className={post?.visibility === "friends" ? "bi bi-people" : "bi bi-globe"}></i>
+                  <span>{post?.visibility}</span>
+                </div>
+              )}
+              {isCurrentUserAuthor && changeVisibility && (
+                <div className="z-30 absolute flex justify-center w-36 px-1 py-2 top-6 bg-gray-100 text-sm rounded-xl dark:text-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
+                  <span className="w-fit" onClick={handleChangeVisibility}>
+                    Change to {visibilityStatus === "friends" ? "public" : "friends"}
+                  </span>
+                </div>
+              )}
+
+              </div>
+            </div>
+            
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formattedTime}</span>
           </div>
         </div>  
@@ -210,9 +259,13 @@ export const PostCard = ({post}) => {
         )}
 
         { isCurrentUserAuthor && (
-          <span className="cursor-pointer text-lg rounded-full px-1 hover:text-red-500 dark:text-gray-300" onClick={() => setShowDeleteConfirmation(true)}>
+           <span className="cursor-pointer text-lg rounded-full px-1 hover:text-red-500 dark:text-gray-300" onClick={() => setShowDeleteConfirmation(true)}>
             <i className="bi bi-trash3"></i>
           </span>
+          // <span className="cursor-pointer text-lg rounded-full px-1 hover:text-red-500 dark:text-gray-300" onClick={() => setShowDeleteConfirmation(true)}>
+          //   <i className="bi bi-trash3"></i>
+          // </span>
+          
         )}
       </div>
       
