@@ -10,7 +10,7 @@ export const SidebarSkeleton = () => {
     { title: "Groups", hasBadge: true },
     { title: "Chats", hasBadge: false },
     { title: "Bookmarks", hasBadge: false },
-    { title: "Events", hasBadge: false },
+    { title: "Events", hasBadge: true },
     { title: "Mems", hasBadge: true },
     { title: "Notifications", hasBadge: false },
     { title: "Settings", hasBadge: false },

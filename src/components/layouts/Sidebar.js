@@ -58,9 +58,12 @@ export const Sidebar = () => {
             <span>Bookmarks</span>
           </div>
         </Link>
-        <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
-          <img src={calendar} className="h-6 w-6 mr-2" alt="Events icon" />
-          Events
+        <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded relative">
+          <img src={calendar} className="h-6 w-6 mr-2" alt="Groups icon" />
+          <span>Events</span>
+          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+            Soon
+          </span>
         </div>
         <div className="flex items-center p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
           <img src={happy} className="h-6 w-6 mr-2" alt="Mems icon" />

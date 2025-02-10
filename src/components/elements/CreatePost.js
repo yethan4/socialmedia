@@ -26,6 +26,8 @@ export const CreatePost = () => {
       handleImage,
       handleRemoveImage,
     } = useInputHandler();
+  const [visibility, setVisibility] = useState("friends")
+  const [showList, setShowList] = useState(false) //who can see the post
 
   const dispatch = useDispatch();
 
@@ -55,6 +57,7 @@ export const CreatePost = () => {
         img: imgUrl,
         likesCount: 0,
         commentsCount: 0,
+        visibility,
       });
 
       //download data to avoid createdAT problem
@@ -77,12 +80,38 @@ export const CreatePost = () => {
   return (
     <form onSubmit={handleSubmit} className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px] mb-4">
       <div className="flex flex-col gap-2">
-        <Link to={`/profile/${userInfo?.id}`}>
-        <span className="flex items-center gap-2">
-          <img src={userInfo?.avatar} alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />
-          <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
-        </span>
-        </Link>
+        <div className="relative flex">
+          <Link to={`/profile/${userInfo?.id}`}>
+          <span className="flex items-center gap-2">
+            <img src={userInfo?.avatar} alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />
+            <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
+          </span>
+          </Link>
+          <div className="absolute right-2 top-2 flex gap-1">
+            <div className="flex justify-center gap-1 px-2 rounded-xl bg-gray-100 dark:text-gray-50 dark:bg-gray-700 select-none">
+              <i className={visibility === "friends" ? "bi bi-people" : "bi bi-globe"}></i>
+              <span>{visibility === "friends" ? "Friends" : "Public"}</span>
+            </div>
+            <div className="px-1 rounded-full bg-gray-100 dark:text-gray-50 dark:bg-gray-700 cursor-pointer select-none" onClick={() => setShowList(() => !showList)}>
+              {showList ? (
+                <span className="text-xs"><i className="bi bi-caret-up-fill"></i></span>
+              ) : (
+                <span className="text-xs"><i className="bi bi-caret-down-fill"></i></span>
+              )}
+            </div>
+          </div>
+          {showList && (<div className="absolute z-40 right-1 top-10 dark:bg-gray-800 py-1 flex flex-col rounded border bg-white dark:text-gray-200 dark:border-gray-700">
+            <span className="px-2 py-2 select-none cursor-default">Who can see the post?</span>
+            <div className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer" onClick={() => setVisibility("friends")}>
+              <i className="mr-1 bi bi-people"></i>
+              <span>Friends</span>
+            </div>
+            <div className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer" onClick={() => setVisibility("public")}>
+              <i className="mr-1 bi bi-globe"></i>
+              <span>Public</span>
+            </div>
+          </div> )} 
+        </div>
         {img.url &&  
         <div className="">
           <div className="bg-gray-300 w-fit relative">
