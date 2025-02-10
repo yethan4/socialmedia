@@ -104,7 +104,42 @@ export const Profile = () => {
     try{
 
       if(bgImg.file){
-        imgUrl = await uploadImage(bgImg.file); 
+        imgUrl = await uploadImage(bgImg.file); const loadMorePosts = async () => {
+          if (!lastVisible) {
+            setNoMorePosts(true);
+            return;
+          }
+        
+          dispatch(setLoading(true));
+        
+          try {
+            const postsRef = collection(db, "posts");
+            const q = query(
+              postsRef,
+              where("authorId", "==", id),
+              orderBy("createdAt", "desc"),
+              startAfter(lastVisible),
+              limit(5)
+            );
+        
+            const querySnapshot = await getDocs(q);
+        
+            if (!querySnapshot.empty) {
+              const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+              const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        
+              dispatch(addPosts(posts, newLastVisible));
+            } else {
+              setNoMorePosts(true);
+            }
+          } catch (err) {
+            console.error("Błąd podczas ładowania postów:", err);
+            alert("Wystąpił błąd. Spróbuj ponownie.");
+          } finally {
+            dispatch(setLoading(false));
+          }
+        };
+        
       }
 
       if(userDetails.bgImg) await deleteImage(userDetails.bgImg);
@@ -249,18 +284,24 @@ export const Profile = () => {
           orderBy("createdAt", "desc"),
           limit(5)
         );
+    
         const querySnapshot = await getDocs(q);
-
-        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        let posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-
+    
+        // Filtrowanie postów
+        posts = posts.filter(post => {
+          return post.visibility !== "friends" || friendStatus === "friends";
+        });
+    
         dispatch(setPosts(posts, lastVisible));
-        return posts;
-
       } catch (err) {
         console.log(err);
+      } finally {
+        dispatch(setLoading(false));
       }
     };
+    
     fetchUserPosts(id);
   }, [id, dispatch]);
 
@@ -283,8 +324,12 @@ export const Profile = () => {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        let posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        
+        posts = posts.filter(post => {
+          return post.visibility !== "friends" || friendStatus === "friends" || isCurrentUser;
+        });
 
         dispatch(addPosts(posts, newLastVisible));
       } else {

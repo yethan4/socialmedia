@@ -52,7 +52,7 @@ export const useFriendStatus = (friendId) => {
     if (userInfo && friendId && userInfo.id === friendId) {
       setIsCurrentUser(true);
     }
-  }, [userInfo, friendId]); // Poprawione dependencies
+  }, [userInfo, friendId]); 
 
   useEffect(() => {
     const checkStatus = async () => {
