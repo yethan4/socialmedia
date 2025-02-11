@@ -18,7 +18,7 @@ import { HomeSkeleton } from "../../components/skeletons"
 export const Home = () => {
   useTitle()
   const [noMorePosts, setNoMorePosts] = useState(false);
-  const [activeTab, setActiveTab] = useState("explore");
+  const [activeTab, setActiveTab] = useState("friends");
 
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.authState.userInfo)

@@ -291,7 +291,7 @@ export const Profile = () => {
     
         // Filtrowanie postów
         posts = posts.filter(post => {
-          return post.visibility !== "friends" || friendStatus === "friends";
+          return post.visibility !== "friends" || friendStatus === "friends" || userInfo.id === id;
         });
     
         dispatch(setPosts(posts, lastVisible));
