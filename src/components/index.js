@@ -26,3 +26,5 @@ export { UserCard } from "./elements/UserCard";
 
 export { ImageViewer } from "./elements/ImageViewer";
 export { DropDownChats } from "./elements/DropDownChats";
+
+export { AvatarImage } from "./elements/AvatarImage";

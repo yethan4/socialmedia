@@ -4,6 +4,7 @@ import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import { AvatarImage } from "./AvatarImage";
 
 export const LikeNotificationCard = ({notification, setDropNotifications=""}) => {
   const [author, setAuthor] = useState(null);
@@ -46,7 +47,7 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
       onClick={handleDivClick} 
     >
       <Link to={`/profile/${author?.id}`}>
-        <img src={author?.avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+        <AvatarImage src={author?.avatar} w={12} h={12}/>
       </Link>
       <div className="flex flex-col ml-2">
         <div>

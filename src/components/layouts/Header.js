@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { DropDownChats, DropDownMenu, DropDownMenuSm, DropDownNotifications, SearchBar, SearchBarSm } from "..";
+import { AvatarImage, DropDownChats, DropDownMenu, DropDownMenuSm, DropDownNotifications, SearchBar, SearchBarSm } from "..";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { db } from "../../firebase/config";
 import { setNotifications } from "../../actions/notificationsAction";
 import { collection, doc, onSnapshot, orderBy, query, where } from "firebase/firestore";
-import { setChats, setLoading } from "../../actions/chatsAction";
+import { setChats } from "../../actions/chatsAction";
 import { useDarkMode } from "../../hooks/useDarkMode";
+import { useImageLoader } from "../../hooks/useImageLoader";
 
 export const Header = () => {
   const {darkMode, setDarkMode} = useDarkMode();
@@ -15,6 +16,7 @@ export const Header = () => {
   const [dropChats, setDropChats] = useState(false);  
   const [inputSearchBar, setInputSearchBar] = useState("");
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -145,8 +147,8 @@ export const Header = () => {
                   <p className="absolute top-0 right-1 text-xs rounded-full text-slate-100 bg-red-500 px-1 select-none">{notificationsCounter>0 ? notificationsCounter : ""}</p>
                   <i className="bi bi-bell "></i>
                 </span>
-                <span className="rounded-full" onClick={() => showDropMenu(!dropDwonMenu)}>
-                  <img src={userInfo.avatar} alt="" className="object-cover w-9 h-9 mb-1 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700 hover:ring-2" />
+                <span className="rounded-full mb-1" onClick={() => showDropMenu(!dropDwonMenu)}>
+                  <AvatarImage src={userInfo?.avatar} w={9} h={9}/>
                 </span>
               </>
             )}

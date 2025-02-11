@@ -4,6 +4,7 @@ import { fetchDocument } from "../../../services/oneDocumentService";
 import { useUserPresence } from "../../../hooks/useUserPresence";
 import { formatTimeAgo } from "../../../utils/timeUtils";
 import { Link } from "react-router-dom";
+import { AvatarImage } from "../../../components";
 
 export const ChatPreview = ({chat, currentChat}) => {
   const [withUserInfo, setWithUserInfo] = useState();
@@ -33,11 +34,7 @@ export const ChatPreview = ({chat, currentChat}) => {
     <Link to={`/chats/${chat.withUserId}`}>
       <div className={isOpen ? "flex py-2 px-1 mr-1 cursor-pointer rounded-md shadow bg-gray-200 dark:bg-gray-800 max-lg:hidden" : "flex py-2 px-1 mr-1 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 max-lg:hidden"}>
         <div className="relative w-fit h-fit">
-          <img
-            src={withUserInfo?.avatar}
-            alt=""
-            className="object-cover w-11 h-11 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700"
-          />
+          <AvatarImage src={withUserInfo?.avatar} w={11} h={11} />
           {isOnline ? (
             <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border border-gray-300 bg-green-500 dark:border-gray-500">
             </div>
@@ -49,7 +46,11 @@ export const ChatPreview = ({chat, currentChat}) => {
 
         <div className="ml-2 flex flex-col">
           <div className="flex items-center">
-            <span className={!chat.isSeen && "font-bold"}>{withUserInfo?.username}</span>
+            {withUserInfo?.username ? (
+              <span className={!chat.isSeen && "font-bold"}>{withUserInfo?.username}</span>
+            ) : (
+              <div className="w-16 h-3 rounded-2xl bg-gray-300 dark:bg-gray-600 animate-pulse"></div>
+            )}
             <span className="h-fit w-fit">
               <i className="bi bi-dot"></i>
             </span>

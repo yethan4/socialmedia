@@ -5,11 +5,14 @@ import { useSelector } from "react-redux";
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { Link } from "react-router-dom";
+import { useImageLoader } from "../../hooks/useImageLoader";
+import { AvatarImage } from "./AvatarImage";
 
 export const CommentCard = ({comment, postAuthorId}) => {
   const [author, setAuthor] = useState(null);
   const [canEdit, setCanEdit] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const userInfo = useSelector(state => state.authState.userInfo);
 
@@ -44,12 +47,8 @@ export const CommentCard = ({comment, postAuthorId}) => {
 
   return (
     <div className="mt-1 mb-3 flex items-start dark:text-gray-200">
-  <Link to={`/profile/${author?.id}`}>
-    <img
-      src={author?.avatar}
-      alt=""
-      className="w-8 h-8 object-cover rounded-full mt-2 cursor-pointer shadow-md"
-    />
+  <Link to={`/profile/${author?.id}`} className="mt-2">
+    <AvatarImage src={author?.avatar} w={8} h={8} />
   </Link>
   <div className="relative flex flex-col ml-3 py-2 px-4 rounded-2xl bg-gray-100 dark:bg-gray-700 shadow-md w-full">
     <div className="flex items-center justify-between">

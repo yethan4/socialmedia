@@ -5,7 +5,6 @@ import { ChatPreview } from "../../pages/ChatsPage/components";
 import { Link } from "react-router-dom";
 
 export const DropDownChats = () => {
-  const [currentChat, setCurrentChat] = useState("");
   const [input, setInput] = useState("");
   const [filteredChats, setFilteredChats] = useState([]);
 
@@ -53,7 +52,7 @@ export const DropDownChats = () => {
             <ChatPreview
               key={chat.chatId}
               chat={chat}
-              currentChat={currentChat}
+              currentChat={[]}
             />
           ))
         ) : (

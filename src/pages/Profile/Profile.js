@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/oneDocumentService';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { CreatePost, FriendCard, PostCard} from '../../components';
+import { AvatarImage, CreatePost, FriendCard, PostCard} from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
@@ -12,6 +12,7 @@ import { useTitle } from '../../hooks/useTitle';
 import { deleteImage, uploadImage } from '../../services/imageService';
 import { createNewChat } from '../../services/chatService';
 import { useFriendStatus } from '../../hooks/useFriendStatus';
+import { useImageLoader } from '../../hooks/useImageLoader';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -32,6 +33,7 @@ export const Profile = () => {
   const [isAboutMeEdit, setIsAboutMeEdit] = useState(false);
   const [textAboutMe, setTextAboutMe] = useState("");
   const [noMorePosts, setNoMorePosts] = useState(false);
+  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -375,10 +377,20 @@ export const Profile = () => {
     <div className="mt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
       <div className="relative shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg max-lg:pb-8">
         <div 
-          className="relative h-[35vh] bg-cover bg-center border-b" 
+          className="relative h-[35vh] bg-cover bg-center border-b"
           key={bgImg.url} 
-          style={{ backgroundImage: `url(${bgImg.url})` }}
+          style={{ backgroundImage: imageLoaded ? `url(${bgImg.url})` : 'none', }}
         >
+          {!imageLoaded && (
+            <div className="absolute inset-0 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+          )}
+          <img
+            src={bgImg.url}
+            alt="background"
+            className="hidden" 
+            onLoad={handleLoadImage} 
+          />
+
         {isCurrentUser && (
           <>
             <input type="file" id="bgImg" className="hidden" onChange={handleBgImage} />
@@ -418,11 +430,8 @@ export const Profile = () => {
                   className="w-48 h-48 rounded-full border-4 border-white object-cover"
                 />
               ) : (
-              <img
-                src={userData?.avatar}
-                alt="User Avatar"
-                className="w-48 h-48 rounded-full border-4 border-white object-cover"
-              />)}
+              <AvatarImage src={userData?.avatar} w={48} h={48} border="border-4 border-white"/>
+              )}
               {isCurrentUser && (
                 <div>
                   <input type="file" id="avatarImg" className="hidden" onChange={handleAvatarImage} />

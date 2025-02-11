@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { CommentCard, CreateComment, ImageViewer, UserCard } from "..";
+import { AvatarImage, CommentCard, CreateComment, ImageViewer, UserCard } from "..";
 import { fetchDocument } from "../../services/oneDocumentService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,6 @@ import { deletePost, dislikePost, likePost } from "../../actions/postsAction";
 import { deleteObject, ref } from "firebase/storage";
 import { Link } from "react-router-dom";
 import { firebaseDislike, firebaseLike} from "../../services/likeService";
-
 
 export const PostCard = ({post}) => {
   const [comments, setComments] = useState([]);
@@ -207,7 +206,10 @@ export const PostCard = ({post}) => {
     <div className="relative shadow-lg flex flex-col w-full rounded-lg items-center dark:bg-gray-800 bg-white p-4 max-lg:max-w-[480px] max-lg:mx-auto">
         <div className="flex items-center w-full mb-4">
           
-        <Link to={`/profile/${author?.id}`}><img src={author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-3 object-cover" /></Link>
+        {/* Avatar */}
+        <Link to={`/profile/${author?.id}`} className="mr-2">
+          <AvatarImage src={author?.avatar} w={10} h={10}/>
+        </Link>
           
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
@@ -262,19 +264,20 @@ export const PostCard = ({post}) => {
            <span className="cursor-pointer text-lg rounded-full px-1 hover:text-red-500 dark:text-gray-300" onClick={() => setShowDeleteConfirmation(true)}>
             <i className="bi bi-trash3"></i>
           </span>
-          // <span className="cursor-pointer text-lg rounded-full px-1 hover:text-red-500 dark:text-gray-300" onClick={() => setShowDeleteConfirmation(true)}>
-          //   <i className="bi bi-trash3"></i>
-          // </span>
-          
         )}
       </div>
       
-      { post.img && (
-        <div className="w-full mb-4 flex justify-center">
-          <ImageViewer src={post.img} alt="postImage" className="max-w-full max-h-[500px] rounded-lg shadow-sm" />
-        </div>)}
+      {/* PostImg*/}
+      {post.img && (
+        <ImageViewer
+          src={post.img}
+          alt="postImage"
+          className={"max-w-full max-h-[500px] rounded-lg shadow-sm"}
+        />
+      )}
 
-      {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-1">{post.content}</div>}
+
+      {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 mt-2 px-1">{post.content}</div>}
 
       <div className="flex items-center text-sm font-medium justify-start w-full text-gray-600 dark:text-gray-300 mb-2 px-1">
         <i className={liked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>

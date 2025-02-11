@@ -4,6 +4,7 @@ import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "
 import { db } from "../../firebase/config";
 import { useSelector } from "react-redux";
 import { useInputHandler } from "../../hooks/useInputHandler";
+import { AvatarImage } from "./AvatarImage";
 
 export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) => {
   const {
@@ -69,7 +70,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
     <div className="flex z-30 flex-col w-full border-t pt-1 dark:border-gray-500">
       <form onSubmit={handleSubmit}>
         <div className="flex w-full">
-        <img src={userInfo?.avatar} alt="user" className="w-8 h-8 rounded-full object-cover" />
+        <AvatarImage src={userInfo?.avatar} w={8} h={8} />
         <textarea
         value={text} 
         ref={textareaRef} 

@@ -8,6 +8,7 @@ import { useUserPresence } from '../../../hooks/useUserPresence';
 import { Link } from 'react-router-dom';
 import { TypingIndicator } from '../../../animations/TypingIndicator';
 import { formatDisplayDate } from '../../../utils/timeUtils';
+import { AvatarImage } from '../../../components';
 
 export const ChatView = ({ chatId, chatPartnerId }) => {
   const [chat, setChat] = useState({ messages: [] });
@@ -163,11 +164,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
         <div className="pl-2 py-2 flex shadow dark:shadow-gray-800">
           <Link to={`/profile/${chatPartner?.id}`}>
             <div className="relative w-fit h-fit">
-              <img
-                src={chatPartner?.avatar}
-                alt=""
-                className="object-cover w-12 h-12 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700"
-              />
+              <AvatarImage src={chatPartner?.avatar} w={12} h={12} />
               {isOnline ? (
                 <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border border-gray-400 bg-green-500 dark:border-gray-500"></div>
               ) : (

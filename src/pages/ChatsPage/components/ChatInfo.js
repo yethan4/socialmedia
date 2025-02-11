@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { formatTimeAgo } from '../../../utils/timeUtils';
 import { Link } from 'react-router-dom';
+import { AvatarImage } from '../../../components';
 
 export const ChatInfo = ({chat, chatPartner}) => {
   const [option, setOption] = useState("");
@@ -14,11 +15,7 @@ export const ChatInfo = ({chat, chatPartner}) => {
       
       <Link to={`/profile/${chatPartner?.id}`}>
       <div className="flex flex-col items-center justify-center mt-4">
-        <img
-          className="rounded-full h-24 w-24 object-cover" 
-          src={chatPartner?.avatar} 
-          alt="avatar" 
-        />
+        <AvatarImage src={chatPartner?.avatar} w={24} h={24}/>
         <span className="mt-2 text-xl font-semibold">{chatPartner?.username}</span>
       </div>
       </Link>

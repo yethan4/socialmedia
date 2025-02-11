@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import { addNewPost } from "../../actions/postsAction";
 import { Link } from "react-router-dom";
 import { useInputHandler } from "../../hooks/useInputHandler";
+import { useImageLoader } from "../../hooks/useImageLoader";
+import { AvatarImage } from "./AvatarImage";
 
 export const CreatePost = () => {
   const {
@@ -26,12 +28,13 @@ export const CreatePost = () => {
       handleImage,
       handleRemoveImage,
     } = useInputHandler();
-  const [visibility, setVisibility] = useState("friends")
-  const [showList, setShowList] = useState(false) //who can see the post
+  const [visibility, setVisibility] = useState("friends");
+  const [showList, setShowList] = useState(false); //who can see the post
+  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const dispatch = useDispatch();
 
-  const userInfo = useSelector(state => state.authState.userInfo)
+  const userInfo = useSelector(state => state.authState.userInfo);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -83,7 +86,7 @@ export const CreatePost = () => {
         <div className="relative flex">
           <Link to={`/profile/${userInfo?.id}`}>
           <span className="flex items-center gap-2">
-            <img src={userInfo?.avatar} alt="" className="object-cover w-10 h-10 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700" />
+            <AvatarImage src={userInfo?.avatar} w={10} h={10}/>
             <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
           </span>
           </Link>

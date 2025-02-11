@@ -1,4 +1,5 @@
 import { useFriendStatus } from '../../hooks/useFriendStatus';
+import { AvatarImage } from './AvatarImage';
 
 export const FriendCard = ({friendId}) => {
   const {
@@ -15,7 +16,7 @@ export const FriendCard = ({friendId}) => {
 
   return (
     <div className="w-48 h-64 px-1 pt-4 shadow rounded flex flex-col items-center dark:bg-gray-800">
-      <img src={friendInfo?.avatar} alt="" className="w-40 h-40 rounded object-cover"/>
+      <AvatarImage src={friendInfo?.avatar} w={40} h={40} rounded=""/>
       <div className="flex flex-col items-center relative mt-3">
         <span className="font-semibold text-gray-900 dark:text-slate-50">{friendInfo?.username}</span>
         {friendStatus === "friends" && (

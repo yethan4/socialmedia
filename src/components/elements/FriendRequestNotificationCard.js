@@ -6,6 +6,7 @@ import { db } from "../../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { addFriend, rejectFriendRequest } from "../../services/friendsService";
+import { AvatarImage } from "./AvatarImage";
 
 export const FriendRequestNotificationCard = ({notification, setDropNotifications}) => {
   const [author, setAuthor] = useState(null);
@@ -57,7 +58,7 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
       onClick={handleDivClick}
     >
       <Link to={`/profile/${author?.id}`}>
-        <img src={author?.avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+        <AvatarImage src={author?.avatar} w={12} h={12}/>
       </Link>
       <div className="flex flex-col ml-2">
       <div className="flex flex-col">
