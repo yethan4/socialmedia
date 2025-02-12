@@ -70,7 +70,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
     <div className="flex z-30 flex-col w-full border-t pt-1 dark:border-gray-500">
       <form onSubmit={handleSubmit}>
         <div className="flex w-full">
-        <AvatarImage src={userInfo?.avatar} w={8} h={8} />
+        <AvatarImage src={userInfo?.avatar} size={8} />
         <textarea
         value={text} 
         ref={textareaRef} 

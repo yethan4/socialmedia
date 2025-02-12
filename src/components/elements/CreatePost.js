@@ -86,7 +86,7 @@ export const CreatePost = () => {
         <div className="relative flex">
           <Link to={`/profile/${userInfo?.id}`}>
           <span className="flex items-center gap-2">
-            <AvatarImage src={userInfo?.avatar} w={10} h={10}/>
+            <AvatarImage src={userInfo?.avatar} size={10}/>
             <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
           </span>
           </Link>

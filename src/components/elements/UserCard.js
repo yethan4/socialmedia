@@ -13,7 +13,7 @@ export const UserCard = ({userId}) => {
   return (
     <Link to={`/profile/${userId}`}>
     <div className="flex items-center px-2 py-1 hover:bg-gray-200 cursor-pointer rounded-xl dark:hover:bg-gray-700">
-      <AvatarImage src={userData?.avatar} w={10} h={10}/>
+      <AvatarImage src={userData?.avatar} size={10} />
       <span className="ml-2">{userData?.username}</span>
     </div>
     </Link>

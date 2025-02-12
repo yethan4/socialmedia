@@ -48,7 +48,7 @@ export const CommentCard = ({comment, postAuthorId}) => {
   return (
     <div className="mt-1 mb-3 flex items-start dark:text-gray-200">
   <Link to={`/profile/${author?.id}`} className="mt-2">
-    <AvatarImage src={author?.avatar} w={8} h={8} />
+    <AvatarImage src={author?.avatar} size={8} />
   </Link>
   <div className="relative flex flex-col ml-3 py-2 px-4 rounded-2xl bg-gray-100 dark:bg-gray-700 shadow-md w-full">
     <div className="flex items-center justify-between">

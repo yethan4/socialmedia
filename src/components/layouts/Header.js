@@ -148,7 +148,7 @@ export const Header = () => {
                   <i className="bi bi-bell "></i>
                 </span>
                 <span className="rounded-full mb-1" onClick={() => showDropMenu(!dropDwonMenu)}>
-                  <AvatarImage src={userInfo?.avatar} w={9} h={9}/>
+                  <AvatarImage src={userInfo?.avatar} size={9}/>
                 </span>
               </>
             )}

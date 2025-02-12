@@ -58,7 +58,7 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
       onClick={handleDivClick}
     >
       <Link to={`/profile/${author?.id}`}>
-        <AvatarImage src={author?.avatar} w={12} h={12}/>
+        <AvatarImage src={author?.avatar} size={12}/>
       </Link>
       <div className="flex flex-col ml-2">
       <div className="flex flex-col">

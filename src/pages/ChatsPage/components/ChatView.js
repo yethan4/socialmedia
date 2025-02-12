@@ -164,7 +164,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
         <div className="pl-2 py-2 flex shadow dark:shadow-gray-800">
           <Link to={`/profile/${chatPartner?.id}`}>
             <div className="relative w-fit h-fit">
-              <AvatarImage src={chatPartner?.avatar} w={12} h={12} />
+              <AvatarImage src={chatPartner?.avatar} size={12} />
               {isOnline ? (
                 <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border border-gray-400 bg-green-500 dark:border-gray-500"></div>
               ) : (

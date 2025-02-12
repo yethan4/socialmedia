@@ -34,7 +34,7 @@ export const ChatPreview = ({chat, currentChat}) => {
     <Link to={`/chats/${chat.withUserId}`}>
       <div className={isOpen ? "flex py-2 px-1 mr-1 cursor-pointer rounded-md shadow bg-gray-200 dark:bg-gray-800 max-lg:hidden" : "flex py-2 px-1 mr-1 cursor-pointer rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 max-lg:hidden"}>
         <div className="relative w-fit h-fit">
-          <AvatarImage src={withUserInfo?.avatar} w={11} h={11} />
+          <AvatarImage src={withUserInfo?.avatar} size={11} />
           {isOnline ? (
             <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border border-gray-300 bg-green-500 dark:border-gray-500">
             </div>

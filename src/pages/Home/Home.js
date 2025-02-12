@@ -147,7 +147,7 @@ export const Home = () => {
           
           <div className="w-full flex bg-white text-lg shadow mx-auto rounded-xl dark:bg-gray-800 max-lg:max-w-[480px]">
             <div
-              className={`flex-1 py-4 flex justify-center cursor-pointer dark:text-gray-50 rounded-l-xl transition-all ${
+              className={`flex-1 py-4 flex justify-center cursor-pointer dark:text-gray-50 rounded-l-xl ${
                 activeTab === "friends" ? "bg-gray-100 dark:bg-gray-700 font-semibold" : "hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
               onClick={() => changeTab("friends")}
@@ -156,7 +156,7 @@ export const Home = () => {
               <span>Home</span>
             </div>
             <div
-              className={`flex-1 py-4 flex justify-center cursor-pointer dark:text-gray-50 rounded-r-xl transition-all ${
+              className={`flex-1 py-4 flex justify-center cursor-pointer dark:text-gray-50 rounded-r-xl ${
                 activeTab === "explore" ? "bg-gray-100 dark:bg-gray-700 font-semibold" : "hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
               onClick={() => changeTab("explore")}

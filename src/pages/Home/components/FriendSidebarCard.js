@@ -17,7 +17,7 @@ export const FriendSidebarCard = ({ userId }) => {
     <Link to={`/profile/${userId}`}>
     <div className="relative flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
       <div className="relative">
-        <AvatarImage src={userData?.avatar} w={10} h={10} />
+        <AvatarImage src={userData?.avatar} size={10} />
        {isOnline ? (
         <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border border-gray-300 bg-green-500 dark:border-gray-500"></div>
        ) : (

@@ -15,7 +15,7 @@ export const ChatInfo = ({chat, chatPartner}) => {
       
       <Link to={`/profile/${chatPartner?.id}`}>
       <div className="flex flex-col items-center justify-center mt-4">
-        <AvatarImage src={chatPartner?.avatar} w={24} h={24}/>
+        <AvatarImage src={chatPartner?.avatar} size={24}/>
         <span className="mt-2 text-xl font-semibold">{chatPartner?.username}</span>
       </div>
       </Link>

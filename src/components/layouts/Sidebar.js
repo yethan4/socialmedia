@@ -22,7 +22,7 @@ export const Sidebar = () => {
     <div className="max-xl:hidden font-medium sticky top-20 flex-1 h-[90vh] max-w-[350px] ml-10 flex flex-col gap-2 border-r dark:border-gray-700 dark:text-slate-200 dark:bg-gray-900 rounded-lg">
       <Link to={`/profile/${userInfo?.id}`}>
         <div className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-          <AvatarImage src={userInfo?.avatar} w={12} h={12} />
+          <AvatarImage src={userInfo?.avatar} size={12} />
           <span>{userInfo?.username}</span>
         </div>
       </Link>

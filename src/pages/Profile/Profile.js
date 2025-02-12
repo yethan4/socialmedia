@@ -430,7 +430,7 @@ export const Profile = () => {
                   className="w-48 h-48 rounded-full border-4 border-white object-cover"
                 />
               ) : (
-              <AvatarImage src={userData?.avatar} w={48} h={48} border="border-4 border-white"/>
+              <AvatarImage src={userData?.avatar} size={48}/>
               )}
               {isCurrentUser && (
                 <div>

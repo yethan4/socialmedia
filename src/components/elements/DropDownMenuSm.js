@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { signOutUser } from "../../services/authService";
 import { useDispatch, useSelector } from "react-redux"; // Dodajemy hook `useDispatch`
+import { AvatarImage } from "./AvatarImage";
 
 export const DropDownMenuSm = ({setDropDwonMenu}) => {
   const userInfo = useSelector(state => state.authState.userInfo);
@@ -16,11 +17,7 @@ export const DropDownMenuSm = ({setDropDwonMenu}) => {
       
       <Link to={`/profile/${userInfo?.id}`}>
         <div className="flex items-center justify-center gap-2 py-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700">
-          <img
-            src={userInfo?.avatar}
-            alt=""
-            className="object-cover w-12 h-12 rounded-full cursor-pointer ring-gray-50 dark:ring-gray-700"
-          />
+          <AvatarImage src={userInfo?.avatar} size={12} />
           <span>{userInfo?.username}</span>
         </div>
       </Link>

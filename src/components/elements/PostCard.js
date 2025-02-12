@@ -208,7 +208,7 @@ export const PostCard = ({post}) => {
           
         {/* Avatar */}
         <Link to={`/profile/${author?.id}`} className="mr-2">
-          <AvatarImage src={author?.avatar} w={10} h={10}/>
+          <AvatarImage src={author?.avatar} size={10} />
         </Link>
           
           <div className="flex flex-col">
@@ -272,12 +272,12 @@ export const PostCard = ({post}) => {
         <ImageViewer
           src={post.img}
           alt="postImage"
-          className={"max-w-full max-h-[500px] rounded-lg shadow-sm"}
+          className={"max-w-full max-h-[500px] rounded-lg shadow-sm mb-2"}
         />
       )}
 
 
-      {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 mt-2 px-1">{post.content}</div>}
+      {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-1">{post.content}</div>}
 
       <div className="flex items-center text-sm font-medium justify-start w-full text-gray-600 dark:text-gray-300 mb-2 px-1">
         <i className={liked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>
