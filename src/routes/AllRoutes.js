@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Home, Login, Register, Profile, PostPage, NotificationsPage, FriendsPage, SettingsPage, PageNotFound, MyActivityPage, BookmarksPage, ChatsPage } from "../pages";
+import { Home, Login, Register, Profile, PostPage, NotificationsPage, FriendsPage, SettingsPage, PageNotFound, MyActivityPage, BookmarksPage, ChatsPage, ResetPasswordPage } from "../pages";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 
@@ -25,6 +25,7 @@ export const AllRoutes = () => {
       {/* logged out only */}
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+      <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
     </Routes>
   )
 }

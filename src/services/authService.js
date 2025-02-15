@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signOut as firebaseSignOut, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut as firebaseSignOut, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import { auth, database, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
@@ -108,6 +108,15 @@ export const signOutUser = async (dispatch) => {
     toast.success("You are logged out.");
   } catch (err) {
     toast.error(err.message);
+  }
+};
+
+export const resetPassword = async(email) => {
+  try{
+    await sendPasswordResetEmail(auth, email);
+    toast.success("The link has been sent. Please check your email.");
+  }catch(err){
+    console.log(err)
   }
 };
 
