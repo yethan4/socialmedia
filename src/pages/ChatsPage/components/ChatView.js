@@ -12,7 +12,6 @@ import { AvatarImage } from '../../../components';
 
 export const ChatView = ({ chatId, chatPartnerId }) => {
   const [chat, setChat] = useState({ messages: [] });
-  const [chatPartner, setChatPartner] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showChatInfo, setShowChatInfo] = useState(false);
@@ -23,6 +22,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
 
   const { isOnline, lastActive } = useUserPresence(chatPartnerId);
   const currentUser = useSelector((state) => state.authState.userInfo);
+  const chatPartner = useSelector((state) => state.usersState.users[chatPartnerId])
 
   useEffect(() => {
     setIsFirstLoad(true)
@@ -52,15 +52,6 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
 
     return () => unsubscribe();
   }, [chatId]);
-
-  useEffect(() => {
-    if (chatPartnerId) {
-      fetchDocument(chatPartnerId, 'users').then((user) => {
-        setChatPartner(user);
-      });
-    }
-  }, [chatPartnerId]);
-
   
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
@@ -70,7 +61,6 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
         const isBottom = scrollHeight - (scrollTop + clientHeight) < 40; 
         setIsAtBottom(isBottom);
-        //console.log('ScrollTop:', scrollTop, 'ScrollHeight:', scrollHeight, 'ClientHeight:', clientHeight, 'IsBottom:', isBottom);
       }
     };
 

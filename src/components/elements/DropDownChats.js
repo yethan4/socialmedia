@@ -53,6 +53,7 @@ export const DropDownChats = () => {
               key={chat.chatId}
               chat={chat}
               currentChat={[]}
+              isDropDown={true}
             />
           ))
         ) : (
