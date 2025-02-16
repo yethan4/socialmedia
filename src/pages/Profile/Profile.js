@@ -289,6 +289,9 @@ export const Profile = () => {
     
         const querySnapshot = await getDocs(q);
         let posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        if (posts.length === 0) {
+          setNoMorePosts(true);
+        }
         const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
     
         // Filtrowanie postów
@@ -549,9 +552,12 @@ export const Profile = () => {
           <section>
             {isCurrentUser && <CreatePost />}
             <div className="mt-0 flex flex-col gap-3 pb-10">
-              {posts.map((post) => (
+              {posts.length>0 && posts.map((post) => (
                 <PostCard post={post} key={post.id} />
               ))}
+              {posts.length === 0 && noMorePosts && (
+                <span className="px-10 py-4 text-xl rounded w-full text-center dark:text-slate-50">{userData?.username} doesn't have any posts yet</span>
+              )}
             </div>
             {!noMorePosts && (
               <div ref={observerRef} className="h-20 flex justify-center mb-10">

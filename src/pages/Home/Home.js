@@ -19,6 +19,7 @@ export const Home = () => {
   useTitle()
   const [noMorePosts, setNoMorePosts] = useState(false);
   const [activeTab, setActiveTab] = useState("friends");
+  const [postsLoaded, setPostLoaded] = useState(false);
 
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.authState.userInfo)
@@ -31,6 +32,7 @@ export const Home = () => {
   const changeTab = (tab) => {
     setActiveTab(tab);
     setNoMorePosts(false);
+    dispatch(setPosts([], null));
   }
 
   useEffect(() => {
@@ -40,6 +42,10 @@ export const Home = () => {
         const postsRef = collection(db, "posts");
         let q = "";
         if (activeTab === "friends") {
+          if(currentUser.friends.length === 0){
+            setNoMorePosts(true);
+            return;
+          }
           q = query(
             postsRef, 
             orderBy("createdAt", "desc"),
@@ -66,6 +72,7 @@ export const Home = () => {
         console.error(err);
       } finally {
         dispatch(setLoading(false));
+        setPostLoaded(true);
       }
     };
 
@@ -134,7 +141,7 @@ export const Home = () => {
     };
   }, [lastVisible, loading]);
 
-  if (loading && posts.length === 0) {
+  if (loading && !postsLoaded) {
     return <HomeSkeleton />;
   }
 
@@ -170,6 +177,9 @@ export const Home = () => {
             { posts.map((post) => {
               return <PostCard post={post} key={post.id} />
             })}
+            { posts.length === 0 && noMorePosts && (
+              <span className="px-10 py-4 shadow text-xl rounded w-full text-center dark:shadow-gray-700 dark:text-slate-50">No posts to load.</span>
+            )}
           </div>
           {/* Element obserwowany na dole */}
           {!noMorePosts && (

@@ -4,6 +4,7 @@ import { auth, database, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
 import { doc, getDoc, onSnapshot, setDoc} from "firebase/firestore";
 import { ref, onValue, onDisconnect, set} from "firebase/database";
+import { setPosts } from "../actions/postsAction";
 
 export const watchUserDocument = (userId, dispatch) => {
   const docRef = doc(db, "users", userId);
@@ -104,6 +105,7 @@ export const signOutUser = async (dispatch) => {
     await firebaseSignOut(auth);
 
     dispatch(logout());
+    dispatch(setPosts([], null));
 
     toast.success("You are logged out.");
   } catch (err) {
