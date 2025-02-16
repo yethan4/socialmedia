@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CreateMessage, MessageCard, ChatInfo } from './';
 import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
-import { fetchDocument } from '../../../services/oneDocumentService';
 import { useSelector } from 'react-redux';
 import { useUserPresence } from '../../../hooks/useUserPresence';
 import { Link } from 'react-router-dom';
@@ -22,28 +21,24 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
 
   const { isOnline, lastActive } = useUserPresence(chatPartnerId);
   const currentUser = useSelector((state) => state.authState.userInfo);
-  const chatPartner = useSelector((state) => state.usersState.users[chatPartnerId])
+  const chatPartner = useSelector((state) => state.usersState.users[chatPartnerId]);
 
   useEffect(() => {
-    setIsFirstLoad(true)
-  }, [chatId])
-
-
+    setIsFirstLoad(true);
+  }, [chatId]);
 
   useEffect(() => {
     if (endRef.current && chat.messages.length > 0) {
       if (isFirstLoad) {
         setIsFirstLoad(false);
-        
         setTimeout(() => {
           endRef.current.scrollIntoView({ block: 'end' });
-        }, 100); 
+        }, 100);
       } else if (isAtBottom) {
         endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
     }
   }, [chat.messages, isAtBottom, isFirstLoad]);
-  
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, 'chats', chatId), (doc) => {
@@ -52,14 +47,14 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
 
     return () => unsubscribe();
   }, [chatId]);
-  
+
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
 
     const handleScroll = () => {
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        const isBottom = scrollHeight - (scrollTop + clientHeight) < 40; 
+        const isBottom = scrollHeight - (scrollTop + clientHeight) < 40;
         setIsAtBottom(isBottom);
       }
     };
@@ -69,7 +64,6 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
       chatContainer.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
   useEffect(() => {
     const updateCurrentUserSeenStatus = async (userId, chatId) => {
       if(document.hidden) return;
@@ -94,7 +88,6 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
     
   }, [chat.messages, chatId, chatPartnerId, currentUser.id])
 
-
   useEffect(() => {
     if (!chatId || !currentUser) return;
 
@@ -118,17 +111,12 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    
     updateSeenBy();
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [chat, currentUser]); 
-
-
-
-
+  }, [chat, currentUser]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -142,15 +130,17 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
       setIsSeen(seenBy.includes(chatPartnerId));
     });
 
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, [chatId, chatPartnerId]);
 
+  const lastClearedAt = chat?.lastClearedAt?.[currentUser.id] || 0;
+  const filteredMessages = chat.messages.filter(
+    (message) => message.createdAt.seconds > lastClearedAt
+  );
 
   return (
     <div className="flex-1 h-full border-l flex dark:border-gray-700">
-
       <div className="flex-1 h-full border-l flex flex-col dark:border-gray-700">
-        {/* Informacje o partnerze czatu */}
         <div className="pl-2 py-2 flex shadow dark:shadow-gray-800">
           <Link to={`/profile/${chatPartner?.id}`}>
             <div className="relative w-fit h-fit">
@@ -182,38 +172,36 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
           </div>
         </div>
 
-        {/* Wiadomości */}
         <div
           ref={chatContainerRef}
           className="mt-3 flex gap-2 flex-col w-full px-4 flex-1 overflow-y-auto dark-scrollbar always-scrollbar"
         >
-          {chat.messages.map((message, index) => {
-          const prevMessage = index>0 ? chat.messages[index - 1] : null;
-          const formattedDate = (index === 0 || (prevMessage && (message.createdAt.seconds - prevMessage.createdAt.seconds) > 1000))
-          ? formatDisplayDate(message.createdAt.seconds)
-          : null;
+          {filteredMessages.map((message, index) => {
+            const prevMessage = index > 0 ? filteredMessages[index - 1] : null;
+            const formattedDate =
+              index === 0 || (prevMessage && message.createdAt.seconds - prevMessage.createdAt.seconds > 1000)
+                ? formatDisplayDate(message.createdAt.seconds)
+                : null;
 
-          
-          return (
-            <>
-            {formattedDate && <div className="w-full text-center text-xs my-2">{formattedDate}</div>}
-            <MessageCard
-              key={index}
-              message={message}
-              chatPartner={message.senderId !== currentUser.id ? chatPartner : null}
-            />
-            </>
-          );
-        })}
+            return (
+              <React.Fragment key={index}>
+                {formattedDate && <div className="w-full text-center text-xs my-2">{formattedDate}</div>}
+                <MessageCard
+                  message={message}
+                  chatPartner={message.senderId !== currentUser.id ? chatPartner : null}
+                />
+              </React.Fragment>
+            );
+          })}
 
-          {!isSeen && chat?.messages[chat?.messages?.length - 1]?.senderId === currentUser.id && (
+          {!isSeen && filteredMessages.length > 0 && filteredMessages[filteredMessages.length - 1]?.senderId === currentUser.id && (
             <span className="ml-auto mt-[-4px] text-sm dark:text-gray-400">
               <i className="bi bi-check-circle mr-1"></i>
               Delivered
             </span>
           )}
 
-          {isSeen && chat?.messages[chat?.messages?.length - 1]?.senderId === currentUser.id && (
+          {isSeen && filteredMessages.length > 0 && filteredMessages[filteredMessages.length - 1]?.senderId === currentUser.id && (
             <span className="ml-auto mt-[-4px] text-sm text-gray-600 dark:text-gray-400">
               <i className="bi bi-check-circle-fill mr-1"></i>
               Seen
@@ -222,7 +210,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
 
           {chat?.currentlyTyping?.includes(chatPartnerId) && (
             <div className="flex h-fit mt-2 items-center">
-              <img src={chatPartner.avatar} alt="" className="w-8 h-8 object-cover rounded-full mr-2 "/>
+              <img src={chatPartner.avatar} alt="" className="w-8 h-8 object-cover rounded-full mr-2"/>
               <TypingIndicator />
             </div>
           )}
@@ -230,12 +218,10 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
           <div ref={endRef}></div>
         </div>
 
-        {/* Pole do tworzenia wiadomości */}
         <CreateMessage chatId={chatId} chatPartnerId={chatPartnerId} />
       </div>
 
-      { showChatInfo && (<ChatInfo chat={chat} chatPartner={chatPartner} />)}
-
+      {showChatInfo && <ChatInfo chat={chat} chatPartner={chatPartner} />}
     </div>
   );
 };

@@ -83,6 +83,18 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
             await updateDoc(userChatsRef, {
               chats: userChatsData.chats,
             });
+          } else {
+            const newChat = {
+              chatId: chatId,
+              isSeen: false,
+              lastMessage: text !== "" ? text : "Photo sent.",
+              receiverId: chatPartnerId,
+              updatedAt: Date.now(),
+              withUserId: currentUser.id
+            };
+            await updateDoc(userChatsRef, {
+              chats: arrayUnion(newChat)
+            });
           }
         }
       }
