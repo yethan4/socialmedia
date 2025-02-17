@@ -7,7 +7,6 @@ import { setNotifications } from "../../actions/notificationsAction";
 import { collection, doc, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { setChats } from "../../actions/chatsAction";
 import { useDarkMode } from "../../hooks/useDarkMode";
-import { useImageLoader } from "../../hooks/useImageLoader";
 
 export const Header = () => {
   const {darkMode, setDarkMode} = useDarkMode();
@@ -16,7 +15,6 @@ export const Header = () => {
   const [dropChats, setDropChats] = useState(false);  
   const [inputSearchBar, setInputSearchBar] = useState("");
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
-  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -84,7 +82,8 @@ export const Header = () => {
   
           try {
             const items = res.data()?.chats || [];
-            const sortedChats = [...items].sort((a, b) => b.updatedAt - a.updatedAt);
+            const filteredChats = items.filter(chat => !chat?.isDeleted)
+            const sortedChats = filteredChats.sort((a, b) => b.updatedAt - a.updatedAt);
             const newMessages = sortedChats.filter(chat => !chat.isSeen).length;
   
             dispatch(setChats(sortedChats));

@@ -2,18 +2,16 @@ import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useUserPresence } from "../../../hooks/useUserPresence";
 import { formatTimeAgo } from "../../../utils/timeUtils";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AvatarImage } from "../../../components";
 import { fetchUserIfNeeded } from "../../../actions/usersAction";
-import { db } from "../../../firebase/config";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { deleteChat } from "../../../services/chatService";
 
 export const ChatPreview = ({ chat, currentChat, isDropDown = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const withUserInfo = useSelector((state) => state.usersState.users[chat.withUserId]);
   const { isOnline } = useUserPresence(chat.withUserId);
@@ -37,40 +35,8 @@ export const ChatPreview = ({ chat, currentChat, isDropDown = false }) => {
   };
 
   const handleDelete = useCallback(async () => {
-    const chatRef = doc(db, "chats", chat.chatId);
-    const userChatRef = doc(db, "userchats", currentUser.id);
-  
-    const chatSnap = await getDoc(chatRef);
-    const userChatSnap = await getDoc(userChatRef);
-  
-    if (!chatSnap.exists() || !userChatSnap.exists()) return;
-  
-    const chatData = chatSnap.data();
-    const userChats = userChatSnap.data().chats || [];
-  
-    const updatedChats = userChats.filter(singleChat => singleChat.chatId !== chat.chatId);
-  
-    const currentTime = Date.now() / 1000;
-  
-    const lastClearedOther = chatData.lastClearedAt?.[chat.withUserId] || 0;
-  
-    if (lastClearedOther) {
-      const filteredMessages = chatData.messages.filter(msg => msg.createdAt.seconds > lastClearedOther);
-  
-      await updateDoc(chatRef, {
-        messages: filteredMessages,
-        [`lastClearedAt.${currentUser.id}`]: currentTime
-      });
-    } else {
-      await updateDoc(chatRef, {
-        [`lastClearedAt.${currentUser.id}`]: currentTime
-      });
-    }
-  
-    await updateDoc(userChatRef, { chats: updatedChats });
-
-    navigate(updatedChats.length ? `/chats/${updatedChats[0]?.withUserId}` : "/chats");
-  }, [chat, currentUser, navigate]);
+    await deleteChat(chat, currentUser.id)
+  }, [chat, currentUser]);
 
   return (
     <Link to={`/chats/${chat.withUserId}`}>
@@ -112,7 +78,7 @@ export const ChatPreview = ({ chat, currentChat, isDropDown = false }) => {
             >
               {chat.receiverId === currentUser.id
                 ? chat.lastMessage
-                : `You: ${chat.lastMessage} Lorem ipsum dolor sit amet consectetur adipisicing elit.`}
+                : `You: ${chat.lastMessage}`}
             </span>
           </div>
         </div>

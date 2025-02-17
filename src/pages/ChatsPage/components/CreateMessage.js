@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import emoji from "../../../assets/emoji.png";
-import { uploadImage } from "../../../services/imageService";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/config";
 import { useInputHandler } from "../../../hooks/useInputHandler";
+import { sendMessage } from "../../../services/chatService";
 
 export const CreateMessage = ({ chatId, chatPartnerId }) => {
   const [isSending, setIsSending] = useState(false);
@@ -36,76 +36,26 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
 
   const handleSend = async (e) => {
     e.preventDefault();
-
+  
     if (text === "" && img.url === "") return;
-
     if (isSending) return;
-
+  
     setIsSending(true);
-
-    let imgUrl = null;
-
+  
     try {
-      if (img.file) {
-        imgUrl = await uploadImage(img.file);
-      }
-
-      await updateDoc(doc(db, "chats", chatId), {
-        messages: arrayUnion({
-          senderId: currentUser.id,
-          text,
-          createdAt: new Date(),
-          ...(imgUrl && { img: imgUrl }),
-        }),
-        seenBy: [currentUser.id]
+      await sendMessage({
+        chatId,
+        currentUser,
+        chatPartnerId,
+        text,
+        imgFile: img.file,
       });
-
-      const userIDs = [currentUser.id, chatPartnerId];
-
-      for (const id of userIDs) {
-        const userChatsRef = doc(db, "userchats", id);
-        const userChatsSnapshot = await getDoc(userChatsRef);
-      
-        if (userChatsSnapshot.exists()) {
-          const userChatsData = userChatsSnapshot.data();
-      
-          const chatIndex = userChatsData.chats.findIndex(
-            (c) => c.chatId === chatId
-          );
-      
-          if (chatIndex !== -1) {
-            userChatsData.chats[chatIndex].lastMessage =
-              text !== "" ? text : "Photo sent.";
-            userChatsData.chats[chatIndex].isSeen = id === currentUser.id ? true : false;
-            userChatsData.chats[chatIndex].receiverId = chatPartnerId;
-            userChatsData.chats[chatIndex].updatedAt = Date.now();
-      
-            await updateDoc(userChatsRef, {
-              chats: userChatsData.chats,
-            });
-          } else {
-            const newChat = {
-              chatId: chatId,
-              isSeen: false,
-              lastMessage: text !== "" ? text : "Photo sent.",
-              receiverId: chatPartnerId,
-              updatedAt: Date.now(),
-              withUserId: currentUser.id
-            };
-            await updateDoc(userChatsRef, {
-              chats: arrayUnion(newChat)
-            });
-          }
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setImg({
-        file: null,
-        url: "",
-      });
+  
+      setImg({ file: null, url: "" });
       setText("");
+    } catch (error) {
+      console.error("Error while sending message:", error);
+    } finally {
       setIsSending(false);
     }
   };
@@ -200,7 +150,7 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
               </span>
             </div>
 
-            {text || img.url ? (
+            {(text || img.url) && !isSending ? (
               <button type="submit" className="text-xl" onClick={handleSend}>
                 <i className="bi bi-send-fill text-blue-600 hover:text-blue-500"></i>
               </button>
