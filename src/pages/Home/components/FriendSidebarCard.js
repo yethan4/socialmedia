@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
-import { fetchDocument } from "../../../services/oneDocumentService";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useUserPresence } from "../../../hooks/useUserPresence";
 import { AvatarImage } from "../../../components";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserIfNeeded } from "../../../actions/usersAction";
 
 export const FriendSidebarCard = ({ userId }) => {
-  const [userData, setUserData] = useState([]);
+  const dispatch = useDispatch();
+
+  const userData = useSelector((state) => state.usersState.users[userId])
   
   const { isOnline, lastActive } = useUserPresence(userId);
 
   useEffect(() => {
-      fetchDocument(userId, "users").then((user) => setUserData(user))
-    }, [userId])
+    dispatch(fetchUserIfNeeded(userId));
+  }, [userId, dispatch]);
 
   return (
     <Link to={`/profile/${userId}`}>

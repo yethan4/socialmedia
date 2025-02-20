@@ -37,7 +37,7 @@ export const Profile = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
   const posts = useSelector(state => state.postsState.posts);
   const lastVisible = useSelector(state => state.postsState.lastVisible);
   const loading = useSelector(state => state.postsState.loading);
@@ -146,7 +146,7 @@ export const Profile = () => {
 
       if(userDetails.bgImg) await deleteImage(userDetails.bgImg);
   
-      const docRef = doc(db, "userDetails", userInfo.id);
+      const docRef = doc(db, "userDetails", currentUser.id);
   
       await updateDoc(docRef, {
         bgImg: imgUrl 
@@ -177,11 +177,11 @@ export const Profile = () => {
       }
 
       
-      if(userInfo.avatar !== "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9"){ 
-        await deleteImage(userInfo.avatar);
+      if(currentUser.avatar !== "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9"){ 
+        await deleteImage(currentUser.avatar);
       }
   
-      const docRef = doc(db, "users", userInfo.id);
+      const docRef = doc(db, "users", currentUser.id);
   
       await updateDoc(docRef, {
         avatar: imgUrl 
@@ -204,7 +204,7 @@ export const Profile = () => {
     setLoadingData(true);
     try{
 
-      const docRef = doc(db, "userDetails", userInfo.id);
+      const docRef = doc(db, "userDetails", currentUser.id);
 
       await updateDoc(docRef, {
         aboutMe: textAboutMe
@@ -224,19 +224,19 @@ export const Profile = () => {
   };
 
   const handleMessage = async () => {
-    await createNewChat(userInfo.id, userData.id);
+    await createNewChat(currentUser.id, userData.id);
     
     navigate(`/chats/${userData.id}`)
   }
 
 
   useEffect(() => {
-    if (id === userInfo.id) {
+    if (id === currentUser.id) {
       setIsCurrentUser(true);
     } else {
       setIsCurrentUser(false);
     }
-  }, [id, userInfo]);
+  }, [id, currentUser]);
 
   useEffect(() => {
     if (!id) return
@@ -296,7 +296,7 @@ export const Profile = () => {
     
         // Filtrowanie postów
         posts = posts.filter(post => {
-          return post.visibility !== "friends" || friendStatus === "friends" || userInfo.id === id;
+          return post.visibility !== "friends" || friendStatus === "friends" || currentUser.id === id;
         });
     
         dispatch(setPosts(posts, lastVisible));
@@ -428,7 +428,7 @@ export const Profile = () => {
             <div className="relative">
               {isCurrentUser ? (
                 <img
-                  src={avatarImg.url ? avatarImg.url : userInfo.avatar}
+                  src={avatarImg.url ? avatarImg.url : currentUser.avatar}
                   alt="User Avatar"
                   className="w-48 h-48 rounded-full border-4 border-white object-cover"
                 />

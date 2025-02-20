@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useFriendStatus } from '../../hooks/useFriendStatus';
 import { AvatarImage } from './AvatarImage';
 
@@ -16,9 +17,17 @@ export const FriendCard = ({friendId}) => {
 
   return (
     <div className="w-48 h-64 px-1 pt-4 shadow rounded flex flex-col items-center dark:bg-gray-800">
-      <AvatarImage src={friendInfo?.avatar} size={40}/>
+      <Link to={`/profile/${friendId}`}>
+        <AvatarImage src={friendInfo?.avatar} size={40}/>
+      </Link>
       <div className="flex flex-col items-center relative mt-3">
-        <span className="font-semibold text-gray-900 dark:text-slate-50">{friendInfo?.username}</span>
+        {friendInfo?.username ? (
+          <Link to={`/profile/${friendId}`}>
+            <span className="font-semibold text-gray-900 dark:text-slate-50 hover:underline">{friendInfo?.username}</span>
+          </Link>
+        ) : (
+          <div className="w-24 h-4 mt-1 mb-1 bg-gray-300 dark:bg-gray-600 animate-pulse"></div>
+        )}
         {friendStatus === "friends" && (
           <div className="mt-1 w-full select-none">
             <button onClick={() => setDropRemove(!dropRemove)} className="pl-4 pr-2 py-1 bg-gray-700 text-slate-50 hover:bg-gray-600 dark:bg-gray-700 dark:text-slate-200 dark:hover:bg-gray-600">

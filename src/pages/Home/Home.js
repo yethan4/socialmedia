@@ -30,6 +30,7 @@ export const Home = () => {
   const observerRef = useRef(null);
 
   const changeTab = (tab) => {
+    if(tab===activeTab) return;
     setActiveTab(tab);
     setNoMorePosts(false);
     dispatch(setPosts([], null));

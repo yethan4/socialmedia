@@ -10,7 +10,6 @@ export const setUsers = (users) => ({
   payload: users,
 });
 
-// Funkcja do pobrania użytkownika, jeśli go jeszcze nie ma w store
 export const fetchUserIfNeeded = (userId) => {
   return async (dispatch, getState) => {
     const { users } = getState().usersState;

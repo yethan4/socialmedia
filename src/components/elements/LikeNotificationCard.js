@@ -5,17 +5,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { AvatarImage } from "./AvatarImage";
+import { fetchUserIfNeeded } from "../../actions/usersAction";
+import { useDispatch, useSelector } from "react-redux";
 
 export const LikeNotificationCard = ({notification, setDropNotifications=""}) => {
-  const [author, setAuthor] = useState(null);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const author = useSelector((state) => state.usersState.users[notification.fromUserId])
   const formattedTime = formatTimeAgo(notification.timestamp?.seconds);
 
   useEffect(() => {
-    fetchDocument(notification.fromUserId, "users").then((user) => setAuthor(user));
-  }, [notification?.fromUserId])
+    dispatch(fetchUserIfNeeded(notification.fromUserId));
+  }, [notification.fromUserId, dispatch]);
 
   const handleDivClick = useCallback(async(e) => {
     if (!e.target.closest("a")) {
