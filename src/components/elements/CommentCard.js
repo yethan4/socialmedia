@@ -5,14 +5,12 @@ import { useSelector } from "react-redux";
 import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { Link } from "react-router-dom";
-import { useImageLoader } from "../../hooks/useImageLoader";
 import { AvatarImage } from "./AvatarImage";
 
 export const CommentCard = ({comment, postAuthorId}) => {
   const [author, setAuthor] = useState(null);
   const [canEdit, setCanEdit] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const userInfo = useSelector(state => state.authState.userInfo);
 
@@ -72,7 +70,7 @@ export const CommentCard = ({comment, postAuthorId}) => {
         </span>
       )}
     </div>
-    <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
+    <p className="text-sm mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
       {comment?.content}
     </p>
 

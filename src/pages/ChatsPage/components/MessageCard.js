@@ -32,7 +32,7 @@ export const MessageCard = ({ message, chatPartner }) => {
             <ImageViewer src={message.img} className="mb-2 rounded-xl max-h-[400px]" />
           )}
           {message.text && (
-            <div className="bg-blue-600 text-slate-50 w-fit max-w-[1000px] ml-auto px-2 py-2 rounded-xl">
+            <div className="bg-blue-600 text-slate-50 w-fit max-w-[1000px] ml-auto px-2 py-2 rounded-xl whitespace-pre-wrap">
               {message.text}
             </div>
           )}

@@ -522,7 +522,7 @@ export const Profile = () => {
               <span>About Me</span>
               {isCurrentUser && !isAboutMeEdit && <button className="max-sm:px-3 max-sm:py-2 px-2 py-1 ml-2 bg-gray-700 text-slate-50 rounded-full hover:bg-gray-500" onClick={() => setIsAboutMeEdit(true)}><i className="bi bi-pencil-square" ></i></button>}
             </div>
-            {!isAboutMeEdit && (<span>{userDetails?.aboutMe}</span>)}
+            {!isAboutMeEdit && (<div className="whitespace-pre-wrap text-center w-full">{userDetails?.aboutMe}</div>)}
             {isAboutMeEdit && (
               <>
               <textarea

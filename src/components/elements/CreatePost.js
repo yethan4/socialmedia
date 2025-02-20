@@ -133,7 +133,12 @@ export const CreatePost = () => {
           <span className="relative flex items-center cursor-pointer z-30" onClick={() => setShowPicker((prev) => (!prev))}>
             <img src={emoji} alt="" className="w-6 h-6"/>
             <p className="ml-1 text-sm dark:text-gray-300">Emoji</p>
-            {showPicker && <div className="absolute top-[-80px] m-auto"><EmojiPicker onEmojiClick={onEmojiClick} /></div>}
+            {showPicker && <div className="absolute top-[-80px] m-auto">
+              <EmojiPicker 
+                onEmojiClick={onEmojiClick} 
+                theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
+              />
+            </div>}
           </span>
           <label htmlFor="img" className="flex items-center cursor-pointer">
             <img src={upload} alt="" className="w-6 h-6"/>

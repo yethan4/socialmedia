@@ -145,7 +145,10 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
                 <img src={emoji} alt="" className="w-6 h-6" />
                 {showPicker && (
                   <div className="absolute bottom-[30px] m-auto">
-                    <EmojiPicker onEmojiClick={onEmojiClick} />
+                    <EmojiPicker 
+                      onEmojiClick={onEmojiClick} 
+                      theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
+                    />
                   </div>
                 )}
               </span>

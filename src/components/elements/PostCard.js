@@ -138,7 +138,7 @@ export const PostCard = ({post}) => {
     }catch(err){
       console.log(err)
     }
-  }, [post.id, dispatch])
+  }, [post.id, dispatch, liked])
 
   const handleLikesDisplay = useCallback(async () => {
     setShowLikes(true);
@@ -277,7 +277,7 @@ export const PostCard = ({post}) => {
       )}
 
 
-      {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-1">{post.content}</div>}
+      {post.content && <div className="text-sm w-full font-normal text-gray-700 dark:text-gray-300 mb-4 px-1 whitespace-pre-wrap">{post.content}</div>}
 
       <div className="flex items-center text-sm font-medium justify-start w-full text-gray-600 dark:text-gray-300 mb-2 px-1">
         <i className={liked ? "bi bi-heart-fill mr-1 text-red-600" : "bi bi-heart mr-1"}></i>
