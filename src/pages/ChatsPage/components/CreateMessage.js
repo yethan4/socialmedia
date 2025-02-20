@@ -127,6 +127,7 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
                 id="img"
                 className="hidden"
                 onChange={handleImage}
+                accept="image/jpeg, image/png, image/gif"
               />
               <label
                 htmlFor="img"

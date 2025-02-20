@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import { addNewPost } from "../../actions/postsAction";
 import { Link } from "react-router-dom";
 import { useInputHandler } from "../../hooks/useInputHandler";
-import { useImageLoader } from "../../hooks/useImageLoader";
 import { AvatarImage } from "./AvatarImage";
 
 export const CreatePost = () => {
@@ -30,7 +29,6 @@ export const CreatePost = () => {
     } = useInputHandler();
   const [visibility, setVisibility] = useState("friends");
   const [showList, setShowList] = useState(false); //who can see the post
-  const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const dispatch = useDispatch();
 
@@ -141,7 +139,7 @@ export const CreatePost = () => {
             <img src={upload} alt="" className="w-6 h-6"/>
             <p className="ml-1 text-sm dark:text-gray-300">Add Photo</p>
           </label>
-          <input type="file" id="img" className="hidden" onChange={handleImage} />
+          <input type="file" id="img" className="hidden" onChange={handleImage} accept="image/jpeg, image/png, image/gif" />
         </div>
         <div>
           {text || img.url ? (

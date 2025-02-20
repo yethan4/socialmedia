@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 export const useInputHandler = () => {
   const [text, setText] = useState("");
@@ -24,14 +25,24 @@ export const useInputHandler = () => {
   }, []);
 
   const handleImage = useCallback((event) => {
-    if (event.target.files[0]) {
-      setImg({
-        file: event.target.files[0],
-        url: URL.createObjectURL(event.target.files[0]),
-      });
+    const file = event.target.files[0];
+    if (!file) return;
+  
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+  
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Invalid file format. Please upload a JPG, PNG, or GIF");
+      event.target.value = "";
+      return;
     }
+  
+    setImg({
+      file,
+      url: URL.createObjectURL(file),
+    });
+  
     event.target.value = "";
-  }, []);
+  }, []);  
 
   const handleRemoveImage = useCallback(() => {
     setImg({ file: null, url: "" });
