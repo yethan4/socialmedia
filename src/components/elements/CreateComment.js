@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect} from "react";
 import EmojiPicker from 'emoji-picker-react';
-import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { useSelector } from "react-redux";
 import { useInputHandler } from "../../hooks/useInputHandler";
 import { AvatarImage } from "./AvatarImage";
+import { addComment} from "../../services/commentsService";
+import { addNotification } from "../../services/notificationsService";
 
 export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) => {
   const {
@@ -17,7 +17,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
       onEmojiClick,
     } = useInputHandler();
   
-  const userInfo = useSelector(state => state.authState.userInfo)
+  const currentUser = useSelector(state => state.authState.userInfo)
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -32,28 +32,11 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
       e.preventDefault();
 
       try {
-        await addDoc(collection(db, "comments"), {
-          authorId: userInfo.id,
-          postId: postId,
-          content: text,
-          createdAt: serverTimestamp(),
-        });
+        await addComment(currentUser.id, postId, text)
 
-        if (userInfo.id !== postAuthorId) {
-          await addDoc(collection(db, "notifications"), {
-            fromUserId: userInfo.id,
-            toUserId: postAuthorId,
-            postId: postId,
-            timestamp: serverTimestamp(),
-            seen: false,
-            type: "comment",
-          });
+        if (currentUser.id !== postAuthorId) {
+          await addNotification(currentUser.id, postAuthorId, "comment", postId)
         }
-
-        const postRef = doc(db, "posts", postId);
-        await updateDoc(postRef, {
-          commentsCount: increment(1),
-        });
 
         setText("");
         setShowPicker(false);
@@ -62,7 +45,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
         console.log(err);
       }
     },
-    [text, postId, postAuthorId, setScrollCommentToggle, userInfo.id]
+    [text, postId, postAuthorId, setScrollCommentToggle, currentUser.id]
   );
 
 
@@ -70,7 +53,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
     <div className="flex z-30 flex-col w-full border-t pt-1 dark:border-gray-500">
       <form onSubmit={handleSubmit}>
         <div className="flex w-full">
-        <AvatarImage src={userInfo?.avatar} size={8} />
+        <AvatarImage src={currentUser?.avatar} size={8} />
         <textarea
         value={text} 
         ref={textareaRef} 

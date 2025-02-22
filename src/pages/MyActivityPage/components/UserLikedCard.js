@@ -1,15 +1,21 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { fetchDocument } from "../../../services/oneDocumentService";
 import { Link } from "react-router-dom";
-import { firebaseDislike, firebaseLike } from "../../../services/likeService";
 import { formatTimeAgo } from "../../../utils/timeUtils";
+import { useLikes } from "../../../hooks/useLikes";
+import { AvatarImage } from "../../../components";
 
 export const UserLikeCard = ({like}) => {
   const [postAuthorData, setPostAuthorData] = useState([]);
-  const [likeId, setLikeId] = useState(like.id);
 
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
+
+  const { 
+    likeId, 
+    handleLike, 
+    handleDislike
+  } = useLikes(like.postId, currentUser.id, postAuthorData?.id);
 
   const formattedTime = formatTimeAgo(like.timestamp.seconds);
 
@@ -33,34 +39,13 @@ export const UserLikeCard = ({like}) => {
     
   }, [like.postId])
 
-  const handleLike = useCallback(async() => {
-    try{
-      const likeResponse = await firebaseLike(userInfo.id, like.postId, postAuthorData?.id);
-      setLikeId(likeResponse);
-    }catch(err){
-      console.log(err)
-    }
-    
-
-  }, [userInfo.id, like.postId, postAuthorData?.id])
-
-  const handleDislike = useCallback(async() => {
-    try{
-      await firebaseDislike(likeId, like.postId);
-      setLikeId("");
-    }catch(err){
-      console.log(err)
-    }
-  }, [likeId, like.postId])
-
 
   return (
     <div className="relative flex flex-col pt-2 pl-2 pr-12 shadow dark:shadow-gray-700">
       <span className="mb-2 font-medium text-sm text-gray-700 dark:text-slate-200">{formattedTime}</span>
       <div className="flex items-center dark:text-slate-50">
-        <img src={postAuthorData?.avatar} alt="" className="w-12 h-12 object-cover rounded-full"/>
-        <span className="ml-3"><b>{userInfo?.username}</b> liked <b>{postAuthorData?.username}</b>'s post</span>
-        
+        <AvatarImage src={postAuthorData?.avatar} size="12" />
+        <span className="ml-3"><b>{currentUser?.username}</b> liked <b>{postAuthorData?.username}</b>'s post</span>
       </div>
       <Link to={`/post/${like?.postId}`}>
       <div className="text-sm pt-2 px-2 w-fit my-2 cursor-pointer dark:text-slate-50 underline">

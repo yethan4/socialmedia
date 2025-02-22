@@ -1,9 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../utils/timeUtils";
-import { fetchDocument } from "../../services/oneDocumentService";
-import { useCallback, useEffect, useState } from "react";
-import { db } from "../../firebase/config";
-import { doc, updateDoc } from "firebase/firestore";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFriend, rejectFriendRequest } from "../../services/friendsService";
 import { AvatarImage } from "./AvatarImage";
@@ -13,7 +10,7 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
   const author = useSelector((state) => state.usersState.users[notification.fromUserId])
 
   const formattedTime = formatTimeAgo(notification.timestamp.seconds);
@@ -38,20 +35,20 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
   const handleDelete = useCallback(async(e) => {
     e.stopPropagation();
     try{
-      await rejectFriendRequest(userInfo.id, notification.fromUserId)
+      await rejectFriendRequest(currentUser.id, notification.fromUserId)
     }catch(err){
       console.log(err)
     }
-  }, [userInfo.id, notification.fromUserId])
+  }, [currentUser.id, notification.fromUserId])
 
   const handleAccept = useCallback(async(e) => {
     e.stopPropagation();
     try{
-      await addFriend(userInfo.id, notification.fromUserId)
+      await addFriend(currentUser.id, notification.fromUserId)
     }catch(err){
       console.log(err)
     }
-  }, [userInfo.id, notification.fromUserId])
+  }, [currentUser.id, notification.fromUserId])
 
   return (
     <div 

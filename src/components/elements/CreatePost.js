@@ -4,14 +4,13 @@ import EmojiPicker from 'emoji-picker-react';
 import emoji from "../../assets/emoji.png";
 import upload from "../../assets/upload.png";
 import { useDispatch, useSelector } from "react-redux";
-import { addDoc, collection, getDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { uploadImage } from "../../services/imageService";
 import { toast } from "react-toastify";
 import { addNewPost } from "../../actions/postsAction";
 import { Link } from "react-router-dom";
 import { useInputHandler } from "../../hooks/useInputHandler";
 import { AvatarImage } from "./AvatarImage";
+import { addPost } from "../../services/postsService";
 
 export const CreatePost = () => {
   const {
@@ -32,7 +31,7 @@ export const CreatePost = () => {
 
   const dispatch = useDispatch();
 
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -51,19 +50,7 @@ export const CreatePost = () => {
         imgUrl = await uploadImage(img.file)
       }
 
-      const docRef = await addDoc(collection(db, "posts"), {
-        content: text,
-        authorId: userInfo.id,
-        createdAt: serverTimestamp(),
-        img: imgUrl,
-        likesCount: 0,
-        commentsCount: 0,
-        visibility,
-      });
-
-      //download data to avoid createdAT problem
-      const docSnapshot = await getDoc(docRef);
-      const postData = { id: docRef.id, ...docSnapshot.data() };
+      const postData = await addPost(text, currentUser.id, imgUrl, visibility)
 
       dispatch(addNewPost(postData));
       
@@ -82,10 +69,10 @@ export const CreatePost = () => {
     <form onSubmit={handleSubmit} className="w-full bg-white shadow mx-auto p-2 py-4 rounded-xl dark:bg-gray-800 max-lg:max-w-[480px] mb-4">
       <div className="flex flex-col gap-2">
         <div className="relative flex">
-          <Link to={`/profile/${userInfo?.id}`}>
+          <Link to={`/profile/${currentUser?.id}`}>
           <span className="flex items-center gap-2">
-            <AvatarImage src={userInfo?.avatar} size={10}/>
-            <span className="text-gray-900 dark:text-gray-200 font-bold">{userInfo.username}</span>
+            <AvatarImage src={currentUser?.avatar} size={10}/>
+            <span className="text-gray-900 dark:text-gray-200 font-bold">{currentUser.username}</span>
           </span>
           </Link>
           <div className="absolute right-2 top-2 flex gap-1">

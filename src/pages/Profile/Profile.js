@@ -50,7 +50,7 @@ export const Profile = () => {
   const tabClass = "text-gray-600 py-2 px-6 text-xl cursor-pointer dark:text-slate-300";
 
   useTitle(`- Profile`);
-  console.log(id)
+  
   const {
       friendStatus,
       dropRemove,

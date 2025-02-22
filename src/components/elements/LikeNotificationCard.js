@@ -7,6 +7,7 @@ import { db } from "../../firebase/config";
 import { AvatarImage } from "./AvatarImage";
 import { fetchUserIfNeeded } from "../../actions/usersAction";
 import { useDispatch, useSelector } from "react-redux";
+import { markNotificationAsSeen } from "../../services/notificationsService";
 
 export const LikeNotificationCard = ({notification, setDropNotifications=""}) => {
 
@@ -23,15 +24,12 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
   const handleDivClick = useCallback(async(e) => {
     if (!e.target.closest("a")) {
       try{
-        const notificationRef = doc(db, "notifications", notification.id)
+        markNotificationAsSeen(notification.id)
 
         if(setDropNotifications){
           setDropNotifications(false)
         };
 
-        await updateDoc(notificationRef, {
-          seen: true
-        });
         navigate(`/post/${notification?.postId}`);
       }catch(e){
         console.log(e)

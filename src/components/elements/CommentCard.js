@@ -2,10 +2,9 @@ import { useCallback, useEffect, useState } from "react"
 import { fetchDocument } from "../../services/oneDocumentService"
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useSelector } from "react-redux";
-import { deleteDoc, doc, increment, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { Link } from "react-router-dom";
 import { AvatarImage } from "./AvatarImage";
+import { deleteComment } from "../../services/commentsService";
 
 export const CommentCard = ({comment, postAuthorId}) => {
   const [author, setAuthor] = useState(null);
@@ -30,13 +29,7 @@ export const CommentCard = ({comment, postAuthorId}) => {
 
   const handleDeleteComment = useCallback(async() => {
     try{
-      const document = doc(db, "comments", comment.id)
-      await deleteDoc(document)
-
-      const postRef = doc(db, "posts", comment.postId);
-      await updateDoc(postRef, {
-        commentsCount: increment(-1)
-      });
+      await deleteComment(comment.id, comment.postId)
       setShowOptions(false);
     }catch(err){
       console.log(err)

@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../utils/timeUtils";
-import { deleteDocument, fetchDocument } from "../../services/oneDocumentService";
-import { useCallback, useEffect, useState } from "react";
-import { db } from "../../firebase/config";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteDocument } from "../../services/oneDocumentService";
+import { useCallback, useEffect} from "react";
 import { AvatarImage } from "./AvatarImage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserIfNeeded } from "../../actions/usersAction";
+import { markNotificationAsSeen } from "../../services/notificationsService";
 
 export const FriendsNotificationCard = ({notification, setDropNotifications=""}) => {
   const navigate = useNavigate();
@@ -23,15 +22,12 @@ export const FriendsNotificationCard = ({notification, setDropNotifications=""})
   const handleDivClick = useCallback(async(e) => {
     if (!e.target.closest("a")) {
       try{
-        const notificationRef = doc(db, "notifications", notification.id)
+        await markNotificationAsSeen(notification.id)
 
         if(setDropNotifications){
           setDropNotifications(false)
         };
-
-        await updateDoc(notificationRef, {
-          seen: true
-        });
+        
         navigate(`/profile/${author?.id}`);
       }catch(e){
         console.log(e)
