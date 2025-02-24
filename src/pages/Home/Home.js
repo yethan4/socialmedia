@@ -1,33 +1,35 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { collection, getDocs, limit, orderBy, query, startAfter, where } from "firebase/firestore";
-import { db } from "../../firebase/config";
-
 import { FriendsSidebar } from "./components";
 import { CreatePost, PostCard, Sidebar } from "../../components";
 
-import { addPosts, setLoading, setPosts } from "../../actions/postsAction";
+import { setPosts } from "../../actions/postsAction";
 
 import loadingGif from "../../assets/loading.gif"
 import { useTitle } from "../../hooks/useTitle";
 
 import { HomeSkeleton } from "../../components/skeletons"
+import { usePosts } from "../../hooks/usePosts";
 
 
 export const Home = () => {
   useTitle()
-  const [noMorePosts, setNoMorePosts] = useState(false);
   const [activeTab, setActiveTab] = useState("friends");
-  const [postsLoaded, setPostLoaded] = useState(false);
 
   const dispatch = useDispatch();
-  const currentUser = useSelector(state => state.authState.userInfo)
   const posts = useSelector(state => state.postsState.posts);
   const lastVisible = useSelector(state => state.postsState.lastVisible);
   const loading = useSelector(state => state.postsState.loading);
 
   const observerRef = useRef(null);
+
+  const {
+    noMorePosts,
+    setNoMorePosts,
+    postsLoaded,
+    loadMorePosts
+  } = usePosts(activeTab)
 
   const changeTab = (tab) => {
     if(tab===activeTab) return;
@@ -35,91 +37,6 @@ export const Home = () => {
     setNoMorePosts(false);
     dispatch(setPosts([], null));
   }
-
-  useEffect(() => {
-    const fetchPosts = async() => {
-      dispatch(setLoading(true));
-      try {
-        const postsRef = collection(db, "posts");
-        let q = "";
-        if (activeTab === "friends") {
-          if(currentUser.friends.length === 0){
-            setNoMorePosts(true);
-            return;
-          }
-          q = query(
-            postsRef, 
-            orderBy("createdAt", "desc"),
-            where("authorId", "in", currentUser.friends),
-            limit(4)
-          );
-        } else if (activeTab === "explore") {
-          q = query(
-            postsRef, 
-            orderBy("createdAt", "desc"),
-            where("visibility", "==", "public"),
-            limit(4)
-          );
-        }
-        
-        const querySnapshot = await getDocs(q);
-    
-        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        
-        dispatch(setPosts(posts, lastVisible));
-        return posts; 
-      } catch (err) {
-        console.error(err);
-      } finally {
-        dispatch(setLoading(false));
-        setPostLoaded(true);
-      }
-    };
-
-    fetchPosts();
-  }, [dispatch, activeTab])
-
-  const loadMorePosts = async () => {
-    if (!lastVisible) {
-      setNoMorePosts(true);
-      return;
-    }
-  
-    dispatch(setLoading(true));
-  
-    try {
-      const postsRef = collection(db, "posts");
-      let q 
-      if(activeTab === "friends"){
-        q = query(postsRef, 
-          orderBy("createdAt", "desc"), 
-          startAfter(lastVisible),
-          where("authorId", "in", currentUser.friends), 
-          limit(7));
-      }else if(activeTab === "explore"){
-        q = query(postsRef, 
-          orderBy("createdAt", "desc"), 
-          startAfter(lastVisible),
-          where("visibility", "==", "public"),
-          limit(7));
-      }
-      const querySnapshot = await getDocs(q);
-      
-      if (!querySnapshot.empty) {
-        const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-  
-        dispatch(addPosts(posts, newLastVisible));
-      } else {
-        setNoMorePosts(true);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CreateMessage, MessageCard, ChatInfo } from './';
-import { arrayUnion, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
 import { useSelector } from 'react-redux';
 import { useUserPresence } from '../../../hooks/useUserPresence';
 import { Link } from 'react-router-dom';
 import { TypingIndicator } from '../../../animations/TypingIndicator';
 import { formatDisplayDate } from '../../../utils/timeUtils';
 import { AvatarImage } from '../../../components';
+import { getChat, markChatAsSeen, updateUserChatStatus, checkIfSeen } from '../../../services/chatService';
 
 export const ChatView = ({ chatId, chatPartnerId }) => {
   const [chat, setChat] = useState({ messages: [] });
@@ -28,6 +27,11 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
   }, [chatId]);
 
   useEffect(() => {
+    const unsubscribe = getChat(chatId, setChat);
+    return () => unsubscribe();
+  }, [chatId]);
+
+  useEffect(() => {
     if (endRef.current && chat.messages.length > 0) {
       if (isFirstLoad) {
         setIsFirstLoad(false);
@@ -41,96 +45,43 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
   }, [chat.messages, isAtBottom, isFirstLoad]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, 'chats', chatId), (doc) => {
-      setChat(doc.data() || { messages: [] });
-    });
-
-    return () => unsubscribe();
-  }, [chatId]);
-
-  useEffect(() => {
     const chatContainer = chatContainerRef.current;
 
     const handleScroll = () => {
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        const isBottom = scrollHeight - (scrollTop + clientHeight) < 40;
-        setIsAtBottom(isBottom);
+        setIsAtBottom(scrollHeight - (scrollTop + clientHeight) < 40);
       }
     };
 
     chatContainer.addEventListener('scroll', handleScroll);
-    return () => {
-      chatContainer.removeEventListener('scroll', handleScroll);
-    };
+    return () => chatContainer.removeEventListener('scroll', handleScroll);
   }, []);
+
   useEffect(() => {
-    const updateCurrentUserSeenStatus = async (userId, chatId) => {
-      if(document.hidden) return;
-
-      const docRef = doc(db, "userchats", userId);
-
-      try{
-        const docSnap = await getDoc(docRef);
-  
-        if(docSnap.exists()){
-          const data = docSnap.data();
-          const updatedChats = data.chats.map(chat => chat.chatId === chatId ? { ...chat, isSeen:true } : chat)
-
-          await updateDoc(docRef, { chats: updatedChats });
-        }
-      }catch(err){
-        console.log(err)
-      }
-    }
-
-    updateCurrentUserSeenStatus(currentUser.id, chatId)
-    
-  }, [chat.messages, chatId, chatPartnerId, currentUser.id])
+    updateUserChatStatus(currentUser.id, chatId);
+  }, [chat.messages, chatId, currentUser.id]);
 
   useEffect(() => {
     if (!chatId || !currentUser) return;
 
-    const updateSeenBy = async () => {
-      if (document.hidden) return;
-
-      try {
-        const chatRef = doc(db, "chats", chatId);
-        await updateDoc(chatRef, {
-          seenBy: arrayUnion(currentUser.id),
-        });
-      } catch (error) {
-        console.error("Error updating seenBy:", error);
-      }
-    };
-
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        updateSeenBy();
+        markChatAsSeen(chatId, currentUser.id);
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    updateSeenBy();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    markChatAsSeen(chatId, currentUser.id);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [chat, currentUser]);
+  }, [chat.messages, chatId, currentUser]);
 
   useEffect(() => {
     if (!chatId) return;
-
-    const chatRef = doc(db, "chats", chatId);
-
-    const unsubscribe = onSnapshot(chatRef, (chatSnapshot) => {
-      if (!chatSnapshot.exists()) return;
-
-      const seenBy = chatSnapshot.data().seenBy || [];
-      setIsSeen(seenBy.includes(chatPartnerId));
-    });
-
-    return () => unsubscribe();
+    return checkIfSeen(chatId, chatPartnerId, setIsSeen);
   }, [chatId, chatPartnerId]);
 
   const lastClearedAt = chat?.lastClearedAt?.[currentUser.id] || 0;

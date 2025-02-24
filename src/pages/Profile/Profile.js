@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchDocument } from '../../services/oneDocumentService';
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from 'firebase/firestore';
+import { doc, getDoc, updateDoc} from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { AvatarImage, CreatePost, FriendCard, PostCard} from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
-import { addPosts, setLoading, setPosts } from '../../actions/postsAction';
 
 import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
@@ -13,6 +12,7 @@ import { deleteImage, uploadImage } from '../../services/imageService';
 import { createNewChat } from '../../services/chatService';
 import { useFriendStatus } from '../../hooks/useFriendStatus';
 import { useImageLoader } from '../../hooks/useImageLoader';
+import { usePosts } from '../../hooks/usePosts';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -32,7 +32,6 @@ export const Profile = () => {
   })
   const [isAboutMeEdit, setIsAboutMeEdit] = useState(false);
   const [textAboutMe, setTextAboutMe] = useState("");
-  const [noMorePosts, setNoMorePosts] = useState(false);
   const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const navigate = useNavigate();
@@ -61,6 +60,11 @@ export const Profile = () => {
       handleRemoveFriend,
       handleUndoRequest
     } = useFriendStatus(id);
+
+  const {
+    noMorePosts,
+    loadMorePosts
+  } = usePosts("userPosts", id, friendStatus)
 
   //to be corrected
   const changeTab = (tabName) => {
@@ -106,42 +110,8 @@ export const Profile = () => {
     try{
 
       if(bgImg.file){
-        imgUrl = await uploadImage(bgImg.file); const loadMorePosts = async () => {
-          if (!lastVisible) {
-            setNoMorePosts(true);
-            return;
-          }
-        
-          dispatch(setLoading(true));
-        
-          try {
-            const postsRef = collection(db, "posts");
-            const q = query(
-              postsRef,
-              where("authorId", "==", id),
-              orderBy("createdAt", "desc"),
-              startAfter(lastVisible),
-              limit(5)
-            );
-        
-            const querySnapshot = await getDocs(q);
-        
-            if (!querySnapshot.empty) {
-              const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-              const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        
-              dispatch(addPosts(posts, newLastVisible));
-            } else {
-              setNoMorePosts(true);
-            }
-          } catch (err) {
-            console.error("Błąd podczas ładowania postów:", err);
-            alert("Wystąpił błąd. Spróbuj ponownie.");
-          } finally {
-            dispatch(setLoading(false));
-          }
-        };
-        
+        imgUrl = await uploadImage(bgImg.file); 
+
       }
 
       if(userDetails.bgImg) await deleteImage(userDetails.bgImg);
@@ -273,79 +243,6 @@ export const Profile = () => {
       });
     }
   }, [id]);
-
-  
-
-  useEffect(() => {
-    const fetchUserPosts = async (id) => {
-      dispatch(setLoading(true));
-      try {
-        const postsRef = collection(db, "posts");
-        const q = query(postsRef,
-          where("authorId", "==", id),
-          orderBy("createdAt", "desc"),
-          limit(5)
-        );
-    
-        const querySnapshot = await getDocs(q);
-        let posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        if (posts.length === 0) {
-          setNoMorePosts(true);
-        }
-        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-    
-        // Filtrowanie postów
-        posts = posts.filter(post => {
-          return post.visibility !== "friends" || friendStatus === "friends" || currentUser.id === id;
-        });
-    
-        dispatch(setPosts(posts, lastVisible));
-      } catch (err) {
-        console.log(err);
-      } finally {
-        dispatch(setLoading(false));
-      }
-    };
-    
-    fetchUserPosts(id);
-  }, [id, dispatch]);
-
-  const loadMorePosts = async () => {
-    if (!lastVisible) {
-      setNoMorePosts(true);
-      return;
-    }
-
-    dispatch(setLoading(true));
-
-    try {
-      const postsRef = collection(db, "posts");
-      const q = query(postsRef,
-        where("authorId", "==", id),
-        orderBy("createdAt", "desc"),
-        startAfter(lastVisible),
-        limit(5)
-      );
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        let posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        
-        posts = posts.filter(post => {
-          return post.visibility !== "friends" || friendStatus === "friends" || isCurrentUser;
-        });
-
-        dispatch(addPosts(posts, newLastVisible));
-      } else {
-        setNoMorePosts(true);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -48,6 +48,12 @@ export const PostCard = ({post}) => {
   }, [post.commentsCount]);
 
   useEffect(() => {
+    if(currentUser?.bookmarks.includes(post.id)){
+      setIsBookmarked(true);
+    }
+  }, [post.id, currentUser.bookmarks])
+
+  useEffect(() => {
     if (commentsContainerRef.current) {
       commentsContainerRef.current.scrollTop = commentsContainerRef.current.scrollHeight;
     }

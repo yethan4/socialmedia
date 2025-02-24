@@ -1,4 +1,4 @@
-import { addDoc, arrayUnion, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { uploadImage } from "./imageService";
 
@@ -142,4 +142,54 @@ export const sendMessage = async ({ chatId, currentUser, chatPartnerId, text, im
     console.error("Error sending message:", err);
     throw err;
   }
+};
+
+
+export const getChat = (chatId, callback) => {
+  return onSnapshot(doc(db, "chats", chatId), (doc) => {
+    callback(doc.data() || { messages: [] });
+  });
+};
+
+export const markChatAsSeen = async (chatId, userId) => {
+  try {
+    const chatRef = doc(db, "chats", chatId);
+    await updateDoc(chatRef, {
+      seenBy: arrayUnion(userId),
+    });
+  } catch (error) {
+    console.error("Error updating seenBy:", error);
+  }
+};
+
+export const updateUserChatStatus = async (userId, chatId) => {
+  if (document.hidden) return;
+
+  const docRef = doc(db, "userchats", userId);
+
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const updatedChats = data.chats.map((chat) =>
+        chat.chatId === chatId ? { ...chat, isSeen: true } : chat
+      );
+
+      await updateDoc(docRef, { chats: updatedChats });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const checkIfSeen = (chatId, chatPartnerId, setIsSeen) => {
+  if (!chatId) return () => {};
+
+  const chatRef = doc(db, "chats", chatId);
+  
+  return onSnapshot(chatRef, (chatSnapshot) => {
+    if (!chatSnapshot.exists()) return;
+    const seenBy = chatSnapshot.data().seenBy || [];
+    setIsSeen(seenBy.includes(chatPartnerId));
+  });
 };
