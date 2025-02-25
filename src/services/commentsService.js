@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, deleteDoc, query, where, orderBy, limit, startAfter } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, deleteDoc, query, where, orderBy, limit, startAfter, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { getDocuments } from "./generalService";
 
@@ -44,6 +44,22 @@ export const getComments = async (userId, fromDoc = null) => {
   const { docs: comments, lastDoc: lastVisible } = await getDocuments(q);
 
   return { comments, lastVisible };
+};
+
+
+export const subscribeToComments = (postId, callback) => {
+  const q = query(
+    collection(db, "comments"),
+    where("postId", "==", postId),
+    orderBy("createdAt", "asc")
+  );
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const fetchedComments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(fetchedComments);
+  });
+
+  return unsubscribe;
 };
 
 

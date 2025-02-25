@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { subscribeToComments } from "../services/commentsService";
 
 export const useComments = (postId, showComments) => {
   const [comments, setComments] = useState([]);
@@ -9,14 +8,7 @@ export const useComments = (postId, showComments) => {
   useEffect(() => {
     if (!showComments) return;
 
-    const q = query(
-      collection(db, "comments"),
-      where("postId", "==", postId),
-      orderBy("createdAt", "asc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedComments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const unsubscribe = subscribeToComments(postId, (fetchedComments) => {
       setComments(fetchedComments);
       setCommentsCount(fetchedComments.length);
     });

@@ -1,42 +1,11 @@
-import { collection, endAt, getDocs, limit, orderBy, query, startAt } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { db } from "../../../firebase/config";
+import { useState } from "react";
 import { SearchUserCard } from "./SearchUserCard";
+import useSearchUsers from "../../../hooks/useSearchUsers";
 
 export const SearchBarSm = ({inputSearchBar, setInputSearchBar}) => {
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResult, setSearchResult] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!inputSearchBar.trim()) {
-        setSearchResult([]);
-        return;
-      }
-
-      const q = query(
-        collection(db, "users"),
-        orderBy("username"),
-        startAt(inputSearchBar),
-        endAt(inputSearchBar + "\uf8ff"),
-        limit(5)
-      );
-
-      try {
-        const querySnapshot = await getDocs(q);
-        const results = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          username: doc.data().username,
-          avatar: doc.data().avatar,
-        }));
-        setSearchResult(results);
-      } catch (err) {
-        console.error("Error fetching search results:", err);
-      }
-    };
-
-    fetchData();
-  }, [inputSearchBar]);
+ 
+  const searchResult = useSearchUsers(inputSearchBar); 
 
   return (
     <div className="flex flex-col mt-1">
@@ -57,7 +26,7 @@ export const SearchBarSm = ({inputSearchBar, setInputSearchBar}) => {
           <div className="flex flex-col w-full mt-2 pb-4">
             {searchResult.length > 0 && (
               searchResult.map((user) => (
-                <SearchUserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} setSearchResult={setSearchResult} setIsSearching={setIsSearching}/>
+                <SearchUserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} setIsSearching={setIsSearching}/>
               ))
             )}
             {searchResult.length == 0 && inputSearchBar && (
