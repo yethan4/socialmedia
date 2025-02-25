@@ -1,4 +1,4 @@
-import { fetchDocument } from "../services/oneDocumentService";
+import { fetchDocument } from "../services/generalService";
 
 export const setUser = (user) => ({
   type: "SET_USER",

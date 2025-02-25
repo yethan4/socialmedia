@@ -1,24 +1,22 @@
-import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { db } from "../firebase/config";
 import { PostCard } from "../components";
+import { fetchDocument } from "../services/generalService";
 
 export const PostPage = () => {
   const { id } = useParams();
-  const [post, setPost] = useState(null); // Explicitly set `null` for better clarity.
-  const [error, setError] = useState(null); // Add error state for handling fetch issues.
+  const [post, setPost] = useState(null); 
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!id) return;
 
     const fetchPost = async () => {
       try {
-        const docRef = doc(db, "posts", id);
-        const docSnap = await getDoc(docRef);
+        const result = await fetchDocument(id, "posts")
 
-        if (docSnap.exists()) {
-          setPost({ id, ...docSnap.data() });
+        if (result) {
+          setPost({ id, ...result });
         } else {
           console.log("No such document");
           setError("No such document found.");

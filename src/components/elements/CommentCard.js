@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { fetchDocument } from "../../services/oneDocumentService"
+import { fetchDocument } from "../../services/generalService"
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";

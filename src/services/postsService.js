@@ -1,5 +1,6 @@
 import { addDoc, arrayRemove, arrayUnion, collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { getDocuments } from "./generalService";
 
 export const addPost = async(content, authorId, img, visibility) => {
   const docRef = await addDoc(collection(db, "posts"), {
@@ -32,81 +33,26 @@ export const changeVisibility = async(newStatus, postId) => {
   });
 }
 
-export const getPosts = async(qFor, userId=null, friends=null, bookmarks=null) => {
+export const getPosts = async (qFor, { userId = null, friends = null, bookmarks = null, fromDoc = null }) => {
   const postsRef = collection(db, "posts");
-  let q = "";
+  const constraints = [limit(5)];
+
   if (qFor === "friends") {
-    q = query(
-      postsRef, 
-      orderBy("createdAt", "desc"),
-      where("authorId", "in", friends),
-      limit(5)
-    );
+    constraints.push(orderBy("createdAt", "desc"), where("authorId", "in", friends));
   } else if (qFor === "explore") {
-    q = query(
-      postsRef, 
-      orderBy("createdAt", "desc"),
-      where("visibility", "==", "public"),
-      limit(5)
-    );
-  }else if(qFor === "userPosts"){
-    q = query(postsRef,
-      where("authorId", "==", userId),
-      orderBy("createdAt", "desc"),
-      limit(5)
-    );
-  }else if(qFor==="bookmarks"){
-    q = query(postsRef, 
-      where(documentId(), "in", bookmarks),
-      limit(5)
-    );
+    constraints.push(orderBy("createdAt", "desc"), where("visibility", "==", "public"));
+  } else if (qFor === "userPosts") {
+    constraints.push(where("authorId", "==", userId), orderBy("createdAt", "desc"));
+  } else if (qFor === "bookmarks") {
+    constraints.push(where(documentId(), "in", bookmarks));
   }
-  
-  const querySnapshot = await getDocs(q);
 
-  const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+  if (fromDoc) {
+    constraints.push(startAfter(fromDoc));
+  }
 
-  return {posts, lastVisible}
-}
+  const q = query(postsRef, ...constraints);
+  const { docs: posts, lastDoc: newLastVisible } = await getDocuments(q);
 
-export const getMorePosts = async(qFor, lastVisible, userId=null, friends=null, bookmarks=null) => {
-  const postsRef = collection(db, "posts");
-    let q 
-    if(qFor === "friends"){
-      q = query(postsRef, 
-        orderBy("createdAt", "desc"), 
-        startAfter(lastVisible),
-        where("authorId", "in", friends), 
-        limit(5));
-    }else if(qFor === "explore"){
-      q = query(postsRef, 
-        orderBy("createdAt", "desc"), 
-        startAfter(lastVisible),
-        where("visibility", "==", "public"),
-        limit(5));
-    }else if(qFor === "userPosts"){
-      q = query(postsRef,
-        where("authorId", "==", userId),
-        orderBy("createdAt", "desc"),
-        startAfter(lastVisible),
-        limit(5)
-      );
-    }else if(qFor === "bookmarks"){
-      q = query(postsRef, 
-        where(documentId(), "in", bookmarks),
-        startAfter(lastVisible),
-        limit(5)
-      );
-    }
-
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      const posts = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-      return {posts, newLastVisible}
-    } else {
-      return null
-    }
+  return posts.length > 0 ? { posts, newLastVisible } : null;
 };

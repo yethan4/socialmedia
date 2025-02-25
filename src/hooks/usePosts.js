@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPosts, setPosts } from "../actions/postsAction";
-import { getMorePosts, getPosts } from "../services/postsService";
+import { getPosts } from "../services/postsService";
 import { setLoading } from "../actions/chatsAction";
 
-
-export const usePosts = (category, userId=null, friendStatus=null) => {
+export const usePosts = (category, {userId=null, friendStatus=null}) => {
   const currentUser = useSelector(state => state.authState.userInfo)
   const lastVisible = useSelector(state => state.postsState.lastVisible);
 
@@ -37,30 +36,31 @@ export const usePosts = (category, userId=null, friendStatus=null) => {
         let postsData = { posts: [], lastVisible: null };
 
         if (category === "userPosts") {
-          postsData = await getPosts("userPosts", userId);
+          postsData = await getPosts("userPosts", {userId});
           postsData.posts = filterPosts(postsData.posts);
         } else if (category === "bookmarks") {
           if (!currentUser?.bookmarks?.length) {
             setNoMorePosts(true);
             return;
           }
-          postsData = await getPosts("bookmarks", null, null, currentUser.bookmarks);
+          postsData = await getPosts("bookmarks", {bookmarks: currentUser.bookmarks});
           postsData.posts = sortPosts(postsData.posts);
         } else {
           if (category === "friends" && currentUser.friends.length === 0) {
             setNoMorePosts(true);
             return;
           }
-          postsData = await getPosts(category, null, currentUser.friends);
+          postsData = await getPosts(category, {friends: currentUser.friends});
         }
-        const { posts, lastVisible } = postsData;
+
+        const { posts, newLastVisible } = postsData;
   
         if (posts.length === 0) {
           setNoMorePosts(true);
           return;
         }
   
-        dispatch(setPosts(posts, lastVisible));
+        dispatch(setPosts(posts, newLastVisible));
       } catch (err) {
         console.error(err);
       } finally {
@@ -86,7 +86,7 @@ export const usePosts = (category, userId=null, friendStatus=null) => {
         let postsData = { posts: [], newLastVisible: null };
         
         if(category==="userPosts"){
-          const result = await getMorePosts("userPosts", lastVisible, userId);
+          const result = await getPosts("userPosts", {fromDoc: lastVisible, userId});
 
           if(!result){
             setNoMorePosts(true);
@@ -96,7 +96,7 @@ export const usePosts = (category, userId=null, friendStatus=null) => {
           postsData.posts = filterPosts(result.posts);
           postsData.newLastVisible = result.newLastVisible;
         }else if(category === "bookmarks"){
-          const result = await getMorePosts("bookmarks", lastVisible, null, null, currentUser.bookmarks);
+          const result = await getPosts("bookmarks", {fromDoc: lastVisible, bookmarks: currentUser.bookmarks});
 
           if(!result){
             setNoMorePosts(true);
@@ -106,7 +106,7 @@ export const usePosts = (category, userId=null, friendStatus=null) => {
           postsData.posts = sortPosts(result.posts);
           postsData.newLastVisible = result.newLastVisible;
         }else{
-          const result  = await getMorePosts(category, lastVisible, null, currentUser.friends)
+          const result  = await getPosts(category, {fromDoc: lastVisible, friends:currentUser.friends})
 
           if(!result){
             setNoMorePosts(true);

@@ -1,4 +1,4 @@
-import { addDoc, arrayUnion, collection, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { uploadImage } from "./imageService";
 
@@ -193,3 +193,11 @@ export const checkIfSeen = (chatId, chatPartnerId, setIsSeen) => {
     setIsSeen(seenBy.includes(chatPartnerId));
   });
 };
+
+export const setTypingActivity = async(chatId, userId, isTyping) => {
+  const chatRef = doc(db, "chats", chatId);
+
+  await updateDoc(chatRef, {
+    currentlyTyping: isTyping ? arrayUnion(userId) : arrayRemove(userId),
+  });
+}

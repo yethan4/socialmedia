@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchDocument } from '../../services/oneDocumentService';
+import { fetchDocument } from '../../services/generalService';
 import { AvatarImage } from './AvatarImage';
 
 export const UserCard = ({userId}) => {

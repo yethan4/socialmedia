@@ -1,47 +1,56 @@
-import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
-import { db } from "../firebase/config";
-import { CommentNotificationCard, FriendRequestNotificationCard, FriendsNotificationCard, LikeNotificationCard } from "../components";
+import { CommentNotificationCard, FriendRequestNotificationCard, FriendsNotificationCard, InfiniteScrollObserver, LikeNotificationCard } from "../components";
 import { Sidebar } from "../components";
+import { getNotifications } from "../services/notificationsService";
 
 export const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
-  const [lastVisible, setLastVisible] = useState(null);
+  const [lastVisibleNotification, setLastVisibleNotification] = useState(null);
+  const [noMore, setNoMore] = useState(false);
+  const [loading, setLoading] = useState(false);
   
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
 
   useEffect(() => {
-    let unsubscribe;
-  
-    if (userInfo) {
-      const fetchNotifications = async (id) => {
-        const q = query(
-          collection(db, "notifications"),
-          where("toUserId", "==", id),
-          orderBy("timestamp", "desc"),
-          limit(10)
-        );
-  
-        unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const notifications = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setLastVisible(notifications[notifications.length - 1]);
-          setNotifications(notifications);
-        });
-      };
-  
-      fetchNotifications(userInfo.id);
+    if(!currentUser.id) return;
+    
+    const fetchNotifications = async (id) => {
+      const { notifications, lastVisible } = await getNotifications({id})
+      
+
+      if(notifications.length>0){
+        setLastVisibleNotification(lastVisible);
+        setNotifications(notifications);
+      }
     }
+
+    fetchNotifications(currentUser.id);
   
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
+  }, [currentUser.id]);
+
+  const loadMoreNotifications = async () => {
+      if (!lastVisibleNotification) {
+        setNoMore(true);
+        return;
+      }
+  
+      setLoading(true);
+  
+      try {
+        const {notifications, lastVisible} = await getNotifications({id:currentUser.id, fromDoc:lastVisibleNotification})
+          if(notifications.length>0){
+            setNotifications((prevNotifications) => [...prevNotifications, ...notifications])
+            setLastVisibleNotification(lastVisible);
+          }else{
+            setNoMore(true);
+          }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
-  }, [userInfo]);
   
 
   return (
@@ -49,7 +58,7 @@ export const NotificationsPage = () => {
       <Sidebar />
 
       <div className="flex-1 max-w-[1000px] pt-2 pb-6 mt-0 m-auto dark:text-slate-100 shadow dark:shadow-gray-600">
-        <h1 className="text-center text-xl font-semibold py-2">ALL NOTIFICATIONS ({notifications.length})</h1>
+        <h1 className="text-center text-xl font-semibold py-2">ALL NOTIFICATIONS </h1>
         <div className="flex flex-col gap-2">
         {
           notifications.map((notification) => {
@@ -67,6 +76,11 @@ export const NotificationsPage = () => {
         </div>
         
       </div>
+      {lastVisibleNotification && <InfiniteScrollObserver 
+          loadMore={loadMoreNotifications} 
+          loading={loading} 
+          hasMore={!noMore} 
+        />}
     </div>
     
   )

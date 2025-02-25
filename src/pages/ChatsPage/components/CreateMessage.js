@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import emoji from "../../../assets/emoji.png";
-import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../firebase/config";
 import { useInputHandler } from "../../../hooks/useInputHandler";
-import { sendMessage } from "../../../services/chatService";
+import { sendMessage, setTypingActivity } from "../../../services/chatService";
 
 export const CreateMessage = ({ chatId, chatPartnerId }) => {
   const [isSending, setIsSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const currentUser = useSelector((state) => state.authState.userInfo);
 
   const {
@@ -61,30 +60,21 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
   };
 
   useEffect(() => {
+    const newIsTyping = text.length > 0 || !!img?.url;
+
+    if (newIsTyping !== isTyping) {
+      setIsTyping(newIsTyping);
+    }
+  }, [text.length, img?.url]);
+
+  useEffect(() => {
     const updateCurrentlyTyping = async () => {
-      const chatRef = doc(db, "chats", chatId);
-      const chatSnapshot = await getDoc(chatRef);
-  
-      if (!chatSnapshot.exists()) return;
-  
-      const chatData = chatSnapshot.data();
-      const currentlyTyping = chatData.currentlyTyping || [];
-  
-      const shouldBeTyping = text.length > 0 || img.url;
-  
-      if (shouldBeTyping && !currentlyTyping.includes(currentUser.id)) {
-        await updateDoc(chatRef, {
-          currentlyTyping: arrayUnion(currentUser.id),
-        });
-      } else if (!shouldBeTyping && currentlyTyping.includes(currentUser.id)) {
-        await updateDoc(chatRef, {
-          currentlyTyping: arrayRemove(currentUser.id),
-        });
-      }
+      const isTyping = text.length > 0 || img.url;
+      await setTypingActivity(chatId, currentUser.id, isTyping)
     };
-  
+
     updateCurrentlyTyping();
-  }, [text, img?.url, chatId, currentUser.id]);
+  }, [isTyping]);
   
 
 

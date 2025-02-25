@@ -1,5 +1,6 @@
-import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, deleteDoc, query, where, orderBy, limit, startAfter } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { getDocuments } from "./generalService";
 
 export const updateCommentsCount = async (postId, i) => {
   const postRef = doc(db, "posts", postId);
@@ -25,6 +26,24 @@ export const deleteComment = async(commentId, postId) => {
   await deleteDoc(doc(db, "comments", commentId));
 
   await updateCommentsCount(postId, -1);
-}
+};
+
+export const getComments = async (userId, fromDoc = null) => {
+  const constraints = [
+    where("authorId", "==", userId),
+    orderBy("createdAt", "desc"),
+    limit(8),
+  ];
+
+  if (fromDoc) {
+    constraints.push(startAfter(fromDoc));
+  }
+
+  const q = query(collection(db, "comments"), ...constraints);
+
+  const { docs: comments, lastDoc: lastVisible } = await getDocuments(q);
+
+  return { comments, lastVisible };
+};
 
 

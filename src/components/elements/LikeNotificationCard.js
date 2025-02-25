@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { deleteDocument, fetchDocument } from "../../services/oneDocumentService";
+import { deleteDocument, fetchDocument } from "../../services/generalService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";

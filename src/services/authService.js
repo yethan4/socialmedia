@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword, signOut as firebaseSignOut, sendPasswor
 import { toast } from "react-toastify";
 import { auth, database, db } from "../firebase/config";
 import { logout } from "../actions/authAction";
-import { doc, getDoc, onSnapshot, setDoc} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, onSnapshot, query, setDoc, where} from "firebase/firestore";
 import { ref, onValue, onDisconnect, set} from "firebase/database";
 import { setPosts } from "../actions/postsAction";
 
@@ -137,4 +137,20 @@ export const monitorUserPresence = (userId) => {
       });
     }
   });
+};
+
+export const isUsernameTaken = async (username) => {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("username", "==", username), limit(1));
+
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
+};
+
+export const isEmailTaken = async (email) => {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("email", "==", email), limit(1));
+
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
 };

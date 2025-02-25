@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AvatarImage, CommentCard, CreateComment, ImageViewer, UserCard } from "..";
-import { deleteDocument, fetchDocument } from "../../services/oneDocumentService";
+import { deleteDocument, fetchDocument } from "../../services/generalService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";

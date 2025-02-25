@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../utils/timeUtils";
-import { deleteDocument } from "../../services/oneDocumentService";
+import { deleteDocument } from "../../services/generalService";
 import { useCallback, useEffect} from "react";
 import { AvatarImage } from "./AvatarImage";
 import { useDispatch, useSelector } from "react-redux";

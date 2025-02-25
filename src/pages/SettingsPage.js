@@ -2,9 +2,10 @@ import { useRef, useState } from "react";
 import { Sidebar } from "../components";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword} from "firebase/auth";
 import { toast } from "react-toastify";
-import { auth, db } from "../firebase/config";
-import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { auth } from "../firebase/config";
 import { Link } from "react-router-dom";
+import { isUsernameTaken } from "../services/authService";
+import { updateDocument } from "../services/generalService";
 
 export const SettingsPage = () => {
   const [choice, setChoice] = useState("");
@@ -67,17 +68,13 @@ export const SettingsPage = () => {
     }
 
     try {
-      const usersRef = collection(db, "users");
-      const qName = query(usersRef, where("username", "==", newUsername));
-      const queryNameSnapshot = await getDocs(qName);
-      if (!queryNameSnapshot.empty){
+      const result = await isUsernameTaken(newUsername)
+      if (result){
         return toast.warn("Select another username")
       }
 
-      const userDocRef = doc(db, "users", user.uid);
-      await updateDoc(userDocRef, {
-        username: newUsername
-      });
+      await updateDocument("users", user.uid, {username: newUsername});
+
       toast.success("Username updated successfully.");
       usernameRef.current.value = "";
     } catch (err) {

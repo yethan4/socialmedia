@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { db } from "../firebase/config";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { registerUser } from "../services/authService";
+import { isEmailTaken, isUsernameTaken, registerUser } from "../services/authService";
 
 export const Register = () => {
   const [formData, setFormData] = useState({
@@ -49,19 +47,17 @@ export const Register = () => {
       return toast.warn("Passwords do not match.");
     }
 
-    // VALIDATE UNIQUE USERNAME
-    const usersRef = collection(db, "users");
-    const qName = query(usersRef, where("username", "==", username));
-    const queryNameSnapshot = await getDocs(qName);
-    if (!queryNameSnapshot.empty) {
-      return toast.warn("This username is already taken.");
+    const [usernameTaken, emailTaken] = await Promise.all([
+      isUsernameTaken(username),
+      isEmailTaken(email),
+    ]);
+  
+    if (usernameTaken) {
+      console.log("This username is already taken.");
     }
-
-    // VALIDATE UNIQUE EMAIL
-    const qEmail = query(usersRef, where("email", "==", email));
-    const queryEmailSnapshot = await getDocs(qEmail);
-    if (!queryEmailSnapshot.empty) {
-      return toast.warn("This email is already registered.");
+  
+    if (emailTaken) {
+      console.log("This email is already registered.");
     }
 
     await registerUser(username, email, password);

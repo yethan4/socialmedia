@@ -1,5 +1,6 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, increment, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, increment, limit, orderBy, query, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { getDocuments } from "./generalService";
 
 export const giveLike = async (userId, postId, authorId) => {
   try{
@@ -57,18 +58,24 @@ export const getLike = async(postId, userId) => {
   return querySnapshot.docs[0]?.id
 };
 
-export const getLikes = async(postId) => {
-  const q = query(
-    collection(db, "likes"),
-    where("postId", "==", postId),
-    orderBy("timestamp", "desc")
-  );
-  const querySnapshot = await getDocs(q);
+export const getLikes = async(qFor, {postId=null, userId=null, fromDoc=null}) => {
+  const constraints = [
+    limit(8),
+  ];
 
-  if (!querySnapshot.empty) {
-    const likesResponse = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    return likesResponse
+  if(qFor==="users"){
+    constraints.push(where("postId", "==", postId), orderBy("timestamp", "desc"));
+  }else if(qFor==="likes"){
+    constraints.push(where("userId", "==", userId), orderBy("timestamp", "desc"));
+  };
+
+  if (fromDoc) {
+    constraints.push(startAfter(fromDoc));
   }
 
-  return null;
+  const q = query(collection(db, "likes"), ...constraints);
+
+  const { docs: likes, lastDoc: lastVisible } = await getDocuments(q);
+
+  return { likes, lastVisible };
 }

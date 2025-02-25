@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { deleteDocument } from "../../services/oneDocumentService";
+import { deleteDocument } from "../../services/generalService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
 import { AvatarImage } from "./AvatarImage";

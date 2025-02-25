@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchDocument } from '../../services/oneDocumentService';
-import { doc, getDoc, updateDoc} from 'firebase/firestore';
-import { db } from '../../firebase/config';
-import { AvatarImage, CreatePost, FriendCard, PostCard} from '../../components';
-import { useDispatch, useSelector } from 'react-redux';
+import { fetchDocument, updateDocument } from '../../services/generalService';
+import { AvatarImage, CreatePost, FriendCard, InfiniteScrollObserver, PostCard} from '../../components';
+import { useSelector } from 'react-redux';
 
 import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
@@ -35,7 +33,6 @@ export const Profile = () => {
   const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const currentUser = useSelector(state => state.authState.userInfo);
   const posts = useSelector(state => state.postsState.posts);
   const lastVisible = useSelector(state => state.postsState.lastVisible);
@@ -64,7 +61,7 @@ export const Profile = () => {
   const {
     noMorePosts,
     loadMorePosts
-  } = usePosts("userPosts", id, friendStatus)
+  } = usePosts("userPosts", {userId:id, friendStatus:friendStatus})
 
   //to be corrected
   const changeTab = (tabName) => {
@@ -114,14 +111,9 @@ export const Profile = () => {
 
       }
 
-      if(userDetails.bgImg) await deleteImage(userDetails.bgImg);
-  
-      const docRef = doc(db, "userDetails", currentUser.id);
-  
-      await updateDoc(docRef, {
-        bgImg: imgUrl 
-      });
-      console.log(imgUrl)
+      if(userDetails.bgImg) await deleteImage(userDetails.bgImg); 
+
+      await updateDocument("userDetails", currentUser.id, {bgImg: imgUrl});
   
       setBgImg({ file: "", url: imgUrl });
       setUserDetails(prevState => ({
@@ -151,12 +143,7 @@ export const Profile = () => {
         await deleteImage(currentUser.avatar);
       }
   
-      const docRef = doc(db, "users", currentUser.id);
-  
-      await updateDoc(docRef, {
-        avatar: imgUrl 
-      });
-      console.log(imgUrl)
+      await updateDocument("users", currentUser.id, {avatar: imgUrl });
   
       setAvatarImg({ file: "", url: "" });
     }catch(err){
@@ -173,12 +160,8 @@ export const Profile = () => {
   const handleSaveAboutMe = async() => {
     setLoadingData(true);
     try{
+      await updateDocument("userDetails", currentUser.id, {aboutMe: textAboutMe});
 
-      const docRef = doc(db, "userDetails", currentUser.id);
-
-      await updateDoc(docRef, {
-        aboutMe: textAboutMe
-      });
       setUserDetails(prevState => ({
         ...prevState,
         aboutMe: textAboutMe
@@ -220,50 +203,20 @@ export const Profile = () => {
   }, [id]);
 
   useEffect(() => {
-    const fetchUserDetails = async (id) => {
-      try {
-        const docRef = doc(db, "userDetails", id);
-        const docSnap = await getDoc(docRef);
+    if (!id) return;
 
-        if (docSnap.exists()) {
-          return docSnap.data();
-        } else {
-          console.log("No such document");
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
+    const fetchUserDetails = async () => {
+      const details = await fetchDocument(id, "userDetails");
 
-    if (id) {
-      fetchUserDetails(id).then((details) => {
+      if (details) {
         setUserDetails(details);
-        setBgImg({ file: "", url: details?.bgImg ? details.bgImg : "" });
-        setTextAboutMe(details?.aboutMe ? details.aboutMe : "");
-      });
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && lastVisible && !loading) {
-          loadMorePosts();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
+        setBgImg({ file: "", url: details.bgImg || "" });
+        setTextAboutMe(details.aboutMe || "");
       }
     };
-  }, [lastVisible, loading, loadMorePosts]);
+
+    fetchUserDetails();
+  }, [id])
 
   useEffect(() => {
     const textarea = aboutMeRef.current;
@@ -456,11 +409,11 @@ export const Profile = () => {
                 <span className="px-10 py-4 text-xl rounded w-full text-center dark:text-slate-50">{userData?.username} doesn't have any posts yet</span>
               )}
             </div>
-            {!noMorePosts && (
-              <div ref={observerRef} className="h-20 flex justify-center mb-10">
-                <img src={loadingGif} alt="loading gif" className="h-8" />
-              </div>
-            )}
+            <InfiniteScrollObserver 
+              loadMore={loadMorePosts} 
+              loading={loading} 
+              hasMore={!noMorePosts} 
+            />
           </section>
         ) : (
           <section className="flex gap-x-4 h-[100vh] justify-center gap-y-2  sm:flex-wrap pb-16 ">

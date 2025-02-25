@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFriendRequest, undoFriendRequest } from "../services/friendsService";
 import { useSelector } from "react-redux";
-import { fetchDocument } from "../services/oneDocumentService";
+import { fetchDocument } from "../services/generalService";
 
 export const useFriendStatus = (friendId) => {
   const [friendStatus, setFriendStatus] = useState("strangers");

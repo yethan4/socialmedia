@@ -46,8 +46,8 @@ export const useLikes = (postId, userId, authorId) => {
   const handleLikesDisplay = useCallback(async () => {
       setShowLikes(true);
       try{
-        const likesResponse = await getLikes(postId)
-        setLikesList(likesResponse)
+        const {likes} = await getLikes("users", {postId})
+        setLikesList(likes)
   
       }catch(err){
         console.log(err)

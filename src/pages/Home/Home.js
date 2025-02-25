@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FriendsSidebar } from "./components";
-import { CreatePost, PostCard, Sidebar } from "../../components";
+import { CreatePost, InfiniteScrollObserver, PostCard, Sidebar } from "../../components";
 
 import { setPosts } from "../../actions/postsAction";
 
-import loadingGif from "../../assets/loading.gif"
 import { useTitle } from "../../hooks/useTitle";
 
 import { HomeSkeleton } from "../../components/skeletons"
@@ -19,17 +18,14 @@ export const Home = () => {
 
   const dispatch = useDispatch();
   const posts = useSelector(state => state.postsState.posts);
-  const lastVisible = useSelector(state => state.postsState.lastVisible);
   const loading = useSelector(state => state.postsState.loading);
-
-  const observerRef = useRef(null);
 
   const {
     noMorePosts,
     setNoMorePosts,
     postsLoaded,
     loadMorePosts
-  } = usePosts(activeTab)
+  } = usePosts(activeTab, {})
 
   const changeTab = (tab) => {
     if(tab===activeTab) return;
@@ -37,27 +33,6 @@ export const Home = () => {
     setNoMorePosts(false);
     dispatch(setPosts([], null));
   }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && lastVisible && !loading) {
-          loadMorePosts();
-        }
-      },
-      { threshold: 1.0 }
-    );
-  
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-  
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [lastVisible, loading]);
 
   if (loading && !postsLoaded) {
     return <HomeSkeleton />;
@@ -100,11 +75,11 @@ export const Home = () => {
             )}
           </div>
           {/* Element obserwowany na dole */}
-          {!noMorePosts && (
-            <div ref={observerRef} className="h-20 flex justify-center mb-10">
-              <img src={loadingGif} alt="loading gif" className="h-8" />
-            </div>
-          )}
+          <InfiniteScrollObserver 
+            loadMore={loadMorePosts} 
+            loading={loading} 
+            hasMore={!noMorePosts} 
+          />
         </div>
       </div>
       <FriendsSidebar />
