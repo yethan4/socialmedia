@@ -39,7 +39,7 @@ export const PostCard = ({post}) => {
     comments, 
     commentsCount,
     setCommentsCount,
-   } = useComments(post.id, showComments);
+   } = useComments(post.id, showComments, post.authorId);
 
   const commentsContainerRef = useRef(null);
 

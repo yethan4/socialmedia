@@ -29,6 +29,13 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
     return posts
   }
 
+  const filterBlockedUsersPosts = (posts) => {
+    const blockedIds = [...new Set([...currentUser.blockedUsers, ...currentUser.blockedBy])]
+    posts = posts.filter(post => !blockedIds.includes(post.authorId))
+
+    return posts
+  }
+
   useEffect(() => {
     const fetchPosts = async () => {
       dispatch(setLoading(true));
@@ -54,13 +61,15 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
         }
 
         const { posts, newLastVisible } = postsData;
-  
+
         if (posts.length === 0) {
           setNoMorePosts(true);
           return;
         }
+
+        const filteredPosts = filterBlockedUsersPosts(posts)
   
-        dispatch(setPosts(posts, newLastVisible));
+        dispatch(setPosts(filteredPosts, newLastVisible));
       } catch (err) {
         console.error(err);
       } finally {
@@ -117,7 +126,8 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
 
         if(!postsData.posts.empty){
           const { posts, newLastVisible } = postsData;
-          dispatch(addPosts(posts, newLastVisible));
+          const filteredPosts = filterBlockedUsersPosts(posts)
+          dispatch(addPosts(filteredPosts, newLastVisible));
         }else{
           setNoMorePosts(true)
         }

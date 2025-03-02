@@ -10,7 +10,7 @@ import { createNewChat } from '../../services/chatService';
 import { useFriendStatus } from '../../hooks/useFriendStatus';
 import { useImageLoader } from '../../hooks/useImageLoader';
 import { usePosts } from '../../hooks/usePosts';
-import { blockUser } from '../../services/usersService';
+import { blockUser, unblockUser } from '../../services/usersService';
 import { useBlockStatus } from '../../hooks/useBlockStatus';
 
 export const Profile = () => {
@@ -230,6 +230,8 @@ export const Profile = () => {
     }
   }, [textAboutMe, isAboutMeEdit]);
 
+  console.log(currentUser)
+
   return (
     <div className="mt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
       <div className="relative shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg max-lg:pb-8">
@@ -410,8 +412,8 @@ export const Profile = () => {
               <button 
                 className="flex items-center justify-center w-full pl-3 pr-4 py-2 text-lg bg-gray-600 dark:bg-gray-700 text-gray-50 hover:bg-gray-500 dark:hover:bg-gray-500 whitespace-nowrap rounded-xl"
                 onClick={() => {
-                  setShowConfirmation("block");
                   setDropMenu(false);
+                  unblockUser(currentUser.id, id);
                 }}  
               >
                 <i className="bi bi-ban mr-1"></i> Unblock {userData?.username}

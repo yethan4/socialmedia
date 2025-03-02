@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { giveLike, removeLike, getLike, getLikes } from "../services/likeService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { likePost, dislikePost } from "../actions/postsAction";
 
 export const useLikes = (postId, userId, authorId) => {
@@ -8,6 +8,8 @@ export const useLikes = (postId, userId, authorId) => {
   const [likesList, setLikesList] = useState([]);
   const [showLikes, setShowLikes] = useState(false);
   const dispatch = useDispatch();
+
+  const currentUser = useSelector(state => state.authState.userInfo)
 
   useEffect(() => {
     const fetchLike = async () => {
@@ -43,11 +45,20 @@ export const useLikes = (postId, userId, authorId) => {
     }
   }, [postId, likeId, dispatch]);
 
+  const filterBlockedUsersLikes = (likes) => {
+    const blockedIds = [...new Set([...currentUser.blockedUsers, ...currentUser.blockedBy])]
+    
+    if(authorId != currentUser.id) likes = likes.filter(like => !blockedIds.includes(like.userId))
+    
+    return likes
+  }
+
   const handleLikesDisplay = useCallback(async () => {
       setShowLikes(true);
       try{
         const {likes} = await getLikes("users", {postId})
-        setLikesList(likes)
+        const filteredLikes = filterBlockedUsersLikes(likes)
+        setLikesList(filteredLikes)
   
       }catch(err){
         console.log(err)
