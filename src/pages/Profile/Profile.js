@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchDocument, updateDocument } from '../../services/generalService';
-import { AvatarImage, CreatePost, FriendCard, InfiniteScrollObserver, PostCard} from '../../components';
+import { AvatarImage, ConfirmBox, CreatePost, FriendCard, InfiniteScrollObserver, PostCard} from '../../components';
 import { useSelector } from 'react-redux';
 
-import loadingGif from "../../assets/loading.gif";
 import { useTitle } from '../../hooks/useTitle';
 import { deleteImage, uploadImage } from '../../services/imageService';
 import { createNewChat } from '../../services/chatService';
 import { useFriendStatus } from '../../hooks/useFriendStatus';
 import { useImageLoader } from '../../hooks/useImageLoader';
 import { usePosts } from '../../hooks/usePosts';
+import { blockUser } from '../../services/usersService';
+import { useBlockStatus } from '../../hooks/useBlockStatus';
 
 export const Profile = () => {
   const { id } = useParams();
@@ -30,23 +31,26 @@ export const Profile = () => {
   })
   const [isAboutMeEdit, setIsAboutMeEdit] = useState(false);
   const [textAboutMe, setTextAboutMe] = useState("");
+  const [dropMenu, setDropMenu] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  const { blockStatus }= useBlockStatus(id)
+
   const { imageLoaded, handleLoadImage } = useImageLoader();
 
   const navigate = useNavigate();
   const currentUser = useSelector(state => state.authState.userInfo);
   const posts = useSelector(state => state.postsState.posts);
-  const lastVisible = useSelector(state => state.postsState.lastVisible);
   const loading = useSelector(state => state.postsState.loading);
 
   const scrollTargetRef = useRef();
-  const observerRef = useRef(null);
   const aboutMeRef = useRef();
 
   const activeTabClass = "text-gray-800 py-2 px-6 border-b-2 cursor-pointer dark:text-slate-100";
   const tabClass = "text-gray-600 py-2 px-6 text-xl cursor-pointer dark:text-slate-300";
 
   useTitle(`- Profile`);
-  
+
   const {
       friendStatus,
       dropRemove,
@@ -224,7 +228,7 @@ export const Profile = () => {
         textarea.style.height = "auto"; 
         textarea.style.height = `${textarea.scrollHeight}px`; 
     }
-  }, [textAboutMe, isAboutMeEdit]); 
+  }, [textAboutMe, isAboutMeEdit]);
 
   return (
     <div className="mt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
@@ -232,7 +236,7 @@ export const Profile = () => {
         <div 
           className="relative h-[35vh] bg-cover bg-center border-b"
           key={bgImg.url} 
-          style={{ backgroundImage: imageLoaded ? `url(${bgImg.url})` : 'none', }}
+          style={{ backgroundImage: imageLoaded && !blockStatus.isCuBlocked && !blockStatus.hasCuBlocked  ? `url(${bgImg.url})` : 'none', }}
         >
           {!imageLoaded && (
             <div className="absolute inset-0 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
@@ -283,7 +287,14 @@ export const Profile = () => {
                   className="w-48 h-48 rounded-full border-4 border-white object-cover"
                 />
               ) : (
-              <AvatarImage src={userData?.avatar} size={48}/>
+
+             ( !blockStatus.isCuBlocked ? (
+              <AvatarImage src={userData?.avatar} size={48}/> 
+             ) : (
+              <div className="w-48 h-48 rounded-full border-2 border-white bg-gray-300 dark:bg-gray-700 dark:bg-gray-600"/>
+             )
+               )
+
               )}
               {isCurrentUser && (
                 <div>
@@ -319,55 +330,106 @@ export const Profile = () => {
         </div>
 
         <div className="mt-16 text-center px-4 pb-6">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{userData?.username}</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{!blockStatus.isCuBlocked ? userData?.username : "You are blocked"}</h2>
         </div>
+        
         <div className="flex max-lg:justify-center absolute bottom-2 left-1 right-1">
-          {friendStatus === "pendingSent" && (
-            <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleUndoRequest}>
-              <i className="bi bi-person-dash-fill mr-1"></i>
-              Remove request
-            </button>
-          )}
-          {friendStatus === "pendingReceived" && (
-            <>
-              <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleAddFriend}>
-                <i className="bi bi-person-fill-add mr-1"></i>
-                Accept
+
+          
+  {!blockStatus.isCuBlocked && !blockStatus.hasCuBlocked && (
+    <>
+      {friendStatus === "pendingSent" && (
+        <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleUndoRequest}>
+          <i className="bi bi-person-dash-fill mr-1"></i>
+          Remove request
+        </button>
+      )}
+      {friendStatus === "pendingReceived" && (
+        <>
+          <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleAddFriend}>
+            <i className="bi bi-person-fill-add mr-1"></i>
+            Accept
+          </button>
+          <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleRejectRequest}>
+            <i className="bi bi-person-dash-fill mr-1"></i>
+            Reject
+          </button>
+        </>
+      )}
+      {friendStatus === "strangers" && (
+        <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleSentRequest}>
+          <i className="bi bi-person-fill-add mr-1"></i>
+          Add Friend
+        </button>
+      )}
+      {friendStatus === "friends" && (
+        <div className="relative" onClick={() => setDropRemove(!dropRemove)}>
+          <button className="pl-4 pr-2 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
+            <i className="bi bi-person-check-fill mr-1"></i>
+            Friends<i className="bi bi-three-dots ml-2"></i>
+          </button>
+          {dropRemove && (
+            <div className="absolute right-2 top-11 bg-gray-50 shadow w-28 text-center hover:bg-gray-200 dark:bg-gray-500 dark:hover:bg-gray-700">
+              <button className="px-2 py-1 rounded" onClick={() => setShowConfirmation("remove")}>
+                Remove
               </button>
-              <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleRejectRequest}>
-                <i className="bi bi-person-dash-fill mr-1"></i>
-                Reject
-              </button>
-            </>
-          )}
-          {friendStatus === "strangers" && (
-            <button className="px-4 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200" onClick={handleSentRequest}>
-              <i className="bi bi-person-fill-add mr-1"></i>
-              Add Friend
-            </button>
-          )}
-          {friendStatus === "friends" && (
-            <div className="relative" onClick={() => setDropRemove(!dropRemove)}>
-              <button className="pl-4 pr-2 py-2 mr-2 shadow dark:bg-gray-800 dark:text-slate-200">
-                <i className="bi bi-person-check-fill mr-1"></i>
-                Friends<i className="bi bi-three-dots ml-2"></i>
-              </button>
-              {dropRemove && <div className="absolute right-2 top-11 bg-gray-50 shadow w-28 text-center hover:bg-gray-200 dark:bg-gray-500 dark:hover:bg-gray-700">
-                <button className="px-2 py-1 rounded" onClick={handleRemoveFriend}>Remove</button>
-              </div>}
             </div>
           )}
-          {!isCurrentUser && 
-          <button className="px-4 py-2 bg-blue-600 text-slate-50" onClick={handleMessage}>
-            <i className="bi bi-chat mr-1"></i>
-            Message
-          </button>}
         </div>
+      )}
+      {!isCurrentUser && (
+        <button className="px-4 py-2 bg-blue-600 text-slate-50" onClick={handleMessage}>
+          <i className="bi bi-chat mr-1"></i>
+          Message
+        </button>
+      )}
+    </>
+  )}
+  <div className="relative ml-auto flex items-center">
+    {!isCurrentUser && !blockStatus.isCuBlocked && (
+      <>
+        <button 
+          className="h-fit px-1 text-gray-900 dark:text-gray-100 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700"
+          onClick={() => setDropMenu(!dropMenu)}
+        >
+          <i className="bi bi-three-dots-vertical"></i>
+        </button>
+        {dropMenu && (
+          <div className="absolute top-8 right-0">
+            {!blockStatus.hasCuBlocked ? (
+              <button 
+                className="flex items-center justify-center w-full pl-3 pr-4 py-2 text-lg bg-red-500 dark:bg-red-600 text-white hover:bg-red-400 dark:hover:bg-red-500 whitespace-nowrap rounded-xl"
+                onClick={() => {
+                  setShowConfirmation("block");
+                  setDropMenu(false);
+                }}  
+              >
+                <i className="bi bi-ban mr-1"></i> Block {userData?.username}
+              </button>
+            ) : (
+              <button 
+                className="flex items-center justify-center w-full pl-3 pr-4 py-2 text-lg bg-gray-600 dark:bg-gray-700 text-gray-50 hover:bg-gray-500 dark:hover:bg-gray-500 whitespace-nowrap rounded-xl"
+                onClick={() => {
+                  setShowConfirmation("block");
+                  setDropMenu(false);
+                }}  
+              >
+                <i className="bi bi-ban mr-1"></i> Unblock {userData?.username}
+              </button>
+            )}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+</div>
+
+
       </div>
 
       <div className="flex mt-8 max-lg:flex-col">
         <div className="lg:sticky top-20 w-96 h-fit max-lg:m-auto max-lg:mb-4">
-          <div className="w-full h-fit shadow dark:shadow-gray-800 dark:shadow-sm flex flex-col justify-center items-center px-4 py-6 dark:text-gray-200">
+          {!blockStatus.isCuBlocked && !blockStatus.hasCuBlocked && (<div className="w-full h-fit shadow dark:shadow-gray-800 dark:shadow-sm flex flex-col justify-center items-center px-4 py-6 dark:text-gray-200">
             <div className="font-semibold mb-1">
               <span>About Me</span>
               {isCurrentUser && !isAboutMeEdit && <button className="max-sm:px-3 max-sm:py-2 px-2 py-1 ml-2 bg-gray-700 text-slate-50 rounded-full hover:bg-gray-500" onClick={() => setIsAboutMeEdit(true)}><i className="bi bi-pencil-square" ></i></button>}
@@ -388,10 +450,10 @@ export const Profile = () => {
               </div>
               </>
             )}
-          </div>
+          </div>)}
         </div>
 
-        <div className="lg:ml-16 flex-1 dark:bg-gray-900">
+        {!blockStatus.isCuBlocked && !blockStatus.hasCuBlocked && (<div className="lg:ml-16 flex-1 dark:bg-gray-900">
 
           <div className="z-40 sticky top-14 pt-2 mb-2 bg-white border-b-2 flex justify-center text-2xl font-semibold dark:bg-gray-900 dark:border-gray-700">
             <div className={activeTab==="posts" ? activeTabClass : tabClass} onClick={() => changeTab("posts")}>Posts</div>
@@ -425,8 +487,32 @@ export const Profile = () => {
             }
           </section>
         )}
-        </div>
+        </div>)}
       </div>
+
+      {showConfirmation==="remove" && (
+        <ConfirmBox 
+          question={`Are you sure you want to remove ${userData.username} from friends?`}
+          answers={["Remove", "Cancel"]}
+          handleYes={() => {
+            handleRemoveFriend();
+            setShowConfirmation(false);
+          }}
+          handleNo={() => setShowConfirmation(false)}
+        />
+      )}
+
+      {showConfirmation==="block" && (
+        <ConfirmBox 
+          question={`Are you sure you want to block ${userData.username}?`}
+          answers={["Block", "Cancel"]}
+          handleYes ={() =>{
+            blockUser(currentUser.id, id);
+            setShowConfirmation(false);
+          }}
+          handleNo={() => setShowConfirmation(false)}
+        />
+      )}
     </div>
   );
 };

@@ -7,6 +7,8 @@ import { TypingIndicator } from '../../../animations/TypingIndicator';
 import { formatDisplayDate } from '../../../utils/timeUtils';
 import { AvatarImage } from '../../../components';
 import { getChat, markChatAsSeen, updateUserChatStatus, checkIfSeen } from '../../../services/chatService';
+import { useBlockStatus } from '../../../hooks/useBlockStatus';
+import { unblockUserInChat } from '../../../services/usersService';
 
 export const ChatView = ({ chatId, chatPartnerId }) => {
   const [chat, setChat] = useState({ messages: [] });
@@ -14,6 +16,8 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showChatInfo, setShowChatInfo] = useState(false);
   const [isSeen, setIsSeen] = useState(false);
+
+  const {blockStatus, updateBlockStatus} = useBlockStatus(chatPartnerId);
 
   const endRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -169,10 +173,27 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
           <div ref={endRef}></div>
         </div>
 
-        <CreateMessage chatId={chatId} chatPartnerId={chatPartnerId} />
+        {!blockStatus.hasCuBlockedChat && !blockStatus.isCuChatBlocked  && (<CreateMessage chatId={chatId} chatPartnerId={chatPartnerId} />)}
+        {blockStatus.hasCuBlockedChat && (
+          <div className="py-8 border-t dark:border-gray-500 flex flex-col items-center">
+            <span>If you want to continue the conversation, unblock {chatPartner?.username}.</span>
+            <button 
+              className="px-10 py-2 mt-2 font-bold text-white bg-gray-500 dark:bg-gray-700 rounded-xl hover:bg-gray-600"
+              onClick={() => {
+                unblockUserInChat(currentUser.id, chatPartnerId);
+                updateBlockStatus("hasCuBlockedChat", false);
+              }}
+              >Unblock</button>
+          </div>
+        )}
+        {!blockStatus.hasCuBlockedChat && blockStatus.isCuChatBlocked && (
+          <div className="py-8 border-t dark:border-gray-500 flex flex-col items-center">
+            <span className="font-semibold text-red-500">{chatPartner?.username} blocked you</span>
+          </div>
+        )}
       </div>
 
-      {showChatInfo && <ChatInfo chat={chat} chatPartner={chatPartner} />}
+      {showChatInfo && <ChatInfo chat={chat} chatPartner={chatPartner} hasCuBlockedChat={blockStatus.hasCuBlockedChat} />}
     </div>
   );
 };

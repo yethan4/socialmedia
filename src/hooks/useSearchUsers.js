@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSearchResults } from "../services/searchService";
+import { getSearchResults } from "../services/usersService";
 
 const useSearchUsers = (inputSearchBar) => {
   const [searchResult, setSearchResult] = useState([]);

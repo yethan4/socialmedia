@@ -29,3 +29,5 @@ export { DropDownChats } from "./elements/DropDownChats";
 
 export { AvatarImage } from "./elements/AvatarImage";
 export { InfiniteScrollObserver } from "./elements/InfiniteScrollObserver";
+
+export { ConfirmBox } from "./elements/ConfirmBox";

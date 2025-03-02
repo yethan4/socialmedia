@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { AvatarImage, CommentCard, CreateComment, ImageViewer, UserCard } from "..";
+import { AvatarImage, CommentCard, ConfirmBox, CreateComment, ImageViewer, UserCard } from "..";
 import { deleteDocument, fetchDocument } from "../../services/generalService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { useDispatch, useSelector } from "react-redux";
@@ -84,6 +84,8 @@ export const PostCard = ({post}) => {
       setShowDeleteConfirmation(false);
     }catch(err){
       console.log(err)
+    }finally{
+      setShowDeleteConfirmation(false);
     }
   }, [post.id, post.img, dispatch]);
 
@@ -246,27 +248,12 @@ export const PostCard = ({post}) => {
       {showComments && (<CreateComment postId={post?.id} postAuthorId={author?.id} setScrollCommentToggle={setScrollCommentToggle}/>)}
 
       {showDeleteConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-            <p className="text-lg font-semibold text-gray-900 dark:text-gray-200 mb-4">
-              Are you sure you want to delete this post?
-            </p>
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirmation(false)}
-                className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmBox 
+          question="Are you sure you want to delete this post?" 
+          answers={["Delete", "Cancel"]}
+          handleYes={handleDelete}
+          handleNo={() => setShowDeleteConfirmation(false)}
+        />
       )}
       
     </div>

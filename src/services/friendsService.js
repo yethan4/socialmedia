@@ -131,8 +131,6 @@ export const removeFriend = async(currentUserId, userId) => {
       friends: arrayRemove(currentUserId),
     });
 
-    toast.info("Friend has been deleted.")
-
   }catch(err){
     console.log(err)
   }
