@@ -9,8 +9,17 @@ export const NotificationsPage = () => {
   const [lastVisibleNotification, setLastVisibleNotification] = useState(null);
   const [noMore, setNoMore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deletedId, setDeletedId] = useState(null);
   
   const currentUser = useSelector(state => state.authState.userInfo);
+
+  useEffect(() => {
+    if (deletedId) {
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter(notification => notification.id !== deletedId)
+      );
+    }
+  }, [deletedId]);
 
   useEffect(() => {
     if(!currentUser.id) return;
@@ -63,13 +72,13 @@ export const NotificationsPage = () => {
         {
           notifications.map((notification) => {
             if(notification.type=="like"){
-              return <LikeNotificationCard key={notification.id} notification={notification} />
+              return <LikeNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
             }else if(notification.type=="comment"){
-              return <CommentNotificationCard key={notification.id} notification={notification} />
+              return <CommentNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
             }else if(notification.type=="friendReqeust"){
-              return <FriendRequestNotificationCard key={notification.id} notification={notification} />
+              return <FriendRequestNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
             }else if(notification.type=="friends"){
-              return <FriendsNotificationCard key={notification.id} notification={notification} />
+              return <FriendsNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
             }
           })
         }

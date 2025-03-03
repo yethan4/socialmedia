@@ -6,7 +6,7 @@ import { addFriend, rejectFriendRequest } from "../../services/friendsService";
 import { AvatarImage } from "./AvatarImage";
 import { fetchUserIfNeeded } from "../../actions/usersAction";
 
-export const FriendRequestNotificationCard = ({notification, setDropNotifications}) => {
+export const FriendRequestNotificationCard = ({notification, setDropNotifications, setDeletedId}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -35,6 +35,7 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
   const handleDelete = useCallback(async(e) => {
     e.stopPropagation();
     try{
+      setDeletedId(notification.id);
       await rejectFriendRequest(currentUser.id, notification.fromUserId)
     }catch(err){
       console.log(err)

@@ -193,7 +193,7 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
         )}
       </div>
 
-      {showChatInfo && <ChatInfo chat={chat} chatPartner={chatPartner} hasCuBlockedChat={blockStatus.hasCuBlockedChat} />}
+      {showChatInfo && <ChatInfo chat={chat} chatPartner={chatPartner} hasCuBlockedChat={blockStatus.hasCuBlockedChat} lastClearedAt={lastClearedAt} />}
     </div>
   );
 };

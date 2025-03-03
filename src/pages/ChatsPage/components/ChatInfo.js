@@ -1,21 +1,22 @@
 import React, { useState } from 'react'
-import { formatTimeAgo } from '../../../utils/timeUtils';
+import { formatDisplayDate } from '../../../utils/timeUtils';
 import { Link } from 'react-router-dom';
-import { AvatarImage, ConfirmBox } from '../../../components';
+import { AvatarImage, ConfirmBox, ImageViewer } from '../../../components';
 import { useSelector } from 'react-redux';
 import { blockUser, blockUserInChat } from '../../../services/usersService';
 
-export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat}) => {
+export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat, lastClearedAt}) => {
   const [option, setOption] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [step, setStep] = useState(1);
   const [ifWholeApp, setIfWholeApp] = useState(false) 
 
-  const createdTime = formatTimeAgo(chat?.createdAt?.seconds)
+  const lastClearedTime = lastClearedAt>0 ? formatDisplayDate(lastClearedAt) : null
+  const createdTime = formatDisplayDate(chat?.createdAt?.seconds)
   const currentUserId = useSelector(state => state.authState.userInfo.id)
   
   const messagesWithImages = chat?.messages?.filter(msg => msg?.img)
-  
+  console.log(chat)
   const handleConfirm = () => {
     if(step===1){
       setIfWholeApp(true);
@@ -64,8 +65,7 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat}) => {
 
           {option === "info" && 
           <div className="flex flex-col gap-1 mt-2">
-            <span>Chat created - {createdTime}</span>
-            <span>Message counter - {chat.messages?.length}</span>
+            <span>Chat created - {lastClearedTime || createdTime}</span>
           </div>
           }
         </div>
@@ -81,10 +81,10 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat}) => {
             <div className="flex flex-wrap mt-2 gap-2">
               {messagesWithImages.map((msg, index) => (
                 <div key={index} className="w-28 h-28 overflow-hidden rounded-lg">
-                  <img 
+                  <ImageViewer 
                     src={msg.img} 
                     alt={`photo-${index}`} 
-                    className="object-cover w-full h-full" 
+                    className="object-cover w-full h-full"  
                   />
                 </div>
               ))}

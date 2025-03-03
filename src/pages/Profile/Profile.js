@@ -100,7 +100,7 @@ export const Profile = () => {
 
   const handleCancelAvatarImg = () => {
     setAvatarImg({
-      url: userDetails.bgImg || ""
+      url: currentUser.avatar || ""
     })
   };
 

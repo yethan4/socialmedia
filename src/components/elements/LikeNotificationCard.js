@@ -9,7 +9,7 @@ import { fetchUserIfNeeded } from "../../actions/usersAction";
 import { useDispatch, useSelector } from "react-redux";
 import { markNotificationAsSeen } from "../../services/notificationsService";
 
-export const LikeNotificationCard = ({notification, setDropNotifications=""}) => {
+export const LikeNotificationCard = ({notification, setDropNotifications="", setDeletedId}) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -39,6 +39,7 @@ export const LikeNotificationCard = ({notification, setDropNotifications=""}) =>
   
   const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
+    setDeletedId(id);
     await deleteDocument("notifications", id);
   }, []);
 

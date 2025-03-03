@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserIfNeeded } from "../../actions/usersAction";
 import { markNotificationAsSeen } from "../../services/notificationsService";
 
-export const FriendsNotificationCard = ({notification, setDropNotifications=""}) => {
+export const FriendsNotificationCard = ({notification, setDropNotifications="", setDeletedId}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -37,6 +37,7 @@ export const FriendsNotificationCard = ({notification, setDropNotifications=""})
 
   const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
+    setDeletedId(id);
     await deleteDocument("notifications", id);
   }, []);
 
