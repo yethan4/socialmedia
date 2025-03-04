@@ -15,9 +15,8 @@ export const MyActivityPage = () => {
   };
 
   return (
-    <div className="flex h-full w-full pt-20 dark:bg-gray-900">
-      <Sidebar />
+    <>
       {renderComponent()}
-    </div>
+    </>
   )
 }

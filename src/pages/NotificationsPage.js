@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
-import { CommentNotificationCard, FriendRequestNotificationCard, FriendsNotificationCard, InfiniteScrollObserver, LikeNotificationCard } from "../components";
-import { Sidebar } from "../components";
+import { CommentNotificationCard, FriendRequestNotificationCard, FriendsNotificationCard, InfiniteScrollObserver, Layout, LikeNotificationCard } from "../components";
 import { getNotifications } from "../services/notificationsService";
 
 export const NotificationsPage = () => {
@@ -63,9 +62,7 @@ export const NotificationsPage = () => {
   
 
   return (
-    <div className="flex pt-20">
-      <Sidebar />
-
+    <>
       <div className="flex-1 max-w-[1000px] pt-2 pb-6 mt-0 m-auto dark:text-slate-100 shadow dark:shadow-gray-600">
         <h1 className="text-center text-xl font-semibold py-2">ALL NOTIFICATIONS </h1>
         <div className="flex flex-col gap-2">
@@ -90,7 +87,6 @@ export const NotificationsPage = () => {
           loading={loading} 
           hasMore={!noMore} 
         />}
-    </div>
-    
+    </>
   )
 }

@@ -93,8 +93,7 @@ export const SettingsPage = () => {
   );
 
   return (
-    <div className="flex h-full w-full pt-20 dark:bg-gray-900">
-      <Sidebar />
+    <>
       <div className="bg-gray-0 px-14 max-sm:px-2 h-full flex-1 w-full sm:min-w-[480px] max-w-[1024px] mx-auto">
         <div className="flex flex-col border-b w-full pb-4">
           {/* Change Password Section */}
@@ -208,6 +207,6 @@ export const SettingsPage = () => {
         </div>
 
       </div>
-    </div>
+    </>
   );
 };
