@@ -163,8 +163,6 @@ export const markChatAsSeen = async (chatId, userId) => {
 };
 
 export const updateUserChatStatus = async (userId, chatId) => {
-  if (document.hidden) return;
-
   const docRef = doc(db, "userchats", userId);
 
   try {

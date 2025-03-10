@@ -63,25 +63,26 @@ export const ChatView = ({ chatId, chatPartnerId }) => {
   }, []);
 
   useEffect(() => {
-    updateUserChatStatus(currentUser.id, chatId);
-  }, [chat.messages, chatId, currentUser.id]);
-
-  useEffect(() => {
-    if (!chatId || !currentUser) return;
-
     const handleVisibilityChange = () => {
       if (!document.hidden) {
+        updateUserChatStatus(currentUser.id, chatId);
         markChatAsSeen(chatId, currentUser.id);
       }
     };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    markChatAsSeen(chatId, currentUser.id);
-
+  
+    // Obsługa zmiany widoczności dokumentu
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+  
+    // Wywołanie również na zmianę wiadomości (np. gdy przychodzi nowa)
+    if (!document.hidden) {
+      updateUserChatStatus(currentUser.id, chatId);
+      markChatAsSeen(chatId, currentUser.id);
+    }
+  
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [chat.messages, chatId, currentUser]);
+  }, [chat.messages, chatId, currentUser.id]);
 
   useEffect(() => {
     if (!chatId) return;
