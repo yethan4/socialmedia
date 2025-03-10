@@ -39,7 +39,7 @@ export const createNewChat = async (currentUserId, userId) => {
           withUserId: currentUserId
         })
       })
-    } else if(existingChat ){
+    } else if(existingChat && existingChat.isDeleted ){
       const date = Date.now()
       const updatedChats = currentUserChatsData.chats.map(chat =>
         chat.chatId === existingChat.chatId ? { 

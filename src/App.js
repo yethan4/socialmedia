@@ -15,7 +15,7 @@ function App() {
   }, [dispatch])
 
   return (
-    <div className="App dark:bg-gray-900">
+    <div className="App dark:bg-gray-900 ">
       {!loading ? (
         <>
           <Header />

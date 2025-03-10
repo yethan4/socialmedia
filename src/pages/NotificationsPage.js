@@ -62,31 +62,27 @@ export const NotificationsPage = () => {
   
 
   return (
-    <>
-      <div className="flex-1 max-w-[1000px] pt-2 pb-6 mt-0 m-auto dark:text-slate-100 shadow dark:shadow-gray-600">
-        <h1 className="text-center text-xl font-semibold py-2">ALL NOTIFICATIONS </h1>
+    <div className="flex-1 w-full max-w-[1200px] mx-auto px-4">
+      <div className="pt-2 pb-6 w-full mt-0 dark:text-slate-100">
+        <h1 className="text-center text-xl font-semibold py-2">ALL NOTIFICATIONS</h1>
         <div className="flex flex-col gap-2">
-        {
-          notifications.map((notification) => {
-            if(notification.type=="like"){
-              return <LikeNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
-            }else if(notification.type=="comment"){
-              return <CommentNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
-            }else if(notification.type=="friendReqeust"){
-              return <FriendRequestNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
-            }else if(notification.type=="friends"){
-              return <FriendsNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />
+          {notifications.map((notification) => {
+            if (notification.type === "like") {
+              return <LikeNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />;
+            } else if (notification.type === "comment") {
+              return <CommentNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />;
+            } else if (notification.type === "friendReqeust") {
+              return <FriendRequestNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />;
+            } else if (notification.type === "friends") {
+              return <FriendsNotificationCard key={notification.id} notification={notification} setDeletedId={setDeletedId} />;
             }
-          })
-        }
+          })}
         </div>
-        
       </div>
-      {lastVisibleNotification && <InfiniteScrollObserver 
-          loadMore={loadMoreNotifications} 
-          loading={loading} 
-          hasMore={!noMore} 
-        />}
-    </>
+      {lastVisibleNotification && (
+        <InfiniteScrollObserver loadMore={loadMoreNotifications} loading={loading} hasMore={!noMore} />
+      )}
+    </div>
+
   )
 }
