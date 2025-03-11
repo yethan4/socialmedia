@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { FriendCard, Sidebar } from "../components"
+import { FriendCard } from "../components"
 
 export const FriendsPage = () => {
   const userInfo = useSelector(state => state.authState.userInfo)

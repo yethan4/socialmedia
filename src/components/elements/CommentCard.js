@@ -11,15 +11,15 @@ export const CommentCard = ({comment, postAuthorId}) => {
   const [canEdit, setCanEdit] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
 
   const formattedTime = formatTimeAgo(comment.createdAt?.seconds);
 
   useEffect(() => {
-    if(userInfo.id === comment.authorId || postAuthorId === userInfo.id){
+    if(currentUser.id === comment.authorId || postAuthorId === currentUser.id){
       setCanEdit(true);
     }
-  }, [userInfo])
+  }, [currentUser.id, comment.authorId, postAuthorId])
 
   useEffect(() => {
     fetchDocument(comment.authorId, "users").then((user) => {

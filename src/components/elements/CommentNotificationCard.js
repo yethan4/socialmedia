@@ -43,7 +43,7 @@ export const CommentNotificationCard = ({notification, setDropNotifications="", 
     e.stopPropagation();
     setDeletedId(id);
     await deleteDocument("notifications", id);
-  }, []);
+  }, [setDeletedId]);
 
   return (
     <div

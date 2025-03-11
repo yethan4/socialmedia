@@ -29,7 +29,7 @@ export const SearchBarSm = ({inputSearchBar, setInputSearchBar}) => {
                 <SearchUserCard key={user.id} user={user} setInputSearchBar={setInputSearchBar} setIsSearching={setIsSearching}/>
               ))
             )}
-            {searchResult.length == 0 && inputSearchBar && (
+            {searchResult.length === 0 && inputSearchBar && (
               <p className="px-4 py-2 text-gray-500">No results found.</p>
             )}
           </div>

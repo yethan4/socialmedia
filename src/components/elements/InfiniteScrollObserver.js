@@ -15,19 +15,21 @@ export const InfiniteScrollObserver = ({ loadMore, loading, hasMore }) => {
       { threshold: 1.0 }
     );
 
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
+    const currentRef = observerRef.current;
+
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [hasMore, loading, loadMore]);
 
   return (
-    !hasMore ? null : (
+    hasMore && (
       <div ref={observerRef} className="h-20 flex justify-center mb-10">
         {loading && <img src={loadingGif} alt="loading gif" className="h-8" />}
       </div>

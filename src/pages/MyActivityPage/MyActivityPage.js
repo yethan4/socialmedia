@@ -1,4 +1,3 @@
-import { Sidebar } from "../../components";
 import { useParams } from "react-router-dom";
 import { MyLikes } from "./components/MyLikes";
 import { Options } from "./components/Options";

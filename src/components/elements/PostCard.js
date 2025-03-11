@@ -45,7 +45,7 @@ export const PostCard = ({post}) => {
 
   useEffect(() => {
     setCommentsCount(post.commentsCount);
-  }, [post.commentsCount]);
+  }, [post.commentsCount, setCommentsCount]);
 
   useEffect(() => {
     if(currentUser?.bookmarks.includes(post.id)){
@@ -100,7 +100,7 @@ export const PostCard = ({post}) => {
 
   const handleChangeVisibility = useCallback(async () => {
     try {
-      const newStatus = visibilityStatus == "friends" ? "public" : "friends"
+      const newStatus = visibilityStatus === "friends" ? "public" : "friends"
       await changeVisibility(newStatus, post.id)
       setVisibilityStatus(newStatus);
       setIsVisibilityChanging(false);
