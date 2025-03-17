@@ -133,7 +133,6 @@ export const Profile = () => {
 
   const handleSaveAvatarImg = async() => {
     setLoadingData(true);
-    console.log(avatarImg);
     let imgUrl = "";
     
     try{
@@ -229,8 +228,6 @@ export const Profile = () => {
         textarea.style.height = `${textarea.scrollHeight}px`; 
     }
   }, [textAboutMe, isAboutMeEdit]);
-
-  console.log(currentUser)
 
   return (
     <div className="mt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">

@@ -35,7 +35,7 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
   const handleDelete = useCallback(async(e) => {
     e.stopPropagation();
     try{
-      setDeletedId(notification.id);
+      if(setDeletedId) setDeletedId(notification.id);
       await rejectFriendRequest(currentUser.id, notification.fromUserId)
     }catch(err){
       console.log(err)
