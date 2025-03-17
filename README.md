@@ -61,7 +61,7 @@ Follow these steps to set up the application locally:
   
   If you're using yarn:
   ```bash
-  ### `yarn install`
+  `yarn install`
   ```
   
   3. **Set up Firebase**
