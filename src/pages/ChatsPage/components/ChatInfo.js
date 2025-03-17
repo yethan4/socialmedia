@@ -21,7 +21,7 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat, lastClearedAt}) =
     if(step===1){
       setIfWholeApp(true);
       setStep(2);
-    }if(step==2){
+    }if(step===2){
       if(ifWholeApp){
         blockUser(currentUserId, chatPartner.id);
       }else{
@@ -34,10 +34,10 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat, lastClearedAt}) =
   };
 
   const handleCancel = () => {
-    if(step==1){
+    if(step===1){
       setIfWholeApp(false)
       setStep(2)
-    }else if(step==2){
+    }else if(step===2){
       setShowConfirmation(false)
       setStep(1)
       setIfWholeApp(false)
@@ -57,7 +57,7 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat, lastClearedAt}) =
       <div className="flex flex-col mt-10 px-1">
 
         <div className="flex flex-col items-center">
-          <div className="cursor-pointer select-none px-4 py-2 rounded-lg w-full text-center hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => {option == "info" ? setOption("") : setOption("info")}}>
+          <div className="cursor-pointer select-none px-4 py-2 rounded-lg w-full text-center hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => {option === "info" ? setOption("") : setOption("info")}}>
             <i className="bi bi-info-circle mr-1"></i>
             <span className="text-lg">Info</span>
             <i className={option === "info" ? "bi bi-chevron-up ml-2" : "bi bi-chevron-down ml-2"}></i>
@@ -71,7 +71,7 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat, lastClearedAt}) =
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="cursor-pointer select-none px-4 py-2 rounded-lg w-full text-center hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => {option == "photos" ? setOption("") : setOption("photos")}}>
+          <div className="cursor-pointer select-none px-4 py-2 rounded-lg w-full text-center hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => {option === "photos" ? setOption("") : setOption("photos")}}>
             <i className="bi bi-images mr-1"></i>
             <span className="text-lg">Photos</span>
             <i className={option === "photos" ? "bi bi-chevron-up ml-2" : "bi bi-chevron-down ml-2"}></i>

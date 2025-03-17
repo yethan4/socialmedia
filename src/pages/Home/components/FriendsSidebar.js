@@ -1,7 +1,5 @@
-import { useState } from "react"
 import { FriendSidebarCard } from "./"
 import { useSelector } from "react-redux"
-import { FriendsSidebarSkeleton } from "../../../components/skeletons"
 
 export const FriendsSidebar = () => {
   const friends = useSelector(state => state.authState.userInfo?.friends)

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { FriendsSidebar } from "./components";
-import { CreatePost, InfiniteScrollObserver, PostCard, Sidebar } from "../../components";
+import { CreatePost, InfiniteScrollObserver, PostCard } from "../../components";
 
 import { setPosts } from "../../actions/postsAction";
 

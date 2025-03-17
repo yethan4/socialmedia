@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { Sidebar } from "../components";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword} from "firebase/auth";
 import { toast } from "react-toastify";
 import { auth } from "../firebase/config";

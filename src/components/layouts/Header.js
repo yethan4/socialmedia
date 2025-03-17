@@ -20,7 +20,7 @@ export const Header = () => {
   const location = useLocation();
   const isChatsPage = location.pathname.startsWith("/chats")
 
-  const userInfo = useSelector(state => state.authState.userInfo);
+  const currentUser = useSelector(state => state.authState.userInfo);
   const notificationsCounter = useSelector(state => state.notificationsState.unreadCount);
 
   const showDropMenu = (state) => {
@@ -50,11 +50,11 @@ export const Header = () => {
   }, [isChatsPage])
   
   useEffect(() => {
-    if (!userInfo?.id) return;
+    if (!currentUser?.id) return;
 
     const q = query(
       collection(db, "notifications"),
-      where("toUserId", "==", userInfo.id),
+      where("toUserId", "==", currentUser.id),
       where("seen", "==", false),
       orderBy("timestamp", "desc")
     );
@@ -68,15 +68,15 @@ export const Header = () => {
     });
 
     return () => unsubscribe();
-  }, [userInfo?.id, dispatch]);
+  }, [currentUser?.id, dispatch]);
 
   //fetching chats
   useEffect(() => {
-    if (!userInfo) return;
+    if (!currentUser) return;
   
     try {
       const unSub = onSnapshot(
-        doc(db, "userchats", userInfo.id),
+        doc(db, "userchats", currentUser.id),
         (res) => {
           if (!res.exists()) return;
   
@@ -101,7 +101,7 @@ export const Header = () => {
     } catch (error) {
       console.error("Błąd w useEffect:", error);
     }
-  }, [userInfo?.id]);
+  }, [currentUser?.id, dispatch, currentUser]);
 
 
   return (
@@ -112,18 +112,18 @@ export const Header = () => {
             <Link to="/">
               <span onClick={handleScrollTop} className="text-2xl font-bold text-blue-800 select-none cursor-pointer">SocialApp</span>
             </Link>
-            {userInfo && (
+            {currentUser && (
               <SearchBar inputSearchBar={inputSearchBar} setInputSearchBar={setInputSearchBar} />
             )}
           </div>
           <div className="md:hidden flex h-12 pt-2">
             <Link to="/"><span className="text-2xl font-bold text-blue-800">SocialApp</span></Link>
-            {userInfo && (
+            {currentUser && (
               <SearchBarSm inputSearchBar={inputSearchBar} setInputSearchBar={setInputSearchBar} />
             )}
           </div>
           <div className="flex items-center gap-2">
-            {userInfo && (
+            {currentUser && (
               <>
                 {darkMode ? (
                 <span className=" rounded-full p-1 px-2 text-2xl cursor-pointer dark:hover:bg-gray-800" onClick={() => setDarkMode(false)}>
@@ -147,11 +147,11 @@ export const Header = () => {
                   <i className="bi bi-bell "></i>
                 </span>
                 <span className="rounded-full mb-1" onClick={() => showDropMenu(!dropDwonMenu)}>
-                  <AvatarImage src={userInfo?.avatar} size={9}/>
+                  <AvatarImage src={currentUser?.avatar} size={9}/>
                 </span>
               </>
             )}
-            {!userInfo && (
+            {!currentUser && (
               <>
                 {darkMode ? (
                 <span className=" rounded-full p-1 px-2 text-2xl cursor-pointer dark:hover:bg-gray-800" onClick={() => setDarkMode(false)}>

@@ -25,7 +25,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
         textarea.style.height = "40px"; 
         textarea.style.height = `${textarea.scrollHeight}px`; 
     }
-  }, [text]); 
+  }, [text, textareaRef]); 
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -45,7 +45,7 @@ export const CreateComment = ({postId, postAuthorId, setScrollCommentToggle}) =>
         console.log(err);
       }
     },
-    [text, postId, postAuthorId, setScrollCommentToggle, currentUser.id]
+    [text, postId, postAuthorId, setScrollCommentToggle, currentUser.id, setShowPicker, setText]
   );
 
 

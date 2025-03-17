@@ -33,7 +33,7 @@ export const ChatsPage = () => {
     }
   
     dispatch(setLoading(false));
-  }, [id, chats]);
+  }, [id, chats, dispatch]);
 
   useEffect(() => {
     if (searchResults.length > 0) {

@@ -12,19 +12,20 @@ export const DropDownNotifications = ({setDropNotifications}) => {
       
       {
         notifications.map((notification) => {
-          if(notification.type=="like"){
+          if(notification.type==="like"){
             return <LikeNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications}/>
-          }else if(notification.type=="comment"){
+          }else if(notification.type==="comment"){
             return <CommentNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
-          }else if(notification.type=="friendRequest"){
+          }else if(notification.type==="friendRequest"){
             return <FriendRequestNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
-          }else if(notification.type=="friends"){
+          }else if(notification.type==="friends"){
             return <FriendsNotificationCard key={notification.id} notification={notification} setDropNotifications={setDropNotifications} />
           }
+          return null
         })
       }
 
-      {notifications.length == 0 && <div className="px-2">no new notifications</div>}
+      {notifications.length === 0 && <div className="px-2">no new notifications</div>}
 
     </div>
   )
