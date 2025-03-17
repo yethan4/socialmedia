@@ -7,7 +7,6 @@ export const MyActivityPage = () => {
   const { section } = useParams();
 
   const renderComponent = () => {
-    console.log("t")
     if (section === "likes") return <MyLikes />;
     else if (section === "comments") return <MyComments />;
     else return <Options />

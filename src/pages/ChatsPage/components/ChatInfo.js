@@ -16,7 +16,7 @@ export const ChatInfo = ({chat, chatPartner, hasCuBlockedChat, lastClearedAt}) =
   const currentUserId = useSelector(state => state.authState.userInfo.id)
   
   const messagesWithImages = chat?.messages?.filter(msg => msg?.img)
-  console.log(chat)
+
   const handleConfirm = () => {
     if(step===1){
       setIfWholeApp(true);

@@ -24,7 +24,7 @@ export const createNewChat = async (currentUserId, userId) => {
           chatId: chatRef.id,
           isSeen: false,
           lastMessage: "You can now chat!",
-          receiverId: "",
+          receiverId: currentUserId,
           updatedAt: date,
           withUserId: userId
         })
@@ -34,7 +34,7 @@ export const createNewChat = async (currentUserId, userId) => {
           chatId: chatRef.id,
           isSeen: false,
           lastMessage: "You can now chat!",
-          receiverId: "",
+          receiverId: userId,
           updatedAt: date,
           withUserId: currentUserId
         })
@@ -47,7 +47,7 @@ export const createNewChat = async (currentUserId, userId) => {
           isDeleted: false,
           isSeen: false,
           lastMessage: "You can now chat!",
-          receiverId: "",
+          receiverId: currentUserId,
           updatedAt: date,
         } : chat
       );

@@ -28,7 +28,12 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
   }, [currentUser.bookmarks]);
   
   const filterBlockedUsersPosts = useCallback((posts) => {
-    const blockedIds = [...new Set([...currentUser.blockedUsers, ...currentUser.blockedBy])];
+    const blockedIds = [
+      ...new Set([
+        ...(currentUser.blockedUsers || []), 
+        ...(currentUser.blockedBy || [])
+      ])
+    ];    
   
     return posts.filter(post => !blockedIds.includes(post.authorId));
   }, [currentUser.blockedUsers, currentUser.blockedBy]);
@@ -40,8 +45,8 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
         let postsData = { posts: [], lastVisible: null };
 
         if (category === "userPosts") {
-          postsData = await getPosts("userPosts", {userId});
-          postsData.posts = filterPosts(postsData.posts);
+          postsData = await getPosts("userPosts", {userId}) || { posts: [], lastVisible: null };
+          postsData.posts = postsData.posts.length>0 ? filterPosts(postsData.posts) : [];
         } else if (category === "bookmarks") {
           if (!currentUser?.bookmarks?.length) {
             setNoMorePosts(true);

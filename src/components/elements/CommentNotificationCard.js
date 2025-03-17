@@ -41,7 +41,7 @@ export const CommentNotificationCard = ({notification, setDropNotifications="", 
 
   const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
-    setDeletedId(id);
+    if(setDeletedId) setDeletedId(id);
     await deleteDocument("notifications", id);
   }, [setDeletedId]);
 

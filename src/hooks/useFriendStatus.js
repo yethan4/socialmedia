@@ -3,6 +3,7 @@ import { addFriend, checkFriendStatus, rejectFriendRequest, removeFriend, sentFr
 import { useSelector } from "react-redux";
 import { fetchDocument } from "../services/generalService";
 import { toast } from "react-toastify";
+import { createNewChat } from "../services/chatService";
 
 export const useFriendStatus = (friendId) => {
   const [friendStatus, setFriendStatus] = useState("strangers");
@@ -25,6 +26,7 @@ export const useFriendStatus = (friendId) => {
 
   const handleAddFriend = useCallback(async () => {
     await addFriend(userInfo.id, friendId, friendRequestId);
+    await createNewChat(userInfo.id, friendId);
     setFriendStatus("friends");
   }, [userInfo.id, friendId, friendRequestId]);
 
