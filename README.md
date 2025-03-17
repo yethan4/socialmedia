@@ -38,6 +38,8 @@ Here are some screenshots of the app:
 - **Online Status**: Users can see the real-time presence of their friends or other users in chats.
 - **Chat System**: Users can chat with each other, see when their chat partner is typing, and know whether thei messages have been seen or not.
 - **Settings**: Users can update their password and username, manage their notifications, view their bookmarks, and track their activity.
+- **Block Users**: Users can block other users, either across the entire app or just within the chat.
+- **Search for Friends**: Users can search for other users using a search bar to find and connect with friends.
 
 ## Installation
 
