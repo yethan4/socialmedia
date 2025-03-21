@@ -37,7 +37,6 @@ export const MyLikes = () => {
 
   const loadMoreLikes = async () => {
       if (!lastVisibleLike) {
-          console.log('ttasd')
           setNoMoreLikes(true);
           return;
       }

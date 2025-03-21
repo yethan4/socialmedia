@@ -30,17 +30,17 @@ export const FriendRequestNotificationCard = ({notification, setDropNotification
         console.log(e)
       }
     }
-  }, [notification]);
+  }, [notification.fromUserId, navigate, setDropNotifications]);
 
   const handleDelete = useCallback(async(e) => {
     e.stopPropagation();
     try{
-      setDeletedId(notification.id);
+      if(setDeletedId) setDeletedId(notification.id);
       await rejectFriendRequest(currentUser.id, notification.fromUserId)
     }catch(err){
       console.log(err)
     }
-  }, [currentUser.id, notification.fromUserId])
+  }, [currentUser.id, notification.fromUserId, notification.id, setDeletedId])
 
   const handleAccept = useCallback(async(e) => {
     e.stopPropagation();

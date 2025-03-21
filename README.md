@@ -1,70 +1,97 @@
-# Getting Started with Create React App
+# SocialApp
+[socialmedia-yethan.netlify.app](https://socialmedia-yethan.netlify.app/index.html)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Technologies Used
 
-## Available Scripts
+- **Frontend**: React, React Router, Redux
+- **Backend**: Firebase
+- **Styling**: Tailwind CSS
 
-In the project directory, you can run:
+## Description
 
-### `npm start`
+SocialApp is a social application that allows users to publish posts, chat, and interact with others. It was built for educational purposes, with the goal of helping me develop my technical and cognitive skills during its creation.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## SCREENS
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Here are some screenshots of the app:
 
-### `npm test`
+### 1. Home Screen
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+![Home Screen](https://github.com/yethan4/socialmedia/blob/main/screenshots/home.png)
 
-### `npm run build`
+### 2. Dark Home Screen
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![Dark Home Screen](https://github.com/yethan4/socialmedia/blob/main/screenshots/homeDark.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. Chats Screen
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+![Chats Screen](https://github.com/yethan4/socialmedia/blob/main/screenshots/chats.png)
 
-### `npm run eject`
+## Features
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **User Authentication**: Sign up, login, logout and password recovery.
+- **Posts**: Users can create, view, delete posts as well as control who can see them.
+- **Likes and Comments**: Users can like and comment on posts.
+- **Friendship System**: Users can send, accept, or decline friend invitations and manage their friend list.
+- **Notification System**: Users receive notifications when someone likes or comments on their posts, as well as when they receive a friend request or when a friend request is accepted. This ensures users stay updated on interactions and connections within the app.
+- **Toast Notifications**: Users receive short notifications to confirm their actions.
+- **Online Status**: Users can see the real-time presence of their friends or other users in chats.
+- **Chat System**: Users can chat with each other, see when their chat partner is typing, and know whether thei messages have been seen or not.
+- **Settings**: Users can update their password and username, manage their notifications, view their bookmarks, and track their activity.
+- **Block Users**: Users can block other users, either across the entire app or just within the chat.
+- **Search for Friends**: Users can search for other users using a search bar to find and connect with friends.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Installation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Follow these steps to set up the application locally:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+  1. **Clone the repository**
+  
+  In the project directory, you can run:
+  
+  ```bash
+  git clone https://github.com/yethan4/socialmedia.git
+  cd socialmedia
+  ```
+  
+  2. **Install Dependencies**
+  
+  If you're using npm:
+  ```bash
+  npm install
+  ```
+  
+  If you're using yarn:
+  ```bash
+  yarn install
+  ```
+  
+  3. **Set up Firebase**
+  
+  Create a new project in the Firebase Console.
+  Set up Firebase Authentication and enable sign-in methods (e.g., Email/Password, Google).
+  Set up Firebase Firestore (or Realtime Database, depending on your app's structure).
+  Add your Firebase config to the project. You can find your Firebase config in the Firebase Console under Project settings -> General -> Your apps.
+  
+  In the React app, create a .env file in the root directory and add your Firebase configuration:
+  
+  ```plaintext
+  REACT_APP_FIREBASE_API_KEY=your-api-key
+  REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+  REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+  REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+  REACT_APP_FIREBASE_APP_ID=your-app-id
+  ```
+  
+  4. **Run project**
+  
+  Using npm:
+  ```bash
+  npm start
+  ```
+  
+  Using yarn:
+  ```bash
+  yarn start
+  ```

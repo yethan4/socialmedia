@@ -28,7 +28,7 @@ export const FriendSidebarCard = ({ userId }) => {
 
   return (
       <div className="flex items-center justify-between pr-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer rounded">
-        <Link to={`/profile/${userId}`}>
+        <Link to={`/profile/${userId}`} className="flex-1">
         <div className="relative flex items-center gap-2 px-4 py-2 rounded">
           <div className="relative">
             <AvatarImage src={userData?.avatar} size={10} />

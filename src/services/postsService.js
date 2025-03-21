@@ -1,4 +1,4 @@
-import { addDoc, arrayRemove, arrayUnion, collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, documentId, getDoc, limit, orderBy, query, serverTimestamp, startAfter, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { getDocuments } from "./generalService";
 

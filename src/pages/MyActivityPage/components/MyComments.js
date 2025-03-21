@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CommentCard, InfiniteScrollObserver } from "../../../components";
 import { useSelector } from "react-redux";
-import loadingGif from "../../../assets/loading.gif";
 import { Link } from "react-router-dom";
 import { getComments } from "../../../services/commentsService";
 
@@ -57,7 +56,7 @@ export const MyComments = () => {
   };
 
   return (
-    <div className="bg-gray-0 h-full flex-1 mx-auto max-w-[1024px] px-4 pb-4 flex flex-col gap-4">
+    <div className="bg-gray-0 h-full flex-1 w-full px-4 pb-4 flex flex-col gap-4">
       {comments && comments.map((comment) => (
         <div className="shadow px-4 pt-2 rounded-xl dark:shadow-gray-400 dark:shadow-sm" key={comment.id}>
           <CommentCard comment={comment} />

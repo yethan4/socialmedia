@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPosts, setPosts } from "../actions/postsAction";
 import { getPosts } from "../services/postsService";
@@ -13,28 +13,30 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
 
   const dispatch = useDispatch();
 
-  const filterPosts = (posts) => {
-    posts = posts.filter(post => {
+  const filterPosts = useCallback((posts, friendStatus, userId) => {
+    
+    return posts.filter(post => {
       return post.visibility !== "friends" || friendStatus === "friends" || userId === currentUser.id;
     });
-
-    return posts
-  }
-
-  const sortPosts = (posts) => {
-    posts = posts.sort((a, b) => 
+  }, [currentUser.id]);
+  
+  const sortPosts = useCallback((posts) => {
+  
+    return posts.sort((a, b) => 
       currentUser.bookmarks.indexOf(b.id) - currentUser.bookmarks.indexOf(a.id)
     );
-
-    return posts
-  }
-
-  const filterBlockedUsersPosts = (posts) => {
-    const blockedIds = [...new Set([...currentUser.blockedUsers, ...currentUser.blockedBy])]
-    posts = posts.filter(post => !blockedIds.includes(post.authorId))
-
-    return posts
-  }
+  }, [currentUser.bookmarks]);
+  
+  const filterBlockedUsersPosts = useCallback((posts) => {
+    const blockedIds = [
+      ...new Set([
+        ...(currentUser.blockedUsers || []), 
+        ...(currentUser.blockedBy || [])
+      ])
+    ];    
+  
+    return posts.filter(post => !blockedIds.includes(post.authorId));
+  }, [currentUser.blockedUsers, currentUser.blockedBy]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -43,8 +45,8 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
         let postsData = { posts: [], lastVisible: null };
 
         if (category === "userPosts") {
-          postsData = await getPosts("userPosts", {userId});
-          postsData.posts = filterPosts(postsData.posts);
+          postsData = await getPosts("userPosts", {userId}) || { posts: [], lastVisible: null };
+          postsData.posts = postsData.posts.length>0 ? filterPosts(postsData.posts) : [];
         } else if (category === "bookmarks") {
           if (!currentUser?.bookmarks?.length) {
             setNoMorePosts(true);
@@ -80,7 +82,7 @@ export const usePosts = (category, {userId=null, friendStatus=null}) => {
 
     dispatch(setPosts([], []));
     fetchPosts();
-    }, [dispatch, category, userId, currentUser.id, friendStatus]);
+    }, [dispatch, category, userId, currentUser.id, currentUser.bookmarks, currentUser.friends, filterBlockedUsersPosts, filterPosts, sortPosts, friendStatus]);
   
 
   const loadMorePosts = async () => {

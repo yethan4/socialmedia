@@ -17,8 +17,9 @@ export const AllRoutes = () => {
       {/* with Sidebar */}
       <Route element={<Layout />}>
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/friends" element={<FriendsPage />} />
-        <Route path="/bookmarks" element={<BookmarksPage />} />
+        <Route path="/index.html" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/friends" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
+        <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
         <Route path="/my-activity"  element={<ProtectedRoute><MyActivityPage /></ProtectedRoute>} />

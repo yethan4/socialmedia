@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import EmojiPicker from 'emoji-picker-react';
 
 import emoji from "../../assets/emoji.png";
@@ -39,7 +39,7 @@ export const CreatePost = () => {
         textarea.style.height = "auto"; 
         textarea.style.height = `${textarea.scrollHeight}px`; 
     }
-  }, [text]); 
+  }, [text, textareaRef]); 
 
   const handleSubmit = async(e) => {
     e.preventDefault();

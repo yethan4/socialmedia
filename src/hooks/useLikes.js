@@ -45,13 +45,15 @@ export const useLikes = (postId, userId, authorId) => {
     }
   }, [postId, likeId, dispatch]);
 
-  const filterBlockedUsersLikes = (likes) => {
-    const blockedIds = [...new Set([...currentUser.blockedUsers, ...currentUser.blockedBy])]
-    
-    if(authorId != currentUser.id) likes = likes.filter(like => !blockedIds.includes(like.userId))
-    
-    return likes
-  }
+  const filterBlockedUsersLikes = useCallback((likes, authorId) => {
+    const blockedIds = [...new Set([...currentUser.blockedUsers, ...currentUser.blockedBy])];
+  
+    if (authorId !== currentUser.id) {
+      return likes.filter(like => !blockedIds.includes(like.userId));
+    }
+  
+    return likes;
+  }, [currentUser.blockedUsers, currentUser.blockedBy, currentUser.id]);
 
   const handleLikesDisplay = useCallback(async () => {
       setShowLikes(true);
@@ -63,7 +65,7 @@ export const useLikes = (postId, userId, authorId) => {
       }catch(err){
         console.log(err)
       }
-    }, [postId]);
+    }, [postId, filterBlockedUsersLikes]);
 
   return {
     likeId,

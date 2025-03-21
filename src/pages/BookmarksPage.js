@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { InfiniteScrollObserver, Layout, PostCard } from "../components"
+import { InfiniteScrollObserver, PostCard } from "../components"
 
 import { usePosts } from "../hooks/usePosts";
 

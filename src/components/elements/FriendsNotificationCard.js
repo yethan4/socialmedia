@@ -33,13 +33,13 @@ export const FriendsNotificationCard = ({notification, setDropNotifications="", 
         console.log(e)
       }
     }
-  }, [notification.id]);
+  }, [notification.id, author?.id, navigate, setDropNotifications]);
 
   const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
-    setDeletedId(id);
+    if(setDeletedId) setDeletedId(id);;
     await deleteDocument("notifications", id);
-  }, []);
+  }, [setDeletedId]);
 
   return (
     <div

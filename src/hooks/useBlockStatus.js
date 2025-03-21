@@ -41,7 +41,7 @@ export const useBlockStatus = (id) => {
     if (currentUser?.chatBlockedBy?.includes(id)){
       updateBlockStatus("isCuChatBlocked", true);
     }
-  }, [currentUser?.id, currentUser?.blockedUsers, currentUser?.blockedBy, currentUser?.chatBlockedUsers, currentUser?.chatBlockedBy, id]);
+  }, [currentUser, id]);
 
   return {blockStatus, updateBlockStatus}
 }

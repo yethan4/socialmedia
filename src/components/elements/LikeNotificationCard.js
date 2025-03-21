@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { deleteDocument, fetchDocument } from "../../services/generalService";
+import { useCallback, useEffect } from "react";
+import { deleteDocument } from "../../services/generalService";
 import { formatTimeAgo } from "../../utils/timeUtils";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/config";
 import { AvatarImage } from "./AvatarImage";
 import { fetchUserIfNeeded } from "../../actions/usersAction";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,13 +33,13 @@ export const LikeNotificationCard = ({notification, setDropNotifications="", set
         console.log(e)
       }
     }
-  }, [notification.id]);
+  }, [notification.id, navigate, notification?.postId, setDropNotifications]);
   
   const handleDelete = useCallback( async (e, id) => {
     e.stopPropagation();
-    setDeletedId(id);
+    if(setDeletedId) setDeletedId(id);
     await deleteDocument("notifications", id);
-  }, []);
+  }, [setDeletedId]);
 
   return (
     <div

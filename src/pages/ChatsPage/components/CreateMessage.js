@@ -65,7 +65,7 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
     if (newIsTyping !== isTyping) {
       setIsTyping(newIsTyping);
     }
-  }, [text.length, img?.url]);
+  }, [text.length, img?.url, isTyping]);
 
   useEffect(() => {
     const updateCurrentlyTyping = async () => {
@@ -74,7 +74,7 @@ export const CreateMessage = ({ chatId, chatPartnerId }) => {
     };
 
     updateCurrentlyTyping();
-  }, [isTyping]);
+  }, [isTyping, chatId, currentUser.id, img.url, text.length]);
   
 
 
