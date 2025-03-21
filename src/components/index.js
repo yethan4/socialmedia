@@ -24,6 +24,7 @@ export { FriendsNotificationCard } from "./elements/FriendsNotificationCard";
 
 export { FriendCard } from "./elements/FriendCard";
 export { UserCard } from "./elements/UserCard";
+export { FriendsList } from "./elements/FriendsList"
 
 export { ImageViewer } from "./elements/ImageViewer";
 export { DropDownChats } from "./elements/DropDownChats";
