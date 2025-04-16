@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { formatDisplayDate } from "../../../utils/timeUtils";
-import { ImageViewer } from "../../../components";
+import { AvatarImage, ImageViewer } from "../../../components";
 
 export const MessageCard = ({ message, chatPartner }) => {
   const formattedTime = formatDisplayDate(message.createdAt.seconds);
@@ -46,16 +46,12 @@ export const MessageCard = ({ message, chatPartner }) => {
         </div>
       ) : (
         <div 
-          className="flex relative group w-fit"
+          className="flex relative group w-fit space-x-1"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <div className="h-fit mt-auto pb-1">
-            <img
-              src={chatPartner.avatar}
-              alt=""
-              className="w-8 h-8 object-cover rounded-full mr-2"
-            />
+            <AvatarImage src={chatPartner.avatar} size={8} />
           </div>
           <div className="max-w-[1000px]">
             {message.img && (
