@@ -1,6 +1,10 @@
 # SocialApp
 [socialmedia-yethan.netlify.app](https://socialmedia-yethan.netlify.app/index.html)
 
+**Test Account**<br>
+**Login** `test@test.com`
+**Password** `test123`
+
 ## Technologies Used
 
 - **Frontend**: React, React Router, Redux

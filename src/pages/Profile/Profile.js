@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchDocument, updateDocument } from '../../services/generalService';
-import { AvatarImage, ConfirmBox, CreatePost, FriendCard, InfiniteScrollObserver, PostCard} from '../../components';
+import { AvatarImage, ConfirmBox, CreatePost, FriendsList, InfiniteScrollObserver, PostCard} from '../../components';
 import { useSelector } from 'react-redux';
 
 import { useTitle } from '../../hooks/useTitle';
@@ -237,15 +237,15 @@ export const Profile = () => {
           key={bgImg.url} 
           style={{ backgroundImage: imageLoaded && !blockStatus.isCuBlocked && !blockStatus.hasCuBlocked  ? `url(${bgImg.url})` : 'none', }}
         >
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-          )}
-          <img
-            src={bgImg.url}
-            alt="background"
-            className="hidden" 
-            onLoad={handleLoadImage} 
-          />
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
+        )}
+        <img
+          src={bgImg.url}
+          alt="background"
+          className="hidden" 
+          onLoad={handleLoadImage} 
+        />
 
         {isCurrentUser && (
           <>
@@ -477,14 +477,7 @@ export const Profile = () => {
             />
           </section>
         ) : (
-          <section className="flex gap-x-4 h-[100vh] justify-center gap-y-2  sm:flex-wrap pb-16 ">
-            {
-              userData?.friends && 
-              userData.friends.map((friendId) =>( 
-                <FriendCard key={friendId} friendId={friendId} />
-              ))
-            }
-          </section>
+          <FriendsList friends={userData.friends} />
         )}
         </div>)}
       </div>
