@@ -52,7 +52,7 @@ export const Login = () => {
             className="border-b w-full pl-8 py-3 outline-none dark:bg-gray-800"/>
             <i className="bi bi-key-fill absolute left-1 top-3 text-gray-400"></i>
           </div>
-          <button className="py-2 bg-blue-600 text-slate-100 mt-4 text-lg">Zaloguj</button>
+          <button className="py-2 bg-blue-600 text-slate-100 mt-4 text-lg">Sign In</button>
           <div className="absolute bottom-4 left-4 right-4 flex justify-between">
             <Link to="/register" className="hover:underline text-sm">Don't have an account?</Link>
             <Link to="/reset-password" className="hover:underline text-sm">Forgot password?</Link>            
