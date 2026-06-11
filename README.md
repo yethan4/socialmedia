@@ -99,7 +99,7 @@ The project helped me develop my technical and cognitive skills, as well as unde
 
 ## Notes
 
-- This project uses the free tier of Firebase, including Firebase Storage for file uploads (e.g., profile photos, post images).
-- **Starting from October 1, Firebase Storage will no longer be available in the free tier for this project.**  
-  As a result, uploading and displaying images may stop working after that date, unless storage is migrated to another provider.
+- Image uploads were originally handled by Firebase Storage, which is no longer included in free tier.
+- Image storage has therefore been migrated to **Cloudinary**: uploads go directly to Cloudinary, while deletions are handled by a Netlify serverless function so the API secret stays server-side.
+- All existing images that were previously stored in Firebase Storage have also been moved over to Cloudinary.
 - The application is a prototype built for learning and portfolio purposes.
