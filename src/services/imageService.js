@@ -1,43 +1,36 @@
-import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { storage } from "../firebase/config";
+const CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 export const uploadImage = async (file) => {
-  const timestamp = Date.now(); // Instead of the date, get the current milliseconds
-  const storageRef = ref(storage, `images/${timestamp}_${file.name}`);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
 
-  const uploadTask = uploadBytesResumable(storageRef, file);
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    { method: "POST", body: formData }
+  );
 
-  return new Promise((resolve, reject) => {
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-      },
-      (error) => {
-          reject("Something went wrong!" + error.code);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          resolve(downloadURL);
-        });
-      }
-    );
-  });
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error("Image upload failed: " + error);
+  }
+
+  const data = await response.json();
+  return data.secure_url;
 };
 
 export const deleteImage = async (fileURL) => {
-  try {
-    const path = fileURL.split(`${storage.app.options.storageBucket}/o/`)[1].split("?")[0];
-    const decodedPath = decodeURIComponent(path);
+  if (!fileURL || !fileURL.includes("res.cloudinary.com")) return;
 
-    const fileRef = ref(storage, decodedPath);
+  const response = await fetch("/.netlify/functions/delete-image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: fileURL }),
+  });
 
-    await deleteObject(fileRef);
-    console.log("File deleted successfully");
-  } catch (error) {
-    console.error("Error deleting file:", error);
-    throw new Error("Could not delete file: " + error.message);
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error("Could not delete file: " + error);
   }
 };

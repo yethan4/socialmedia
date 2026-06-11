@@ -142,7 +142,7 @@ export const Profile = () => {
       }
 
       
-      if(currentUser.avatar !== "https://firebasestorage.googleapis.com/v0/b/positx-ca63d.appspot.com/o/default%2FdefaultAvatar.png?alt=media&token=ee889b87-bcf3-4d04-9c4c-4746570793d9"){ 
+      if(currentUser.avatar !== "https://res.cloudinary.com/dnuvgzlhk/image/upload/v1759164384/default/defaultAvatar.png"){
         await deleteImage(currentUser.avatar);
       }
   
@@ -232,12 +232,12 @@ export const Profile = () => {
   return (
     <div className="mt-16 w-full max-w-[1200px] h-full mx-auto rounded-lg">
       <div className="relative shadow-lg dark:shadow-gray-800 dark:shadow-sm rounded-lg max-lg:pb-8">
-        <div 
-          className="relative h-[35vh] bg-cover bg-center border-b"
-          key={bgImg.url} 
-          style={{ backgroundImage: imageLoaded && !blockStatus.isCuBlocked && !blockStatus.hasCuBlocked  ? `url(${bgImg.url})` : 'none', }}
+        <div
+          className="relative h-[35vh] bg-cover bg-center border-b bg-gradient-to-br from-sky-400 via-indigo-400 to-purple-500 dark:from-sky-800 dark:via-indigo-900 dark:to-purple-950"
+          key={bgImg.url}
+          style={bgImg.url && imageLoaded && !blockStatus.isCuBlocked && !blockStatus.hasCuBlocked ? { backgroundImage: `url(${bgImg.url})` } : undefined}
         >
-        {!imageLoaded && (
+        {bgImg.url && !imageLoaded && (
           <div className="absolute inset-0 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
         )}
         <img
